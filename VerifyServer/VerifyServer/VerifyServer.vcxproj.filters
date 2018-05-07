@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\operator">
+      <UniqueIdentifier>{29a75cb5-bbf2-4885-95f9-1c1d81403140}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceAppMain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleModeTemplete.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cJSON_Unicode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketProtocol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_sql.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StringIOCompletePortOverlapped.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadSocketRecevier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DBSqlite3Proxy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_lock.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AppEntity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientUser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalFunc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AppDataFileCopy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="veriry_common_define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Encrypter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NetSocketProxy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Operater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSignupNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyArg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DBSqlExecOperate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SignupMethods.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SignupData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IdentifyCodeSignupMethods.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientVerifyNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientVerifyData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginVerifyReponseNetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocketProxy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpNetSocketProxy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientVerifyReponseOperater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyServer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceAppMain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cJSON_Unicode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketProtocol.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StringIOCompletePortOverlapped.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadSocketRecevier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DBSqlite3Proxy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AppEntity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientUser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AppDataFileCopy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NetSocketData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Encrypter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NetSocketProxy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Operater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSignupNetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyArg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DBSqlExecOperate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SignupMethods.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SignupData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IdentifyCodeSignupMethods.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientVerifyNetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientVerifyData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginVerifyReponseNetSocketData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSocketProxy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpNetSocketProxy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientVerifyReponseOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
