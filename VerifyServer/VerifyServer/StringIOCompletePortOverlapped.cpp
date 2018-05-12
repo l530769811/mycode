@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "StringIOCompletePortOverlapped.h"
 #include "AppEntity.h"
+#include "SocketRecevier.h"
 
 
-CStringIOCompletePortOverlapped::CStringIOCompletePortOverlapped(CAppEntity *pShareData)
+CStringIOCompletePortOverlapped::CStringIOCompletePortOverlapped(CSocketRecevier *pRecevier)
 	: m_nsocket(0)
-	, m_pAppEntity(pShareData)
+	, m_pRecevier(pRecevier)
 {
-
+	::memset(m_data, 0, 1024);
+	data_len = 0;
 }
 
 CStringIOCompletePortOverlapped::~CStringIOCompletePortOverlapped(void)
@@ -17,9 +19,9 @@ CStringIOCompletePortOverlapped::~CStringIOCompletePortOverlapped(void)
 
 void CStringIOCompletePortOverlapped::OverLappedOparete()
 {
-	if (m_pAppEntity!=NULL)
+	if (m_pRecevier!=NULL)
 	{
-		m_pAppEntity->RecevieData(m_nsocket, m_string);
+		m_pRecevier->Recevie(m_nsocket, m_data, data_len);
 	}
 		
 }
@@ -45,17 +47,19 @@ bool CStringIOCompletePortOverlapped::Copy(const CIOCompletePortOverlapped &p)
 	const CStringIOCompletePortOverlapped *pp = dynamic_cast<const CStringIOCompletePortOverlapped*>(&p);
 	if (pp!=NULL)
 	{
-		this->m_string = pp->m_string;
-		this->m_nsocket = pp->m_nsocket;
-		
-		bret = true;
+		this->Update(pp->m_nsocket, pp->m_data, pp->data_len);
 	}
 
 	return bret;
 }
 
-void CStringIOCompletePortOverlapped::Update(const DWORD &nsocket, const MyString &string)
+void CStringIOCompletePortOverlapped::Update(const DWORD &nsocket,  const BYTE *rev_buf, UINT rev_len)
 {
 	m_nsocket = nsocket;
-	m_string = string;
+	if(rev_len <= 1024)
+		data_len = rev_len;
+	else
+		data_len = 1024;
+
+	::memcpy(m_data, rev_buf, data_len);
 }

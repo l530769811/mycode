@@ -7,16 +7,18 @@
 #include <Windows.h>
 #include <TcpServer.h>
 
+class CMyServiceAppMain;
 class CAppDataFileCopy;
 class CDBProxy;
 class CDBSqlManager;
 class CSocketRecevier;
 class CTcpServer;
 class CAppOperate;
+class CClientManager;
 class CAppEntity
 {
 public:
-	CAppEntity(void);
+	CAppEntity(CMyServiceAppMain *pmain);
 	~CAppEntity(void);
 
 	int RecevieData(DWORD id, MyString &data);
@@ -24,11 +26,16 @@ public:
 
 private:
 
+	CMyServiceAppMain *m_pmain;
+
 	CSocketRecevier *m_pRecevier;
 	CTcpServer m_tcpServer;
 	CDBSqlManager *m_pDbManager;
 	CDBProxy *m_pdbproxy;
 	CAppDataFileCopy *m_pAppFileData;
+	CClientManager *m_pclient_manager;
+
+
 };
 
 #endif

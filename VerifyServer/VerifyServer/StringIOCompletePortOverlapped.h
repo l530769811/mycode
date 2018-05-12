@@ -2,11 +2,11 @@
 #define __ESOP_CSTRINGIOCOMPLETEPORT_H__
 #include "IOCompletePortOverlapped.h"
 
-class CAppEntity;
+class CSocketRecevier;
 class CStringIOCompletePortOverlapped : public CIOCompletePortOverlapped
 {
 public:
-	CStringIOCompletePortOverlapped(CAppEntity *pShareData);
+	CStringIOCompletePortOverlapped(CSocketRecevier *pRecevier);
 	~CStringIOCompletePortOverlapped(void);
 
 public:
@@ -15,12 +15,13 @@ public:
 	virtual CIOCompletePortOverlapped* Clone();
 	virtual bool Copy(const CIOCompletePortOverlapped &p);
 
-	void Update(const DWORD &nsocket, const MyString &string);
+	void Update(const DWORD &nsocket,  const BYTE *rev_buf, UINT rev_len);
 
 private:
-	MyString m_string;
+	BYTE  m_data[1024];
+	UINT data_len;
 	DWORD m_nsocket;
-	CAppEntity *m_pAppEntity;
+	CSocketRecevier *m_pRecevier;
 	
 };
 

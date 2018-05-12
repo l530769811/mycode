@@ -4,13 +4,13 @@
 #include "SocketRecevier.h"
 #include <list>
 
-class CAppEntity;
+class CSocketRecevier;
 class CIOCompletePort;
 class CIOCompletePortOverlapped;
 class CThreadSocketRecevier : public CSocketRecevier
 {
 public:
-	CThreadSocketRecevier(CAppEntity *pShareData);
+	CThreadSocketRecevier(CSocketRecevier *pRecevier);
 	virtual ~CThreadSocketRecevier();
 
 public:
@@ -25,7 +25,7 @@ private:
 	void _ClearOverlapped();
 
 private:
-	CAppEntity *m_pShareData;
+	CSocketRecevier *m_pRecevier;
 	static const int nPortCount = 2;
 	CIOCompletePort *m_pIoCompletePorts[nPortCount];
 	int m_nCurPort;

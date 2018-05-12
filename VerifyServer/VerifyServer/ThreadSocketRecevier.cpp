@@ -13,8 +13,8 @@
 #pragma comment(lib, "IOCompletePort.lib")
 #endif
 
-CThreadSocketRecevier::CThreadSocketRecevier(CAppEntity *pShareData)
-	: m_pShareData(pShareData)
+CThreadSocketRecevier::CThreadSocketRecevier(CSocketRecevier *pRecevier)
+	: m_pRecevier(pRecevier)
 	, m_nCurPort(0)
 {
 	::InitializeCriticalSection(&m_csLock);
@@ -43,15 +43,15 @@ CThreadSocketRecevier::~CThreadSocketRecevier()
 
 void CThreadSocketRecevier::Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len)
 {
-	assert(m_pShareData!=NULL);
-	if ( m_pShareData!=NULL )
+	assert(m_pRecevier!=NULL);
+	if ( m_pRecevier!=NULL )
 	{
 		TCHAR *pUnicodeBuf = reinterpret_cast<TCHAR*>(rev_buf);
 		MyString strData(pUnicodeBuf);
 		
 		
-		CStringIOCompletePortOverlapped p(m_pShareData);
-		p.Update(uSokcetID, strData);
+		CStringIOCompletePortOverlapped p(m_pRecevier);
+		p.Update(uSokcetID, rev_buf, rev_len);
 		if (m_pIoCompletePorts[m_nCurPort]!=NULL)
 		{
 			m_pIoCompletePorts[m_nCurPort]->IOCompletePortPost(0, NULL, &p);
@@ -84,7 +84,7 @@ CIOCompletePortOverlapped* CThreadSocketRecevier::_getOverlapped()
 	p = m_listOverLapped.front();
 	if (p == NULL)
 	{
-		p = new CStringIOCompletePortOverlapped(m_pShareData);
+		p = new CStringIOCompletePortOverlapped(m_pRecevier);
 	}
 
 	return p;

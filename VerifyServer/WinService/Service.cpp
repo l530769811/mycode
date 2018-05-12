@@ -62,12 +62,15 @@ HANDLE	g_impersonation_token = 0;
 DWORD	g_version_major;
 DWORD	g_version_minor;
 
+ServiceAppMain			*g_pmain = 0;
+
 #ifdef HORIZONLIVE
 BOOL	g_nosettings_flag;
 #endif
 
-CWinService::CWinService(ServiceAppMain *p)
-	:m_pMain(p)
+omni_thread * CWinService::workthread = 0; 
+
+CWinService::CWinService(ServiceAppMain *pmain) 
 {
     OSVERSIONINFO osversioninfo;
     osversioninfo.dwOSVersionInfoSize = sizeof(osversioninfo);
@@ -78,6 +81,9 @@ CWinService::CWinService(ServiceAppMain *p)
     g_platform_id = osversioninfo.dwPlatformId;
 	g_version_major = osversioninfo.dwMajorVersion;
 	g_version_minor = osversioninfo.dwMinorVersion;
+
+	g_pmain = pmain;
+
 #ifdef HORIZONLIVE
 	g_nosettings_flag = false;
 #endif
@@ -120,6 +126,7 @@ CWinService::IsWin95()
 BOOL
 CWinService::IsWinNT()
 {
+	
 	return (g_platform_id == VER_PLATFORM_WIN32_NT);
 }
 
@@ -161,7 +168,9 @@ SERVICE_STATUS          g_srvstatus;       // current status of the service
 SERVICE_STATUS_HANDLE   g_hstatus;
 DWORD                   g_error = 0;
 DWORD					g_servicethread = NULL;
-TCHAR*                   g_errortext[256];
+TCHAR*                  g_errortext[256];
+
+
 
 // Forward defines of internal service functions
 //void WINAPI ServiceMain(DWORD argc, TCHAR **argv);
@@ -170,7 +179,6 @@ TCHAR*                   g_errortext[256];
 void ServiceStop();
 void WINAPI ServiceCtrl(DWORD ctrlcode);
 
-bool WINAPI CtrlHandler (DWORD ctrltype);
 
 BOOL ReportStatus(DWORD state, DWORD exitcode, DWORD waithint);
 
@@ -225,8 +233,9 @@ CWinService::WinRunAsService()
 				DWORD argc = 0;
 				TCHAR** argv = NULL;			
 
-				//CWinService::winAppMain(argc, argv);
 				WinAppMain(argc, argv);
+				
+				//WinAppMain(argc, argv);
 			}
 
 			// Then remove the service from the system service table
@@ -245,9 +254,12 @@ CWinService::WinRunAsService()
 		// Windows NT
 	case VER_PLATFORM_WIN32_NT:
 		{
+#ifdef _DEBUG
+			ServiceMain(0, 0);
+#else
 			// Create a service entry table
 			SERVICE_TABLE_ENTRY dispatchTable[] =
-		    {
+			{
 				{VNCSERVICENAME, (LPSERVICE_MAIN_FUNCTION)ServiceMain},
 				{NULL, NULL}
 			};
@@ -255,6 +267,8 @@ CWinService::WinRunAsService()
 			// Call the service control dispatcher with our entry table
 			if (!StartServiceCtrlDispatcher(dispatchTable))
 				LogErrorMsg(_T("StartServiceCtrlDispatcher failed."));
+#endif // _DEBUG
+			
 		}
 		break;
 
@@ -263,37 +277,47 @@ CWinService::WinRunAsService()
 	return 0;
 }
 
+void* CWinService::WaitServiceMain(void ** returnval)
+{
+	if(CWinService::workthread != 0)
+	{
+		CWinService::workthread->join(returnval);
+	}
+
+	return &returnval;
+}
+
 // SERVICE MAIN ROUTINE
 void WINAPI ServiceMain(DWORD argc, TCHAR**argv)
 {
 	// Register the service control handler
-    g_hstatus = RegisterServiceCtrlHandler(VNCSERVICENAME, ServiceCtrl);
+#ifndef _DEBUG
 
-    if (g_hstatus == 0)
+	g_hstatus = RegisterServiceCtrlHandler(VNCSERVICENAME, ServiceCtrl);
+
+	if (g_hstatus == 0)
 		return;
 
 	// Set up some standard service state values
-    g_srvstatus.dwServiceType = SERVICE_WIN32 | SERVICE_INTERACTIVE_PROCESS;
-    g_srvstatus.dwServiceSpecificExitCode = 0;
+	g_srvstatus.dwServiceType = SERVICE_WIN32 | SERVICE_INTERACTIVE_PROCESS;
+	g_srvstatus.dwServiceSpecificExitCode = 0;
 
 	// Give this status to the SCM
-    if (!ReportStatus(
-        SERVICE_START_PENDING,	// Service state
-        NO_ERROR,				// Exit code type
-        15000))					// Hint as to how long WinVNC should have hung before you assume error
+	if (!ReportStatus(
+		SERVICE_START_PENDING,	// Service state
+		NO_ERROR,				// Exit code type
+		15000))					// Hint as to how long WinVNC should have hung before you assume error
 	{
-        ReportStatus(
+		ReportStatus(
 			SERVICE_STOPPED,
 			g_error,
-            0);
+			0);
 		return;
 	}
+#endif //_DEBUG
 
 	// Now start the service for real
 	CArg *parg = new CArg();
-	CWinService *pobj = CWinService::GetInstance();
-	
-	parg->pmain = pobj->m_pMain;
 	parg->argc = argc;
 	parg->argv = new TCHAR*[argc];
 	for (int i=0; i<argc; i++)
@@ -301,17 +325,20 @@ void WINAPI ServiceMain(DWORD argc, TCHAR**argv)
 		argv[i] = new TCHAR[256];
 		memcpy(argv[1], argv[i], 256);
 	}
-	omni_thread *workthread = omni_thread::create(ServiceWorkThread, parg);
+	CWinService::workthread = omni_thread::create(ServiceWorkThread, parg);
     return;
 }
 
 // SERVICE START ROUTINE - thread that calls WinAppMain
-void ServiceWorkThread(void *arg)
+void* ServiceWorkThread(void *arg)
 {
 	CArg *p = NULL;
-	if(typeid(arg) == typeid(CArg*))
-		p= (CArg*)arg;
+
+	p= (CArg*)arg;
 	// Save the current thread identifier
+
+#ifndef _DEBUG
+
 	g_servicethread = GetCurrentThreadId();
 
     // report the status to the service control manager.
@@ -321,27 +348,24 @@ void ServiceWorkThread(void *arg)
         NO_ERROR,              // exit code
         0))                    // wait hint
 		return;
-
+#endif //_DEBUG
 	// RUN!
 	
+	
+	DWORD argc = 0;
+	TCHAR** argv = NULL;
+	if (p != NULL)
 	{
-		DWORD argc = 0;
-		TCHAR** argv = NULL;
-		if (p != NULL)
+		argc = p->argc;
+		argv = p->argv;
+		WinAppMain(argc, argv);
+
+		for (int i=0; i<p->argc; i++)
 		{
-			argc = p->argc;
-			argv = p->argv;
-			if(p->pmain!= NULL)
-			{
-				p->pmain->WinAppMain(argc, argv);
-			}
+			delete[] argv[i];
 		}
 
-		
-	
-		//CWinService::winAppMain(argc, argv);
 	}
-
 
 	// Mark that we're no longer running
 	g_servicethread = NULL;
@@ -351,6 +375,8 @@ void ServiceWorkThread(void *arg)
 		SERVICE_STOPPED,
 		g_error,
 		0);
+
+	return 0;
 }
 
 // SERVICE STOP ROUTINE - post a quit message to the relevant thread
@@ -360,6 +386,11 @@ void ServiceStop()
 	if (g_servicethread != NULL)
 	{
 		PostThreadMessage(g_servicethread, WM_QUIT, 0, 0);
+	}
+
+	if (g_pmain!= NULL)
+	{
+		g_pmain->MyPostMessage(WM_MYQUIT, 0, 0);
 	}
 }
 
@@ -629,7 +660,9 @@ CWinService::RemoveService(TCHAR *szAppName, TCHAR *szServiceName, BOOL silent)
 				CloseServiceHandle(hsrvmanager);
 			}
 			else if (!silent)
+			{
 				;
+			}
 		}
 		break;
 	};

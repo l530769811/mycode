@@ -80,6 +80,8 @@ class omni_thread;
 #elif defined(__WIN32__)
 #include "nt.h"
 
+
+
 #ifdef _MSC_VER
 
 // Using MSVC++ to compile. If compiling library as a DLL,

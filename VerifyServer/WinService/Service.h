@@ -55,7 +55,6 @@ class CWinService;
 
 class ServiceAppMain;
 struct CArg{
-	ServiceAppMain *pmain;
 	DWORD argc;
 	TCHAR**argv;
 };
@@ -64,12 +63,12 @@ struct CArg{
 //extern int WinAppMain(DWORD argc, TCHAR** argv);
 
 // The NT-specific code wrapper class
-
-class CWinService : public CSingleModeTemplete<CWinService>
+class omni_thread;
+class CWinService
 {
 public:
 	
-	CWinService(ServiceAppMain *pMain);
+	CWinService(ServiceAppMain *pmain);
 	~CWinService();
 	friend void WINAPI ServiceMain(DWORD argc, TCHAR **argv);
 	// SERVICE INSTALL & START FUNCTIONS
@@ -98,9 +97,7 @@ public:
 	// as a service or not
 	static BOOL RunningAsService();
 
-	// Routine to lock the workstation.  Returns TRUE if successful.
-	// Main cause of failure will be when locking is not supported
-	static BOOL LockWorkstation();
+	static void* WaitServiceMain(void** returnval);
 
 #ifdef HORIZONLIVE
 	static void SetNoSettings(bool flag);
@@ -109,13 +106,10 @@ public:
 private:
 	//typedef int (*WinAppMain)(DWORD argc, TCHAR** argv);
 	//static WinAppMain *winAppMain;
-
-
-private:
-	friend void ServiceWorkThread(void *arg);
+	static omni_thread *workthread;
 
 private:
-	ServiceAppMain *m_pMain;
+	friend void* ServiceWorkThread(void *arg);
 };
 
 #endif

@@ -634,18 +634,23 @@ omni_thread::join(void** status)
     if (this == self())
 	throw omni_thread_invalid();
 
-    if (detached)
-	throw omni_thread_invalid();
+    if (detached==0)
+	{
+		if (status)
+			*status = return_val;
+	}
+	//throw omni_thread_invalid();
 
     DB(cerr << "omni_thread::join: doing WaitForSingleObject\n");
 
     if (WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0)
-	throw omni_thread_fatal(GetLastError());
+	{
+		DWORD i = GetLastError();
+		throw omni_thread_fatal(i);
+	}
+	
 
     DB(cerr << "omni_thread::join: WaitForSingleObject succeeded\n");
-
-    if (status)
-      *status = return_val;
 
     delete this;
 }
