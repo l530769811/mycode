@@ -17,7 +17,7 @@ CClientManager::CClientManager(CDBSqlManager *pdb)
 	, m_db(pdb)
 {
 	m_pUdpVerify = new CUDPSocket(this);
-	m_pUdpVerify->Start(UDP_PORT);
+	m_pUdpVerify->Start(UDP_REV_PORT);
 	
 }
 

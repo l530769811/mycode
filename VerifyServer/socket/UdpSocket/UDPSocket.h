@@ -75,7 +75,7 @@ public:
 	//the send appoint the aim;
 	bool SendData(BYTE chData[], int nLen, const struct sockaddr_in &sendto);
 private:
-	bool _InitBroadcastSocket(unsigned short usPort);
+	bool _InitSocket(unsigned short usPort);
 	bool _InitMulticastSocket(unsigned short usPort);
 
 	void _WantStopThread();

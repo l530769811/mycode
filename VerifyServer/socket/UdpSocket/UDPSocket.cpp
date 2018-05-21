@@ -41,7 +41,7 @@ CUDPSocket::~CUDPSocket(void)
 
 bool CUDPSocket::Start(unsigned short usPort)
 {
-	if (!_InitBroadcastSocket(usPort))
+	if (!_InitSocket(usPort))
 	{
 		return false;
 	}
@@ -140,7 +140,7 @@ bool CUDPSocket::_IsWantStopThread()
 	return m_bStopUDPRevThread;
 }
 
-bool CUDPSocket::_InitBroadcastSocket(unsigned short usPort)
+bool CUDPSocket::_InitSocket(unsigned short usPort)
 {
 	if (m_sockServer > 0)
 	{		
@@ -173,63 +173,14 @@ bool CUDPSocket::_InitBroadcastSocket(unsigned short usPort)
 		return false;
 	}
 
-	//int nBind = -1;
-	//if((nBind = ::bind(m_sockServer, (sockaddr*)&m_addrRevice, sizeof(m_addrRevice))) == -1)
-	//{
-	//	printf(("setsockopt1 Fail\n"));
-	//	::closesocket(m_sockServer);
-	//	return false;
-	//}
-	unsigned long TimeOut = 1000*5;
-	if(::setsockopt(m_sockServer,SOL_SOCKET,SO_RCVTIMEO,(char *)&TimeOut,sizeof(TimeOut))==SOCKET_ERROR)
+	int nbind = -1;
+	if((nbind = ::bind(m_sockServer, (sockaddr*)&m_addrRevice, sizeof(m_addrRevice))) == -1)
 	{
-		printf(("setsockopt2 Fail\n"));
-
+		printf(("setsockopt1 fail\n"));
 		::closesocket(m_sockServer);
 		return false;
 	}
 
-	return true;
-}
-
-bool CUDPSocket::_InitMulticastSocket(unsigned short usPort)
-{
-	if (m_sockServer > 0)
-	{		
-		return true;
-	}
-
-	std::string log;
-	if ((m_sockServer = ::socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		return false;
-	}
-
-	m_addrRevice.sin_family=AF_INET;  
-	m_addrRevice.sin_addr.s_addr=htonl(INADDR_ANY);  
-	//m_addrRevice.sin_addr.s_addr = inet_addr("224.0.0.0");
-	m_addrRevice.sin_port=htons(usPort);
-	
-	//::bind(m_sockServer, (struct sockaddr*)&m_addrRevice,sizeof(struct sockaddr));
-
-
-	const int opt = 1;
-	int nb = 0;
-	if ((nb = ::setsockopt(m_sockServer, SOL_SOCKET, SO_BROADCAST, (char*)&opt, sizeof(opt))) == -1)
-	{
-		printf(("setsockopt Fail\n"));
-
-		::closesocket(m_sockServer);
-		return false;
-	}
-
-	//int nBind = -1;
-	//if((nBind = ::bind(m_sockServer, (sockaddr*)&m_addrRevice, sizeof(m_addrRevice))) == -1)
-	//{
-	//	printf(("setsockopt1 Fail\n"));
-	//	::closesocket(m_sockServer);
-	//	return false;
-	//}
 	unsigned long TimeOut = 1000*5;
 	if(::setsockopt(m_sockServer,SOL_SOCKET,SO_RCVTIMEO,(char *)&TimeOut,sizeof(TimeOut))==SOCKET_ERROR)
 	{
@@ -248,7 +199,7 @@ RESULT_THREAD CUDPSocket::_RevThread(void* pParam)
 	
 	while(1)
 	{
-		char buffer[1024*1024] = {0};
+		char buffer[1024*2] = {0};
 		int len = sizeof(struct sockaddr_in);
 		int ret=::recvfrom(
 			 pThis->m_sockServer, 
