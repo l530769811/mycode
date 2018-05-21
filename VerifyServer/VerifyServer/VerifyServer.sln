@@ -9,6 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VerifyServer", "VerifyServe
 		{36776BD4-ABE2-444E-A849-845B438B5A30} = {36776BD4-ABE2-444E-A849-845B438B5A30}
 		{0328F3E0-EE79-480E-A049-952B235BCF05} = {0328F3E0-EE79-480E-A049-952B235BCF05}
 		{52C450F0-62F9-487D-AE56-E28D5838F385} = {52C450F0-62F9-487D-AE56-E28D5838F385}
+		{A62C73FE-D817-465D-BA1C-9DC3848A82C8} = {A62C73FE-D817-465D-BA1C-9DC3848A82C8}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataBase", "..\DataBase\DataBase.vcxproj", "{A954731D-6198-417F-BF13-FB89FB721080}"
@@ -22,6 +23,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "..\common\common.vcxproj", "{D81E9D8F-877E-460D-BA04-D4DBEE9FA364}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "..\omnithread\omnithread.vcxproj", "{2D948CAF-9622-495C-AB44-6337A6A9D440}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinService", "..\WinService\WinService.vcxproj", "{A62C73FE-D817-465D-BA1C-9DC3848A82C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D81E9D8F-877E-460D-BA04-D4DBEE9FA364} = {D81E9D8F-877E-460D-BA04-D4DBEE9FA364}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,10 @@ Global
 		{2D948CAF-9622-495C-AB44-6337A6A9D440}.Debug|Win32.Build.0 = Debug|Win32
 		{2D948CAF-9622-495C-AB44-6337A6A9D440}.Release|Win32.ActiveCfg = Release|Win32
 		{2D948CAF-9622-495C-AB44-6337A6A9D440}.Release|Win32.Build.0 = Release|Win32
+		{A62C73FE-D817-465D-BA1C-9DC3848A82C8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A62C73FE-D817-465D-BA1C-9DC3848A82C8}.Debug|Win32.Build.0 = Debug|Win32
+		{A62C73FE-D817-465D-BA1C-9DC3848A82C8}.Release|Win32.ActiveCfg = Release|Win32
+		{A62C73FE-D817-465D-BA1C-9DC3848A82C8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

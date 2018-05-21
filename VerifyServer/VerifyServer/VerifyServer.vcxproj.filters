@@ -27,12 +27,6 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ServiceAppMain.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleModeTemplete.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="cJSON_Unicode.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -76,9 +70,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ClientManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Service.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="NetSocketData.h">
@@ -132,15 +123,15 @@
     <ClInclude Include="ClientVerifyReponseOperater.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MyServiceAppMain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="VerifyServer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ServiceAppMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="cJSON_Unicode.cpp">
@@ -171,9 +162,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ClientManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Service.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NetSocketData.cpp">
@@ -225,6 +213,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ClientVerifyReponseOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyServiceAppMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

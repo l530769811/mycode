@@ -35,5 +35,8 @@
     <ClInclude Include="my_assist_define.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SingleModeTemplete.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

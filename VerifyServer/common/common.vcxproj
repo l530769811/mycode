@@ -81,6 +81,7 @@
     <ClInclude Include="common_define.h" />
     <ClInclude Include="my_assist_define.h" />
     <ClInclude Include="my_platform.h" />
+    <ClInclude Include="SingleModeTemplete.h" />
     <ClInclude Include="UseCount.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
