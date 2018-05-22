@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00A0A0"
+   
+    android:orientation="vertical" 
+    android:id="@+id/dialog_layout_confirm">
+
+    <TextView
+        android:id="@+id/textView_verify_info"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_weight="2"
+        android:scrollHorizontally="true"
+        android:scrollY="250dp"
+        android:text="" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_info_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="30dp"
+            android:text="@string/string_info_confirm" />
+
+        <Button
+            android:id="@+id/button_info_recycle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+             android:layout_marginBottom="30dp"
+            android:layout_alignParentRight="true"
+            android:text="@string/string_info_recycle" />
+    </RelativeLayout>
+
+</LinearLayout>

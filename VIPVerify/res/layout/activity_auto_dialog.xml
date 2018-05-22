@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout_auto_dialog_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/view_background_color"
+    tools:context="com.vip.vipverify.AutoAlertDialog" >
+
+    <TextView
+        android:id="@+id/textView_autodialog_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:text="@string/string_cancel"
+        android:textColor="@color/notify_text_color" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_auto_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_autodialog_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp" >
+
+        <Button
+            android:id="@+id/button_autodialog_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_ok"
+            android:textColor="@color/button_text_color" />
+
+        <Button
+            android:id="@+id/button_autodialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"           
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="10dp"
+            android:text="@string/string_cancel"
+            android:textColor="@color/button_text_color" />
+    </LinearLayout>
+
+</RelativeLayout>

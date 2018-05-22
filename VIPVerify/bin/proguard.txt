@@ -1,0 +1,21 @@
+# view res/layout/activity_veriry.xml #generated:27
+-keep class com.google.zxing.client.android.ViewfinderView { <init>(...); }
+
+# view AndroidManifest.xml #generated:70
+-keep class com.vip.vipverify.AutoAlertDialog { <init>(...); }
+
+# view AndroidManifest.xml #generated:38
+-keep class com.vip.vipverify.MainActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:61
+-keep class com.vip.vipverify.MyNetWorkDialog { <init>(...); }
+
+# view AndroidManifest.xml #generated:57
+-keep class com.vip.vipverify.SearchServerDialog { <init>(...); }
+
+# view AndroidManifest.xml #generated:65
+-keep class com.vip.vipverify.SignInActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:52
+-keep class com.vip.vipverify.VeriryActivity { <init>(...); }
+

@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <LinearLayout
+        android:id="@+id/linearlayout_server_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" >
+
+        <ListView
+            android:id="@+id/listview_searchservser_name"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:cacheColorHint="#00000000"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="1px"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
+        </ListView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/linearlayout_server_listview"
+        android:layout_alignStart="@+id/linearlayout_server_listview"
+        android:layout_below="@+id/linearlayout_server_listview"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/edittext_searseserver_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/string_default_broadcast_ip"
+            android:inputType="text" 
+            android:gravity="center_horizontal">
+			
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/button_search_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            
+            
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:text="@string/string_search_server" />
+
+        <Button
+            android:id="@+id/button_search_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_ok" />
+    </LinearLayout>
+
+</RelativeLayout>

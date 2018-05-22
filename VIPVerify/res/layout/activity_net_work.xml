@@ -1,0 +1,282 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/view_background_color"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <!--
+    <RelativeLayout
+        android:id="@+id/relativelayout_network_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/textView_ladel_network_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_network_setting" />
+
+        <TextView
+            android:id="@+id/textView_network_kind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_ladel_network_setting"
+            android:layout_alignStart="@+id/textView_ladel_network_setting"
+            android:layout_below="@+id/textView_ladel_network_setting"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_network_kind" />
+
+        <Spinner
+            android:id="@+id/spinner_network_kind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_kind"
+            android:layout_alignTop="@+id/textView_network_kind"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:clickable="false"
+            android:enabled="false" />
+
+        <TextView
+            android:id="@+id/textView_network_ip_addr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_network_kind"
+            android:layout_below="@+id/textView_network_kind"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_id_addr" />
+
+        <EditText
+            android:id="@+id/editText_network_ip_addr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_ip_addr"
+            android:layout_alignTop="@+id/textView_network_ip_addr"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPostalAddress" >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:id="@+id/textView_network_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_network_ip_addr"
+            android:layout_below="@+id/textView_network_ip_addr"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_port" />
+
+        <EditText
+            android:id="@+id/editText_network_port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_port"
+            android:layout_alignTop="@+id/textView_network_port"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="numberSigned" />
+
+        <TextView
+            android:id="@+id/textView_network_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_network_port"
+            android:layout_below="@+id/textView_network_port"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_username" />
+
+        <EditText
+            android:id="@+id/editText_network_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_username"
+            android:layout_alignTop="@+id/textView_network_username"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:ems="10"
+            android:enabled="false" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/textView_network_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_network_username"
+            android:layout_below="@+id/editText_network_username"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_userpassword" />
+
+        <EditText
+            android:id="@+id/editText_network_passwork"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_password"
+            android:layout_alignTop="@+id/textView_network_password"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/textView_network_domain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_network_password"
+            android:layout_below="@+id/textView_network_password"
+            android:layout_marginTop="5dp"
+            android:text="@string/string_domain" />
+
+        <EditText
+            android:id="@+id/editText_network_domain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_network_domain"
+            android:layout_alignTop="@+id/textView_network_domain"
+            android:layout_toRightOf="@+id/textView_ladel_network_setting"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textEmailAddress" />
+
+        <Button
+            android:id="@+id/button_network_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/editText_network_domain"
+            android:layout_below="@+id/editText_network_domain"
+            android:layout_marginTop="10dp"
+            android:enabled="false"
+            android:text="@string/string_network_test" />
+    </RelativeLayout>
+    -->
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_server_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativelayout_network_setting"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/textView_server_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="@string/string_loginserver" />
+
+        <TextView
+            android:id="@+id/textView_server_login_kind"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/textView_server_setting"
+            android:layout_alignStart="@+id/textView_server_setting"
+            android:layout_below="@+id/textView_server_setting"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:text="@string/string_network_kind" />
+
+        <Spinner
+            android:id="@+id/spinner_server_kind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_server_login_kind"
+            android:layout_alignTop="@+id/textView_server_login_kind"
+            android:layout_toEndOf="@+id/textView_server_setting"
+            android:layout_toRightOf="@+id/textView_server_setting"
+            android:gravity="bottom"
+            android:textColor="#00A0FF" />
+
+        <TextView
+            android:id="@+id/textView_server_ip_addr"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/textView_server_login_kind"
+            android:layout_alignStart="@+id/textView_server_login_kind"
+            android:layout_below="@+id/textView_server_login_kind"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:text="@string/string_ip_addr" />
+
+        <EditText
+            android:id="@+id/editText_server_ip_addr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_server_ip_addr"
+            android:layout_alignTop="@+id/textView_server_ip_addr"
+            android:layout_toEndOf="@+id/textView_server_setting"
+            android:layout_toRightOf="@+id/textView_server_setting"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="textPostalAddress"
+            android:textColor="#00A0FF" />
+
+        <TextView
+            android:id="@+id/textView_server_port"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/textView_server_ip_addr"
+            android:layout_alignStart="@+id/textView_server_ip_addr"
+            android:layout_below="@+id/textView_server_ip_addr"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:text="@string/string_port" />
+
+        <EditText
+            android:id="@+id/editText_server_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView_server_port"
+            android:layout_alignTop="@+id/textView_server_port"
+            android:layout_toEndOf="@+id/textView_server_setting"
+            android:layout_toRightOf="@+id/textView_server_setting"
+            android:ems="10"
+            android:gravity="bottom"
+            android:inputType="numberSigned"
+            android:textColor="#00A0FF" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_auto_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_server_setting"
+        android:layout_centerHorizontal="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" 
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" >
+
+        <Button
+            android:id="@+id/button_network_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_ok"
+            android:textColor="@color/button_text_color" />
+
+        <Button
+            android:id="@+id/button_network_cannel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/string_cancel"
+            android:textColor="@color/button_text_color" />
+    </LinearLayout>
+
+</RelativeLayout>
