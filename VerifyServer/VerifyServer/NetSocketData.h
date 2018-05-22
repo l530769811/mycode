@@ -11,7 +11,7 @@ public:
 	
 	int BeSend(CNetSocketProxy *pProxy, CEncrypter *pEncrypter = 0);
 protected:
-	virtual bool _prepare_data(const unsigned char* out_data, long len) = 0;
+	virtual bool _prepare_data(unsigned char* out_data, long len) = 0;
 };
 
 #endif //_NETSOCKETDATA_H__

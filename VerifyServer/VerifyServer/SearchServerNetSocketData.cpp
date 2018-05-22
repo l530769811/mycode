@@ -1,23 +1,24 @@
-#include "LoginVerifyReponseNetSocketData.h"
+#include "SearchServerNetSocketData.h"
 #include "cJSON_Unicode.h"
 #include "SocketProtocol.h"
 #include "GlobalFunc.h"
 
-CLoginVerifyReponseNetSocketData::CLoginVerifyReponseNetSocketData(int result)
-	: m_result(result)
+CSearchServerNetSocketData::CSearchServerNetSocketData(int port, int kind)
+	: m_nport(port) 
+	, m_nkind(kind)
 {
 }
 
 
-CLoginVerifyReponseNetSocketData::~CLoginVerifyReponseNetSocketData(void)
+CSearchServerNetSocketData::~CSearchServerNetSocketData(void)
 {
 }
 
-bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, long len)
+bool CSearchServerNetSocketData::_prepare_data(unsigned char* out_data, long len)
 {
 	bool bret = false;
 	cJSON *root = CreateCommonJsonHead();
-	
+
 	cJSON *content = cJSON_CreateObject();
 	cJSON_AddItemToObject(root, JSON_COMMON_CONTENT_KEY, content);
 	if(content!=0)
@@ -27,7 +28,10 @@ bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, lo
 		cJSON_AddItemToObject(content, JSON_COMMON_CVALUE_KEY, pjson_value);
 		if(pjson_value!=0)
 		{
-			cJSON_AddNumberToObject(pjson_value, JSON_RESULT_KEY, m_result);
+			cJSON_AddNumberToObject(pjson_value, JSON_PORT_KEY, m_nport);
+			cJSON_AddNumberToObject(pjson_value, JSON_NET_KIND_KEY, m_nkind);
+			cJSON_AddStringToObject(pjson_value, JSON_SERVERNAME_KEY, m_strServerName.c_str());
+			cJSON_AddStringToObject(pjson_value, JSON_IP_KEY, m_strIp.c_str());
 		}
 	}
 
@@ -40,7 +44,7 @@ bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, lo
 		::memcpy(out_data, data, data_len);
 		bret = true;
 	}
-	
+
 #else
 	if(len > lstrlen(pjson_str)+1)
 	{
@@ -48,7 +52,7 @@ bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, lo
 		::memcpy(out_data, pjson_str, lstrlen(pjson_str));
 	}
 #endif
-	
+
 
 	DeleteCommonJsonHead(root);
 

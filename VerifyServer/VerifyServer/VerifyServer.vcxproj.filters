@@ -126,6 +126,12 @@
     <ClInclude Include="MyServiceAppMain.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SearchServerNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchServerNetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -216,6 +222,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MyServiceAppMain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchServerNetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchServerNetSocketData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

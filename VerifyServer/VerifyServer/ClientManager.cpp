@@ -11,6 +11,8 @@
 #include "LoginVerifyReponseNetSocketData.h"
 #include "UdpNetSocketProxy.h"
 #include "ClientVerifyReponseOperater.h"
+#include "ClientVerifyNetSocketDataParse.h"
+#include "SearchServerNetSocketDataParse.h"
 
 CClientManager::CClientManager(CDBSqlManager *pdb)
 	: m_pUdpVerify(NULL)
@@ -44,6 +46,8 @@ CClientManager::~CClientManager(void)
 int CClientManager::rev_data(const unsigned char * data, long len, char *ip_from, unsigned short prot_from){
 	int nret = 0;
 	
+	
+
 	return nret;
 }
 

@@ -114,6 +114,8 @@
     <ClInclude Include="NetSocketDataParse.h" />
     <ClInclude Include="NetSocketProxy.h" />
     <ClInclude Include="Operater.h" />
+    <ClInclude Include="SearchServerNetSocketData.h" />
+    <ClInclude Include="SearchServerNetSocketDataParse.h" />
     <ClInclude Include="SignupData.h" />
     <ClInclude Include="SignupMethods.h" />
     <ClInclude Include="SocketProtocol.h" />
@@ -151,6 +153,8 @@
     <ClCompile Include="NetSocketDataParse.cpp" />
     <ClCompile Include="NetSocketProxy.cpp" />
     <ClCompile Include="Operater.cpp" />
+    <ClCompile Include="SearchServerNetSocketData.cpp" />
+    <ClCompile Include="SearchServerNetSocketDataParse.cpp" />
     <ClCompile Include="SignupData.cpp" />
     <ClCompile Include="SignupMethods.cpp" />
     <ClCompile Include="SocketProtocol.cpp" />
