@@ -1,6 +1,8 @@
 #include <my_assist_define.h>
 
 #include <DBSqlManager.h>
+#include "GlobalFunc.h"
+#include "UdpNetSocketProxy.h"
 #include "UDPSocket.h"
 #include "ClientManager.h"
 #include "veriry_common_define.h"
@@ -13,6 +15,7 @@
 #include "ClientVerifyReponseOperater.h"
 #include "ClientVerifyNetSocketDataParse.h"
 #include "SearchServerNetSocketDataParse.h"
+#include "SearchServerNetSocketData.h"
 
 CClientManager::CClientManager(CDBSqlManager *pdb)
 	: m_pUdpVerify(NULL)
@@ -43,9 +46,24 @@ CClientManager::~CClientManager(void)
 	SAFE_DELETE(m_pUdpVerify);
 }
 
-int CClientManager::rev_data(const unsigned char * data, long len, char *ip_from, unsigned short prot_from){
+int CClientManager::rev_data(const unsigned char * data, long len, char *ip_from, unsigned short port_from){
 	int nret = 0;
 	
+	CClientVerifyNetSocketDataParse verify_parse(this);
+	if (verify_parse.ParseData(data, len)==true)
+	{
+
+	}
+
+	CSearchServerNetSocketDataParse search_server_parse;
+	if (search_server_parse.ParseData(data, len) == true)
+	{
+		CSearchServerNetSocketData data(UDP_REV_PORT, -1);
+		TCHAR str_ip[20] = {0};
+		GlobalUtf8ToUnicode(ip_from, str_ip, 19);
+		CUdpNetSocketProxy proxy(this->m_pUdpVerify, str_ip, UDP_SEND_PORT);
+		this->ClientReponse(data, proxy);
+	}
 	
 
 	return nret;
@@ -115,6 +133,6 @@ bool CClientManager::ClientVerify(CUseCount<CClientVerifyData> data)
 bool CClientManager::ClientReponse(CNetSocketData &data, CNetSocketProxy &proxy)
 {
 	bool ret = false;
-
+	ret = data.BeSend(&proxy) > 0;
 	return ret;
 }

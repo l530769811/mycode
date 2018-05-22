@@ -9,7 +9,7 @@ public:
 	virtual ~CLoginVerifyReponseNetSocketData(void);
 
 protected:
-	virtual bool _prepare_data(unsigned char* out_data, long len);
+	virtual int _prepare_data(unsigned char* out_data, long len);
 
 private:
 	int m_result;

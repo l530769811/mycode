@@ -27,7 +27,7 @@ CUDPSocket::CUDPSocket(CUdpSocketReceiveInterface *rev_interface)
 	memset(&m_addrSend, 0, sizeof(m_addrSend));
 	memset(&m_addrRevice, 0, sizeof(m_addrRevice));
 
-	m_bStopUDPRevThread = false;
+	m_bStopUDPRevThread = true;
 	m_bFinishUDPSend = false;
 	m_pRevInterface = NULL;
 	m_pRevInterface = rev_interface;
@@ -89,6 +89,7 @@ bool CUDPSocket::_StartRecive(unsigned short usDesPort)
 	{
 		return false;
 	}
+	m_bStopUDPRevThread = false;
 	return true;
 }
 
@@ -278,7 +279,7 @@ bool CUDPSocket::SendData(BYTE chData[], int nLen, const TCHAR * desIp, const un
 	}  
 	else  
 	{         
-		printf("ok ");
+		printf("ok \n");
 
 		bResult = true;
 	} 
@@ -300,7 +301,7 @@ bool CUDPSocket::SendData(BYTE chData[], int nLen)
 	}  
 	else  
 	{         
-		printf("ok ");
+		printf("ok \n");
 
 		bResult = true;
 	} 
@@ -321,7 +322,7 @@ bool CUDPSocket::SendData(BYTE chData[], int nLen, const struct sockaddr_in &sen
 	}  
 	else  
 	{         
-		printf("ok ");
+		printf("ok \n");
 		//CLogFile file1;
 		//unsigned long *pUULen = (unsigned long *)(chSendData +3+sizeof(unsigned long)*3);
 		//unsigned long nUULen = *pUULen;

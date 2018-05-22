@@ -19,9 +19,9 @@ bool CNetSocketDataParse::ParseData(const unsigned char* data, long len, CEncryp
 		pEncrypter->Decrypt(data, len);
 	}
 
-	if (_isType(data, len) == true)
+	if ((ret=_isType(data, len)) == true)
 	{
-		ret = _parseData(data, len);
+		_parseData(data, len);
 	}
 	
 	return ret;

@@ -13,9 +13,9 @@ CLoginVerifyReponseNetSocketData::~CLoginVerifyReponseNetSocketData(void)
 {
 }
 
-bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, long len)
+int CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, long len)
 {
-	bool bret = false;
+	int bret = false;
 	cJSON *root = CreateCommonJsonHead();
 	
 	cJSON *content = cJSON_CreateObject();
@@ -38,7 +38,7 @@ bool CLoginVerifyReponseNetSocketData::_prepare_data(unsigned char* out_data, lo
 		char data[1024] = {0};
 		int data_len = GlobalUnicodeToUtf8(pjson_str, data, 1023);
 		::memcpy(out_data, data, data_len);
-		bret = true;
+		bret = data_len;
 	}
 	
 #else

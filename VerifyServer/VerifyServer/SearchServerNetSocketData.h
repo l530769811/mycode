@@ -11,7 +11,7 @@ public:
 	CSearchServerNetSocketData(int port, int kind);
 	virtual ~CSearchServerNetSocketData(void);
 protected:
-	virtual bool _prepare_data(unsigned char* out_data, long len);
+	virtual int _prepare_data(unsigned char* out_data, long len);
 
 private:
 	MyString m_strServerName;
