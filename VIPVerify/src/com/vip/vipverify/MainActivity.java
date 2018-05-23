@@ -7,16 +7,20 @@ import java.util.TimerTask;
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.SearchServerDialog.SelectServerListening;
+import com.vip.vipverify.SignupActivity.SignupListening;
 import com.vip.vipverify.client.ClientManager;
 import com.vip.vipverify.client.ClientUser;
 import com.vip.vipverify.client.ClientUserInfo;
 import com.vip.vipverify.my_arg.EmptyMyArg;
+import com.vip.vipverify.net.NetSocketData;
 import com.vip.vipverify.net.ServerNetInfo;
 import com.vip.vipverify.net.SocketReceiveListeningChannelList;
+import com.vip.vipverify.net.UserSignupInfo;
+import com.vip.vipverify.net.UserSignupNetSocketData;
 import com.vip.vipverify.net_data_parse.NetDataParse;
 import com.vip.vipverify.net_data_parse.NetDataParsesCollection;
 import com.vip.vipverify.net_data_parse.NetDataParsesCollection.ParseResultListening;
-import com.vip.vipverify.net_data_parse.UserRegistNetDataParse;
+import com.vip.vipverify.net_data_parse.UserSignupNetDataParse;
 import com.vip.vipverify.net_data_parse.VerifyLoginNetDataParse;
 import com.vip.vipverify.preferences.MyLoginPreferences;
 import com.vip.vipverify.preferences.MyLoginPreferences.AutoLoginDoListening;
@@ -63,7 +67,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	public static final String key_client_manager = "client_manager";
 	public final String string_db_name = "datadb.db";
 
-	public final static int error_key = 0x0011;
+	public final static int notify_key = 0x0011;
 
 	private ClientManager client_manager = null;
 
@@ -84,7 +88,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	private Dialog searchserver_dialog = null;
 	private Dialog network_setting_dialog = null;
 
-	private Dialog singnin_dialog = null;
+	private Dialog singn_up_dialog = null;
 
 	private ProgressDialog loading_dialog = null;
 	private SocketReceiveListeningChannelList listener = new MainActivitySocketReceiveListening();
@@ -96,7 +100,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case error_key:
+			case notify_key:
 				if (msg.obj instanceof String) {
 					String string_error = (String) msg.obj;
 					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
@@ -110,6 +114,20 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 			}
 		}
 	};
+	
+	class MySignupListening implements SignupListening {
+
+		@Override
+		public void Signup(UserSignupInfo info) {
+			// TODO Auto-generated method stub
+			if(client_manager!=null) {
+				NetSocketData data = new UserSignupNetSocketData(info);
+				client_manager.signin_user(data, server_ip, server_port);
+			}
+		}
+		
+	}
+	
 
 	class MySelectServerListening implements SelectServerListening, Serializable {
 		/**
@@ -170,7 +188,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 							int no_error = MyErrors.NoError.nid;
 							if (result !=   no_error) {
 								Message msg = Message.obtain();
-								msg.what = error_key;
+								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
 								msg.obj = MainActivity.this.getResources().getString(string_id);
 								ui_message_handler.sendMessage(msg);
@@ -184,12 +202,19 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								_start_login();
 							}
 
-						} else if (parser instanceof UserRegistNetDataParse) {
-							UserRegistNetDataParse net_parse_login = (UserRegistNetDataParse) parser;
+						} else if (parser instanceof UserSignupNetDataParse) {
+							UserSignupNetDataParse net_parse_login = (UserSignupNetDataParse) parser;
 							int result = net_parse_login.getNresult();
 							if (result != MyErrors.NoError.nid) {
 								Message msg = Message.obtain();
-								msg.what = error_key;
+								msg.what = notify_key;
+								int string_id = MyErrors.GetStringIdFromErrorID(result);
+								msg.obj = MainActivity.this.getResources().getString(string_id);
+								ui_message_handler.sendMessage(msg);
+							}
+							else {
+								Message msg = Message.obtain();
+								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
 								msg.obj = MainActivity.this.getResources().getString(string_id);
 								ui_message_handler.sendMessage(msg);
@@ -321,9 +346,13 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.menu.main_menu, menu);
 
-		server_ip = preferences_login.getServerIp();
-		server_port = preferences_login.getServerPort();
-		server_net_kind = preferences_login.getServer_net_kind();
+		this.server_ip = preferences_login.getServerIp();
+		this.server_port = preferences_login.getServerPort();
+		this.server_net_kind = preferences_login.getServer_net_kind();
+		
+		this.user_name = preferences_login.getUser_name();
+		this.user_password = preferences_login.getUser_password();
+		
 		String server_name = server_ip + " : " + String.valueOf(server_port);
 		TextView textview_ipport = (TextView) MainActivity.this.findViewById(R.id.textView_ipport);
 		textview_ipport.setText(server_name);
@@ -343,7 +372,9 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		}
 
 		EditText usernameEdit = (EditText) findViewById(R.id.editText_login_username);
+		usernameEdit.setText(this.user_name);
 		EditText userpassEdit = (EditText) findViewById(R.id.editText_login_userpassword);
+		userpassEdit.setText(this.user_password);
 		userpassEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
@@ -361,7 +392,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 
 		Button button_loginin = (Button) findViewById(R.id.button_login);
 		button_loginin.setOnClickListener(this);
-		Button button_regist_user = (Button) findViewById(R.id.button_signin);
+		Button button_regist_user = (Button) findViewById(R.id.button_signup);
 		button_regist_user.setOnClickListener(this);
 
 		TextView textbutton_offlinemode = (TextView) findViewById(R.id.textbutton_offline);
@@ -371,8 +402,10 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		textbutton_mainmenu.setOnClickListener(this);
 
 		CheckBox remember_password = (CheckBox) findViewById(R.id.checkBox_main_remember);
+		remember_password.setChecked(preferences_login.isRemember());
 		remember_password.setOnCheckedChangeListener(this);
 		CheckBox autologin_password = (CheckBox) findViewById(R.id.checkBox_main_autologin);
+		autologin_password.setChecked(preferences_login.isAutoLogin());
 		autologin_password.setOnCheckedChangeListener(this);
 	}
 
@@ -435,49 +468,19 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 					Md5Unit.EncodeToMd5String(user_password));
 
 			break;
-		case R.id.button_signin:
-			// intent = new Intent(this, SignInActivity.class);
-			//
-			// loginUser = new OnlineClientUser(server_ip, server_port, null);
-			// bundle.putSerializable(key_client_manager, client_manager);
-			// intent.putExtras(bundle);
-			//
-			// /* 指定intent要启动的类 */
-			// // intent.setClass(MainActivity.this, VeriryActivity.class);
-			// /* 启动一个新的Activity */
-			// this.startActivity(intent);
-			if (singnin_dialog == null) {
-				singnin_dialog = new SignInActivity(this, client_manager);
-				singnin_dialog.setTitle(R.string.string_signin);
+		case R.id.button_signup:
+			
+			if (singn_up_dialog == null) {				
+				singn_up_dialog = new SignupActivity(this, client_manager, new MySignupListening());
+				singn_up_dialog.setTitle(R.string.string_signin);
 			}
-			singnin_dialog.show();
+			singn_up_dialog.show();
 
 			break;
 
 		case R.id.textbutton_offline:
-
-			// String sdPath = "/data/data";
-			//
-			// String db_path = sdPath + "/" + this.getApplicationContext().getPackageName()
-			// + "/" + "databases/"
-			// + string_db_name;
-			// loginUser = new OfflineClientUser(new
-			// MyBaseDataProxy(this.getApplicationContext(), db_path, null, 1));
-			//
-			// intent = new Intent(this, VeriryActivity.class);
-			// bundle = new Bundle();
-			// bundle.putSerializable(key_loginuser, loginUser);
-			// // bundle.putParcelable(key_loginuser, loginUser);
-			// intent.putExtras(bundle);
-			//
-			// /* 指定intent要启动的类 */
-			// // intent.setClass(MainActivity.this, VeriryActivity.class);
-			// /* 启动一个新的Activity */
-			// this.startActivity(intent);
-			//
-			// /* 关闭当前的Activity */
-			// //this.finish();
 			_start_login();
+			
 			break;
 		case R.id.button_main_menu:
 			if (popup_menu != null) {

@@ -101,6 +101,11 @@ public class MyLoginPreferences extends MyPreferences {
 	public boolean isAutoLogin() {
 		return this.bLoginAuto;
 	}
+	
+	public boolean isRemember() {
+		return this.bRemPassword;
+	}
+	
 
 	public void login_result(ServerNetInfo info, String user_name, String user_password, boolean isLogin) {
 		if (isLogin) {

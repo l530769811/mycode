@@ -121,7 +121,7 @@ public class ResendDoOperator implements DoOperator {
 		// TODO Auto-generated method stub
 		if (reverify_timer == null) {
 			reverify_timer = new Timer(true);
-			reverify_timer.schedule(new ReverifyLoginTimertask(null), 5000, 5000);
+			reverify_timer.schedule(new ReverifyLoginTimertask(this), 3000, 3000);
 		}
 
 		if (netsocketdata != null && socketproxy != null) {

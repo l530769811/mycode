@@ -2,6 +2,8 @@ package com.vip.vipverify.client;
 
 import java.io.Serializable;
 
+import com.common.my_message.HandleMessageSpreader;
+import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.Md5Unit;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.my_arg.EmptyMyArg;
@@ -21,7 +23,9 @@ import com.vip.vipverify.operator.SocketSendDoOperator;
 import com.vip.vipverify.thread.OperateWakeThread;
 import com.vip.vipverify.thread.WakeThread;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Message;
 
 public class ClientManager implements Serializable {
 
@@ -32,6 +36,10 @@ public class ClientManager implements Serializable {
 	public static final int udp_receiver_port = 3601;
 	public static final int udp_send_port = 3602;
 	public static final int tcp_login_port = 3601;
+
+	private static final int login_verify_suc_key = 0x1101;
+	private static final int login_verify_fail_key = 0x1102;
+
 	public final String string_db_name = "datadb.db";
 
 	private UDPClient udp_client = null;
@@ -48,6 +56,27 @@ public class ClientManager implements Serializable {
 	private boolean isInsert = false;
 
 	private NetDataParsesCollection parsers = new NetDataParsesCollection();
+
+	private MessageSpreader ui_message_handler = new HandleMessageSpreader() {
+		@Override
+		@SuppressLint("SimpleDateFormat")
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case login_verify_suc_key:
+				if (server_info != null) {
+					cur_login_user = new OnlineClientUser(server_info, new ClientUserInfo(user_name, user_password), db,
+							m_threadSend, client_listener);
+				}
+
+				break;
+			case login_verify_fail_key:
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
 
 	public ClientManager(Context context) {
 		// TODO Auto-generated constructor stub
@@ -95,22 +124,16 @@ public class ClientManager implements Serializable {
 						VerifyLoginNetDataParse login_verify_parser = (VerifyLoginNetDataParse) parser;
 						if (login_verify_parser.getNresult() == 0) {
 							// login verify success
-							if (server_info != null) {
-								// switch (server_info.getNet_kind()) {
-								// case MyTcpClientSocket.net_client_code:
-								//
-								// break;
-								// case MyUdpClientSocket.net_client_code:
-								//
-								// break;
-								//
-								// default:
-								// break;
-								// }
-								cur_login_user = new OnlineClientUser(server_info,
-										new ClientUserInfo(user_name, user_password), db, m_threadSend,
-										client_listener);
-							}
+							Message msg = Message.obtain();
+							msg.what = ClientManager.login_verify_suc_key;
+							ClientManager.this.ui_message_handler.sendMessage(msg);
+						}
+						else
+						{
+							// login verify fail
+							Message msg = Message.obtain();
+							msg.what = ClientManager.login_verify_fail_key;
+							ClientManager.this.ui_message_handler.sendMessage(msg);
 						}
 					}
 
@@ -170,7 +193,7 @@ public class ClientManager implements Serializable {
 		if (udp_client == null) {
 			udp_client = new UDPClient(this.context, udp_receiver_port, null, m_threadSend, client_listener);
 		}
-		if(user_info !=null) {
+		if (user_info != null) {
 			user_name = user_info.getUser_name();
 			user_password = user_info.getUser_password();
 		}
@@ -216,7 +239,6 @@ public class ClientManager implements Serializable {
 			udp_client.UDPClientInit();
 		}
 
-	
 		if (m_threadSend == null) {
 			m_threadSend = new OperateWakeThread();
 

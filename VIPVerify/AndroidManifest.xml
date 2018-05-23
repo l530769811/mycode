@@ -63,7 +63,7 @@
             android:label="@string/title_activity_net_work_dialog" >
         </activity>
         <activity
-            android:name=".SignInActivity"
+            android:name=".SignupActivity"
             android:label="@string/title_activity_sign_in"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>

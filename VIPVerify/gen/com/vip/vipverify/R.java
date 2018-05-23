@@ -90,10 +90,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int button_scan=0x7f090040;
         public static final int button_search_ok=0x7f090028;
         public static final int button_search_server=0x7f090027;
-        public static final int button_signin=0x7f090014;
         public static final int button_signin_cancel=0x7f090031;
         public static final int button_signin_ok=0x7f090030;
         public static final int button_signin_send_identify_code=0x7f09002f;
+        public static final int button_signup=0x7f090014;
         public static final int button_veriry=0x7f090041;
         public static final int checkBox_main_autologin=0x7f090015;
         public static final int checkBox_main_remember=0x7f090016;
@@ -162,7 +162,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int activity_main=0x7f030001;
         public static final int activity_net_work=0x7f030002;
         public static final int activity_search_server=0x7f030003;
-        public static final int activity_sign_in=0x7f030004;
+        public static final int activity_sign_up=0x7f030004;
         public static final int activity_veriry=0x7f030005;
         public static final int fragment_regist_info=0x7f030006;
         public static final int listview_myitem=0x7f030007;
@@ -176,8 +176,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class string {
         public static final int action_settings=0x7f0a00c7;
-        public static final int action_sign_in=0x7f0a00d0;
-        public static final int action_sign_in_short=0x7f0a00d1;
+        public static final int action_sign_in=0x7f0a00d1;
+        public static final int action_sign_in_short=0x7f0a00d2;
         public static final int app_name=0x7f0a0000;
         public static final int bookmark_picker_name=0x7f0a004b;
         public static final int button_add_calendar=0x7f0a004c;
@@ -211,10 +211,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int contents_text=0x7f0a0068;
         public static final int dummy_button=0x7f0a0001;
         public static final int dummy_content=0x7f0a0002;
-        public static final int error_field_required=0x7f0a00d7;
-        public static final int error_incorrect_password=0x7f0a00d6;
-        public static final int error_invalid_email=0x7f0a00d4;
-        public static final int error_invalid_password=0x7f0a00d5;
+        public static final int error_field_required=0x7f0a00d8;
+        public static final int error_incorrect_password=0x7f0a00d7;
+        public static final int error_invalid_email=0x7f0a00d5;
+        public static final int error_invalid_password=0x7f0a00d6;
         public static final int hello_world=0x7f0a004a;
         public static final int history_clear_one_history_text=0x7f0a006a;
         public static final int history_clear_text=0x7f0a0069;
@@ -255,8 +255,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int msg_share_text=0x7f0a008d;
         public static final int msg_sure=0x7f0a008e;
         public static final int msg_unmount_usb=0x7f0a008f;
-        public static final int plus_disconnect=0x7f0a00d3;
-        public static final int plus_sign_out=0x7f0a00d2;
+        public static final int plus_disconnect=0x7f0a00d4;
+        public static final int plus_sign_out=0x7f0a00d3;
         public static final int preferences_actions_title=0x7f0a0090;
         public static final int preferences_auto_focus_title=0x7f0a0091;
         public static final int preferences_auto_open_web_title=0x7f0a0092;
@@ -300,8 +300,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int preferences_vibrate_title=0x7f0a00b8;
         /**  Strings related to login 
          */
-        public static final int prompt_email=0x7f0a00ce;
-        public static final int prompt_password=0x7f0a00cf;
+        public static final int prompt_email=0x7f0a00cf;
+        public static final int prompt_password=0x7f0a00d0;
         public static final int result_address_book=0x7f0a00b9;
         public static final int result_calendar=0x7f0a00ba;
         public static final int result_email_address=0x7f0a00bb;
@@ -330,6 +330,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int string_default_broadcast_ip=0x7f0a002c;
         public static final int string_default_ip=0x7f0a002b;
         public static final int string_default_port=0x7f0a002d;
+        public static final int string_do_done=0x7f0a00cd;
         public static final int string_domain=0x7f0a0034;
         public static final int string_exit=0x7f0a0046;
         public static final int string_exit_notify=0x7f0a0027;
@@ -386,7 +387,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int string_veriry=0x7f0a0009;
         public static final int string_yes=0x7f0a003e;
         public static final int title_activity_auto_dialog=0x7f0a00cb;
-        public static final int title_activity_login=0x7f0a00cd;
+        public static final int title_activity_login=0x7f0a00ce;
         public static final int title_activity_net_work_dialog=0x7f0a00c9;
         public static final int title_activity_regist_info=0x7f0a00c6;
         public static final int title_activity_search_server=0x7f0a00c8;

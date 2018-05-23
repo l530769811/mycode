@@ -3,7 +3,7 @@ import com.vip.vipverify.R;
 
 public enum MyErrors {
 	NetError(-1, R.string.string_net_error),
-	NoError(0, 0),
+	NoError(0, R.string.string_do_done),
 	LoginVerifyError(1, R.string.string_login_verify_error);
 	
 	

@@ -3,15 +3,17 @@ package com.vip.vipverify.net;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.vip.vipverify.Md5Unit;
+
 public class UserSignupNetSocketData extends NetSocketData {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UserRegistInfo info = null;
+	private UserSignupInfo info = null;
 
-	public UserSignupNetSocketData(UserRegistInfo info) {
+	public UserSignupNetSocketData(UserSignupInfo info) {
 		super();
 		this.info = info;
 	}
@@ -31,7 +33,7 @@ public class UserSignupNetSocketData extends NetSocketData {
 			json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
 			if (info != null) {
 				json_cvalue.put(Jsonkey.string_user_name_key, info.getUser_name());
-				json_cvalue.put(Jsonkey.string_user_password_key, info.getUser_password());
+				json_cvalue.put( Jsonkey.string_user_password_key, Md5Unit.EncodeToMd5String(info.getUser_password()) );
 				json_cvalue.put(Jsonkey.string_phone_number, info.getUser_phone());
 				json_cvalue.put(Jsonkey.string_identify_code, info.getIdentify_code());
 			}

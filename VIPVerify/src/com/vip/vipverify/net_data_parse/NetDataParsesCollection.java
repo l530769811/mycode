@@ -15,7 +15,7 @@ public class NetDataParsesCollection {
 
 		ServerInfoNetDataParse(ServerInfoNetDataParse.class, "search_server_request", "search_server_reponse"),
 
-		UserRegistNetDataParse(UserRegistNetDataParse.class, "user_regist_request", "user_regist_reponse"),
+		UserRegistNetDataParse(UserSignupNetDataParse.class, "user_regist_request", "user_regist_reponse"),
 
 		VerifyLoginNetDataParse(VerifyLoginNetDataParse.class, "verify_login_request", "verify_login_reponse"),
 

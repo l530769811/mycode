@@ -7,7 +7,7 @@ import com.vip.vipverify.my_arg.MyArg;
 import com.vip.vipverify.net.Jsonkey;
 import com.vip.vipverify.operator.DoOperator;
 
-public class UserRegistNetDataParse extends NetDataParse {
+public class UserSignupNetDataParse extends NetDataParse {
 
 	/**
 	 * 
@@ -17,7 +17,7 @@ public class UserRegistNetDataParse extends NetDataParse {
 	private int nresult = -1;
 	private String str_string = "";
 
-	public UserRegistNetDataParse(MyArg arg) {
+	public UserSignupNetDataParse(MyArg arg) {
 		// TODO Auto-generated constructor stub
 	}
 	
