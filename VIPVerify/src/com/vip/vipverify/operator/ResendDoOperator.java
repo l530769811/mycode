@@ -54,7 +54,7 @@ public class ResendDoOperator implements DoOperator {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			if (reverify_times <= 4) {
+			if (reverify_times <= 2) {
 				reverify_times++;
 				if (operator != null) {
 					operator.ToDoOperate();
@@ -121,7 +121,7 @@ public class ResendDoOperator implements DoOperator {
 		// TODO Auto-generated method stub
 		if (reverify_timer == null) {
 			reverify_timer = new Timer(true);
-			reverify_timer.schedule(new ReverifyLoginTimertask(null), 1000, 1000);
+			reverify_timer.schedule(new ReverifyLoginTimertask(null), 5000, 5000);
 		}
 
 		if (netsocketdata != null && socketproxy != null) {

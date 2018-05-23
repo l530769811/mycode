@@ -93,7 +93,7 @@ public class ClientManager implements Serializable {
 					// TODO Auto-generated method stub
 					if (parser instanceof VerifyLoginNetDataParse) {
 						VerifyLoginNetDataParse login_verify_parser = (VerifyLoginNetDataParse) parser;
-						if (login_verify_parser.getNresult() >= 0) {
+						if (login_verify_parser.getNresult() == 0) {
 							// login verify success
 							if (server_info != null) {
 								// switch (server_info.getNet_kind()) {
@@ -172,7 +172,7 @@ public class ClientManager implements Serializable {
 		}
 		if(user_info !=null) {
 			user_name = user_info.getUser_name();
-			user_name = user_info.getUser_password();
+			user_password = user_info.getUser_password();
 		}
 
 		udp_client.UDPClientInit();

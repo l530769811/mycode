@@ -20,6 +20,7 @@ public class MyLoginPreferences extends MyPreferences {
 	private int server_port = -1;
 
 	private String user_name = "";
+
 	private String user_password = "";
 
 	private ClientManager client_manager = null;
@@ -72,6 +73,15 @@ public class MyLoginPreferences extends MyPreferences {
 	public int getServerPort() {
 		return server_port;
 	}
+	
+	public String getUser_name() {
+		return user_name;
+	}
+
+	public String getUser_password() {
+		return user_password;
+	}
+
 
 	public void setRememberPassword(boolean bIsRem, String user_name, String user_password) {
 		this.bRemPassword = bIsRem;
@@ -101,7 +111,7 @@ public class MyLoginPreferences extends MyPreferences {
 			saveRememberPassword();
 
 		} else {
-
+			saveUserName();
 		}
 	}
 

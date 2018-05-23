@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	public static final String key_client_manager = "client_manager";
 	public final String string_db_name = "datadb.db";
 
-	public final static int net_error_id = 0x0011;
+	public final static int error_key = 0x0011;
 
 	private ClientManager client_manager = null;
 
@@ -96,8 +96,13 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case net_error_id:
-				Toast.makeText(MainActivity.this, R.string.string_net_error, Toast.LENGTH_SHORT).show();
+			case error_key:
+				if (msg.obj instanceof String) {
+					String string_error = (String) msg.obj;
+					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
+				}
+				
+				
 				break;
 
 			default:
@@ -162,11 +167,16 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 						if ((parser instanceof VerifyLoginNetDataParse)) {
 							VerifyLoginNetDataParse net_parse_login = (VerifyLoginNetDataParse) parser;
 							int result = net_parse_login.getNresult();
-							if (result != 0 ) {
+							int no_error = MyErrors.NoError.nid;
+							if (result !=   no_error) {
 								Message msg = Message.obtain();
-								msg.what = net_error_id;
-								msg.obj = MainActivity.this.getResources().getString(R.string.string_net_error);
+								msg.what = error_key;
+								int string_id = MyErrors.GetStringIdFromErrorID(result);
+								msg.obj = MainActivity.this.getResources().getString(string_id);
 								ui_message_handler.sendMessage(msg);
+								preferences_login.login_result(
+										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
+										Md5Unit.EncodeToMd5String(user_password), false);
 							} else {
 								preferences_login.login_result(
 										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
@@ -177,10 +187,11 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 						} else if (parser instanceof UserRegistNetDataParse) {
 							UserRegistNetDataParse net_parse_login = (UserRegistNetDataParse) parser;
 							int result = net_parse_login.getNresult();
-							if (result < 0) {
+							if (result != MyErrors.NoError.nid) {
 								Message msg = Message.obtain();
-								msg.what = net_error_id;
-								msg.obj = MainActivity.this.getResources().getString(R.string.string_net_error);
+								msg.what = error_key;
+								int string_id = MyErrors.GetStringIdFromErrorID(result);
+								msg.obj = MainActivity.this.getResources().getString(string_id);
 								ui_message_handler.sendMessage(msg);
 							}
 						}

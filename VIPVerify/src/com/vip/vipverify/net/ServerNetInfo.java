@@ -49,7 +49,7 @@ public class ServerNetInfo {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "(" + this.name + ")" + this.ip + " : " + String.valueOf(this.port);
+		return "(" + this.name + ")\n" + this.ip + " : " + String.valueOf(this.port);
 	}
 
 }
