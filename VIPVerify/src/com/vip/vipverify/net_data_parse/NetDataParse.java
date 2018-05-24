@@ -19,8 +19,8 @@ public abstract class NetDataParse implements Serializable{
 	final public boolean Parse(byte[] buf_data, int len) {
 		boolean bret = false;
 		if (buf_data != null) {
-			if (is_type(buf_data, len)) {
-				bret = parse_data(buf_data, len);
+			if ( (bret = is_type(buf_data, len)) == true) {
+				parse_data(buf_data, len);
 			}
 		}
 

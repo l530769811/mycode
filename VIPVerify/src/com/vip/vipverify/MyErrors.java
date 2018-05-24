@@ -4,8 +4,8 @@ import com.vip.vipverify.R;
 public enum MyErrors {
 	NetError(-1, R.string.string_net_error),
 	NoError(0, R.string.string_do_done),
-	LoginVerifyError(1, R.string.string_login_verify_error);
-	
+	LoginVerifyError(1, R.string.string_login_verify_error),
+	SignupError(2, R.string.string_signup_error);
 	
 	
 	final int nid;

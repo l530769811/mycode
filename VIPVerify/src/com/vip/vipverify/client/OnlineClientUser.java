@@ -587,4 +587,10 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 
 	}
 
+	@Override
+	public String GetUserName() {
+		// TODO Auto-generated method stub
+		return user_info.getUser_name();
+	}
+
 }

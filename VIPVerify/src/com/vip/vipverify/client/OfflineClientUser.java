@@ -145,4 +145,10 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 		return bret;
 	}
 
+	@Override
+	public String GetUserName() {
+		// TODO Auto-generated method stub
+		return string_username;
+	}
+
 }

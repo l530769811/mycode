@@ -195,7 +195,7 @@
             android:layout_toEndOf="@+id/textView_server_setting"
             android:layout_toRightOf="@+id/textView_server_setting"
             android:gravity="bottom"
-            android:textColor="#00A0FF" />
+            android:textColor="@color/button_text_color" />
 
         <TextView
             android:id="@+id/textView_server_ip_addr"
@@ -219,7 +219,7 @@
             android:ems="10"
             android:gravity="bottom"
             android:inputType="textPostalAddress"
-            android:textColor="#00A0FF" />
+            android:textColor="@color/button_text_color" />
 
         <TextView
             android:id="@+id/textView_server_port"
@@ -243,7 +243,7 @@
             android:ems="10"
             android:gravity="bottom"
             android:inputType="numberSigned"
-            android:textColor="#00A0FF" />
+            android:textColor="@color/button_text_color" />
     </RelativeLayout>
 
     <LinearLayout

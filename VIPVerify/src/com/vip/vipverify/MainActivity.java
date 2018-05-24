@@ -68,6 +68,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	public final String string_db_name = "datadb.db";
 
 	public final static int notify_key = 0x0011;
+	public final static int login_notify_key = 0x0012;
 
 	private ClientManager client_manager = null;
 
@@ -104,10 +105,18 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 				if (msg.obj instanceof String) {
 					String string_error = (String) msg.obj;
 					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
-				}
-				
-				
+				}				
 				break;
+				
+			case login_notify_key:
+				//if(msg.obj instanceof int)
+				{
+					boolean result = (boolean)msg.obj;
+					if(result)
+					{
+						_start_login();
+					}
+				}
 
 			default:
 				break;
@@ -160,22 +169,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		@Override
 		public boolean receive_data(byte[] data, int len) {
 			// TODO Auto-generated method stub
-			// VerifyLoginNetDataParse net_data = new VerifyLoginNetDataParse(new
-			// EmptyMyArg());
-			// if (net_data.Parse(data, len) == true) {
-			// int result = net_data.getNresult();
-			// if (result < 0) {
-			// Message msg = Message.obtain();
-			// msg.what = net_error_id;
-			// msg.obj =
-			// MainActivity.this.getResources().getString(R.string.string_net_error);
-			// ui_message_handler.sendMessage(msg);
-			// }
-			//
-			// }
-			// if (loading_dialog != null) {
-			// loading_dialog.dismiss();
-			// }
+			
 			if (parses != null) {
 				parses.parse(data, len, new ParseResultListening() {
 
@@ -199,7 +193,11 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								preferences_login.login_result(
 										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
 										Md5Unit.EncodeToMd5String(user_password), true);
-								_start_login();
+								//_start_login();
+								Message msg = Message.obtain();
+								msg.what = login_notify_key;
+								msg.obj = true;
+								ui_message_handler.sendMessage(msg);
 							}
 
 						} else if (parser instanceof UserSignupNetDataParse) {
@@ -464,8 +462,9 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 				user_password = edit_user_password.getText().toString();
 			}
 
-			_loginUser(new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
-					Md5Unit.EncodeToMd5String(user_password));
+			_loginUser(new ServerNetInfo("unknow", server_ip, server_port, server_net_kind),
+					user_name,
+					(user_password));
 
 			break;
 		case R.id.button_signup:

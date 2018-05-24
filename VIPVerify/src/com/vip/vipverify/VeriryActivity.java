@@ -60,6 +60,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -79,6 +81,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+/**
+ * @author Administrator
+ *
+ */
 public class VeriryActivity extends Activity implements SurfaceHolder.Callback, Runnable, OnClickListener {
 
 	private static final String TAG = VeriryActivity.class.getSimpleName();
@@ -492,6 +498,47 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			ret = loginUser.commit_verify(info);
 		}
 		return ret;
+	}
+
+	
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		getMenuInflater().inflate(R.menu.login_user_menu, menu);
+		MenuItem item = menu.getItem(0);
+		
+		if(item!=null && this.loginUser!=null)
+		{
+			item.setTitle(loginUser.GetUserName());
+		}
+		return  super.onCreateOptionsMenu(menu);
+	}
+	
+	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		
+		switch (item.getItemId()) {
+		case R.id.login_user_menu_info:
+			
+			break;
+
+		case R.id.login_user_menu_loginout:
+			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
+					this.getResources().getString(R.string.string_sure_loginout), 5, new ExitLeaveMyDialogListener(this));
+			dialog.show();
+			break;
+		default:
+
+			break;
+
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

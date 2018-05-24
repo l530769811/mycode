@@ -3,6 +3,8 @@ package com.vip.vipverify.net;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.vip.vipverify.Md5Unit;
+
 public class VerifyLoginNetSocketData extends NetSocketData {
 	/**
 	 * 
@@ -33,7 +35,7 @@ public class VerifyLoginNetSocketData extends NetSocketData {
 			JSONObject json_cvalue = new JSONObject();
 			json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
 			json_cvalue.put(Jsonkey.string_user_name_key, user_name);
-			json_cvalue.put(Jsonkey.string_user_password_key, user_password);
+			json_cvalue.put(Jsonkey.string_user_password_key, Md5Unit.EncodeToMd5String(user_password));
 			
 			String json_string = json_object.toString();
 			ret_byte = json_string.getBytes();

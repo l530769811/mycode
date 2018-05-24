@@ -118,9 +118,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
-                android:background="@color/button_text_color"
+                android:background="@color/view_background_color"
                 android:text="@string/string_autologin"
-                android:textColor="#00A0FF" />
+                android:textColor="@color/button_text_color" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -151,9 +151,9 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-               android:background="@color/button_text_color"
+               android:background="@color/view_background_color"
                 android:text="@string/string_remember"
-                android:textColor="#00A0FF" />
+                android:textColor="@color/button_text_color" />
         </RelativeLayout>
     </RelativeLayout>
 

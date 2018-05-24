@@ -206,7 +206,7 @@ public class ClientManager implements Serializable {
 				client_listener.InsertOnSocketReceiveListening(new EmptySocketReceiveListening());
 				isInsert = true;
 			}
-			NetSocketData data = new VerifyLoginNetSocketData(user_name, Md5Unit.EncodeToMd5String(user_password));
+			NetSocketData data = new VerifyLoginNetSocketData(user_name, (user_password));
 			DoOperator operator = new ResendDoOperator(data, udp_proxy, "verify_login_reponse", client_listener);
 
 			if (m_threadSend != null) {

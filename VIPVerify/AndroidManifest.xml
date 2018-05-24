@@ -51,8 +51,10 @@
         </activity>
         <activity
             android:name=".VeriryActivity"
-            android:label="@string/title_activity_veriry"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            android:label="@string/title_activity_veriry">
+            <!-- 
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+              -->
         </activity>
         <activity
             android:name=".SearchServerDialog"

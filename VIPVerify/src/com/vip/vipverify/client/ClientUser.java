@@ -14,6 +14,8 @@ public abstract class ClientUser implements Serializable {
 	public abstract void loginIn();
 
 	public abstract void loginOut();
+	
+	public abstract String GetUserName();
 
 	public abstract boolean commit_regist(CardRegistInfo info);
 	//abstract boolean commit_regist_after_do();
