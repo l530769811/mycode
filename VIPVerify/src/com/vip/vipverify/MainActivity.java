@@ -10,7 +10,9 @@ import com.vip.vipverify.SearchServerDialog.SelectServerListening;
 import com.vip.vipverify.SignupActivity.SignupListening;
 import com.vip.vipverify.client.ClientManager;
 import com.vip.vipverify.client.ClientUser;
+import com.vip.vipverify.client.ClientUserCreator;
 import com.vip.vipverify.client.ClientUserInfo;
+import com.vip.vipverify.client.OnlineClientUser;
 import com.vip.vipverify.my_arg.EmptyMyArg;
 import com.vip.vipverify.net.NetSocketData;
 import com.vip.vipverify.net.ServerNetInfo;
@@ -62,7 +64,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 
-	private ClientUser loginUser = null;
+	private ClientUserCreator loginUser = null;
 	public static final String key_loginuser = "login_user";
 	public static final String key_client_manager = "client_manager";
 	public final String string_db_name = "datadb.db";
@@ -130,6 +132,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		public void Signup(UserSignupInfo info) {
 			// TODO Auto-generated method stub
 			if(client_manager!=null) {
+				loading_dialog = ProgressDialog.show(MainActivity.this, "", getResources().getString(R.string.string_notify_signuping));
 				NetSocketData data = new UserSignupNetSocketData(info);
 				client_manager.signin_user(data, server_ip, server_port);
 			}
@@ -188,11 +191,11 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								ui_message_handler.sendMessage(msg);
 								preferences_login.login_result(
 										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
-										Md5Unit.EncodeToMd5String(user_password), false);
+										(user_password), false);
 							} else {
 								preferences_login.login_result(
 										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
-										Md5Unit.EncodeToMd5String(user_password), true);
+										(user_password), true);
 								//_start_login();
 								Message msg = Message.obtain();
 								msg.what = login_notify_key;
@@ -330,15 +333,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		preferences_login.autoLogin(my_auito_login);
 
 		parses.createObject(new EmptyMyArg());
-		// loading_dialog = new ProgressDialog(this, 0);
-
-		// String db_path = "/data/data/" +
-		// this.getApplicationContext().getPackageName() + "/" + "databases/" +
-		// string_db_name;
-		// loginUser = new OfflineClientUser(mdb = new
-		// MyBaseDataProxy(this.getApplicationContext(), db_path, null, 1));
-		// loginUser.loginIn();
-
+		
 		popup_menu = new PopupMenu(this, this.findViewById(R.id.button_main_menu));
 		menu = popup_menu.getMenu();
 		MenuInflater menuInflater = getMenuInflater();
@@ -429,28 +424,23 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	private void _start_login() {
 
 		if (client_manager != null) {
-			loginUser = client_manager.get_cur_loginuser();
+			loginUser = client_manager.get_cur_user_Creator();
 		}
 
+		
 		Intent intent = null;
+		
 		Bundle bundle = new Bundle();
 		intent = new Intent(this, VeriryActivity.class);
-		bundle = new Bundle();
+	
 		bundle.putSerializable(key_loginuser, loginUser);
-		// bundle.putParcelable(key_loginuser, loginUser);
 		intent.putExtras(bundle);
-
-		/* 指定intent要启动的类 */
-		// intent.setClass(MainActivity.this, VeriryActivity.class);
-		/* 启动一个新的Activity */
+		
 		this.startActivity(intent);
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		Intent intent = null;
-		Bundle bundle = new Bundle();
 		switch (v.getId()) {
 		case R.id.button_login:
 			EditText edit_user_name = (EditText) this.findViewById(R.id.editText_login_username);
@@ -465,6 +455,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 			_loginUser(new ServerNetInfo("unknow", server_ip, server_port, server_net_kind),
 					user_name,
 					(user_password));
+			
 
 			break;
 		case R.id.button_signup:
@@ -481,6 +472,9 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 			_start_login();
 			
 			break;
+		case R.id.textView_ipport:
+			break;
+			
 		case R.id.button_main_menu:
 			if (popup_menu != null) {
 				popup_menu.show();

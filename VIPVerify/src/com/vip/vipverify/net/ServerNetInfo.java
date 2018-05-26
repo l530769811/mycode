@@ -1,6 +1,12 @@
 package com.vip.vipverify.net;
 
-public class ServerNetInfo {
+import java.io.Serializable;
+
+public class ServerNetInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name = "unknow";
 	private String ip = "";
 	private int port = -1;

@@ -1,24 +1,44 @@
 package com.common.my_message;
 
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
+
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 
-public class HandleMessageSpreader implements MessageSpreader{
+@SuppressLint("HandlerLeak")
+public class HandleMessageSpreader implements MessageSpreader, Serializable {
 
-	private Handler message_handle = new Handler(){
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	MyHandler message_handle = new MyHandler(this);
+
+	private static class MyHandler extends Handler {
+		private WeakReference<HandleMessageSpreader> spreader = null;
+		//private HandleMessageSpreader spreader = null;
+		MyHandler(HandleMessageSpreader spreader) {
+			this.spreader = new WeakReference<HandleMessageSpreader>(spreader);
+			//this.spreader = spreader;
+		}
 
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
-			revMessage(msg);
+			if (spreader != null) {
+				spreader.get().revMessage(msg);
+				//spreader.revMessage(msg);;
+			}
 		}
-		
+
 	};
-	private void revMessage(Message msg)
-	{
-		this.handleMessage(msg);
+
+	private final void revMessage(Message msg) {
+		handleMessage(msg);
 	}
-	
+
 	@Override
 	public boolean sendMessage(Message msg) {
 		// TODO Auto-generated method stub
@@ -34,7 +54,7 @@ public class HandleMessageSpreader implements MessageSpreader{
 	@Override
 	public void handleMessage(Message msg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

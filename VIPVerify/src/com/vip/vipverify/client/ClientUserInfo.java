@@ -1,6 +1,12 @@
 package com.vip.vipverify.client;
 
-public class ClientUserInfo {
+import java.io.Serializable;
+
+public class ClientUserInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String user_name = "";
 	private String user_password = "";
 

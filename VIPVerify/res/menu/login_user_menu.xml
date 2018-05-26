@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+     <item
+        android:id="@+id/login_user_menu_info"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:orderInCategory="1"
+        android:showAsAction="withText|ifRoom"
+        android:title="@string/string_username">
+    </item>
+    <item
+        android:id="@+id/login_user_menu_loginout"
+        android:icon="@android:drawable/ic_menu_today"
+        android:orderInCategory="2"
+        android:showAsAction="never"
+        android:title="@string/string_loginout">
+    </item>
+
+</menu>

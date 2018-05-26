@@ -73,6 +73,7 @@ public class SignupActivity extends Dialog implements OnClickListener, Serializa
 			if (this.isRightRegistInfo()) {
 				if (listener != null) {
 					listener.Signup(info);
+					this.dismiss();
 				}
 			}
 

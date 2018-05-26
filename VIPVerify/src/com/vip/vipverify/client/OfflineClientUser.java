@@ -12,6 +12,8 @@ import com.vip.vipverify.operator.ExecSqlOperator;
 import com.vip.vipverify.operator.SelectSqlDoOperator;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.os.Message;
 
 public class OfflineClientUser extends ClientUser implements Serializable {
 
@@ -59,7 +61,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 	final static String select_card_info_name_pass_encrypt = "SELECT * FROM tlVeriryCardUser WHERE CardNumber='%s'   "
 			+ "											   and CardPasswordEncrypt='%s';";
 	private MyBaseDataProxy mdb = null;
-	private MessageSpreader message_handler = null;
+	private MessageSpreader ui_message_handler = null;
 
 	public OfflineClientUser(MyBaseDataProxy db) {
 		mdb = db;
@@ -79,7 +81,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 					Md5Unit.EncodePasswordByCardnumber(info.getString_card_number(), info.getString_password()),
 					info.getString_first_name(), "no describe", this.string_username, info.getString_phone(),
 					info.getN_sex(), "no extra text");
-			ret = mdb.PostExecSql(new ExecSqlOperator(str_regist_sql, mdb, this.message_handler,
+			ret = mdb.PostExecSql(new ExecSqlOperator(str_regist_sql, mdb, this.ui_message_handler,
 					VeriryActivity.KeyCardUserRegistSuc, VeriryActivity.KeyCardUserRegistFail));
 		}
 
@@ -95,7 +97,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 			String str_verify_sql = new String();
 			str_verify_sql = String.format(select_card_info_name_pass_encrypt, info.getString_card_number(),
 					Md5Unit.EncodePasswordByCardnumber(info.getString_card_number(), info.getString_card_password()));
-			ret = mdb.PostExecSql(new SelectSqlDoOperator(str_verify_sql, mdb, this.message_handler,
+			ret = mdb.PostExecSql(new SelectSqlDoOperator(str_verify_sql, mdb, this.ui_message_handler,
 					VeriryActivity.KeyCardUserVerifySuc, VeriryActivity.KeyCardUserVerifyFail));
 		}
 
@@ -114,6 +116,14 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 		if (mdb != null) {
 			mdb.start();
 		}
+		
+		if(ui_message_handler!=null)
+		{
+			Message msg = Message.obtain();
+			msg.what = VeriryActivity.KeyConectResult;
+			msg.obj = true;
+			ui_message_handler.sendMessage(msg);
+		}
 	}
 
 	@Override
@@ -125,9 +135,9 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 	}
 
 	@Override
-	public void bindHandler(MessageSpreader h) {
+	public void bindUiHandler(MessageSpreader h) {
 		// TODO Auto-generated method stub
-		message_handler = h;
+		ui_message_handler = h;
 	}
 
 	@Override
@@ -138,7 +148,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 		if (mdb != null && info != null) {
 			String string_sql = new String();
 			string_sql = String.format(delete_carduser_data, info.getString_card_number());
-			bret = mdb.PostExecSql(new DeleteSqlDoOperator(string_sql, mdb, message_handler,
+			bret = mdb.PostExecSql(new DeleteSqlDoOperator(string_sql, mdb, ui_message_handler,
 					VeriryActivity.KeyCardUserVerifyDeletetSuc, VeriryActivity.KeyCardUserVerifyDeleteFail));
 		}
 
@@ -150,5 +160,4 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 		// TODO Auto-generated method stub
 		return string_username;
 	}
-
 }

@@ -3,20 +3,25 @@ package com.vip.vipverify.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 import com.vip.vipverify.thread.WakeThread;
 
-public class MyTcpClientSocket extends MyClientSocket {
+public class MyTcpClientSocket extends MyClientSocket implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Socket socketClient = null;
 	private DataInputStream in = null;
 	private DataOutputStream out = null;
 	public final static int net_client_code = 0;
 
-	public MyTcpClientSocket(Thread rev_thread, WakeThread send_thread, SockketDataListening listrenling) {
-		super(rev_thread, send_thread, listrenling);
+	public MyTcpClientSocket(Thread rev_thread, SockketDataListening listrenling, ConnectResultListening connect_listener) {
+		super(rev_thread, listrenling, connect_listener);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -35,15 +40,12 @@ public class MyTcpClientSocket extends MyClientSocket {
 		// }
 
 		try {
-			// socketClient = new Socket();
-			// SocketAddress socketAddress = new InetSocketAddress(addr, port);
-			// socketClient.connect(socketAddress, 1000);
-			// out = new DataOutputStream(socketClient.getOutputStream());
-			// in = new DataInputStream(socketClient.getInputStream());
+
 			SocketAddress socketAddress = new InetSocketAddress(addr, port);
 			if (socketClient != null) {
-				socketClient.connect(socketAddress, 1000);
-
+				socketClient.connect(socketAddress);
+				out = new DataOutputStream(socketClient.getOutputStream());
+				in = new DataInputStream(socketClient.getInputStream());
 				bret = true;
 			}
 
@@ -74,6 +76,16 @@ public class MyTcpClientSocket extends MyClientSocket {
 					SocketChannel channel = socketClient.getChannel();
 					if (channel != null) {
 						channel.close();
+					}
+
+					if (out != null) {
+						out.close();
+						out = null;
+					}
+
+					if (in != null) {
+						in.close();
+						in = null;
 					}
 				}
 
@@ -107,25 +119,8 @@ public class MyTcpClientSocket extends MyClientSocket {
 		try {
 			// flag = false;
 			if (socketClient != null) {
-				// Toast.makeText(getApplicationContext(),
-				// "socket_closeConnect()", Toast.LENGTH_LONG).show();
-				// socket.shutdownOutput();
-				// socket.shutdownInput();
 				if (socketClient.isClosed() == false)
 					socketClient.close();
-
-				// .purge();
-				// Heart.cancel();
-			}
-
-			if (out != null) {
-				out.close();
-				out = null;
-			}
-
-			if (in != null) {
-				in.close();
-				in = null;
 			}
 
 			bret = true;
@@ -153,9 +148,6 @@ public class MyTcpClientSocket extends MyClientSocket {
 		try {
 			socketClient = new Socket();
 
-			out = new DataOutputStream(socketClient.getOutputStream());
-			in = new DataInputStream(socketClient.getInputStream());
-
 			bret = true;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -174,7 +166,6 @@ public class MyTcpClientSocket extends MyClientSocket {
 
 			try {
 				out.write(data);
-
 				nlen = len;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

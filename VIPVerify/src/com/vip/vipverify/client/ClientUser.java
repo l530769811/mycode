@@ -5,6 +5,8 @@ import java.io.Serializable;
 import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.db.QueryUnit;
 
+import android.app.Activity;
+
 public abstract class ClientUser implements Serializable {
 	/**
 	 * 
@@ -14,19 +16,18 @@ public abstract class ClientUser implements Serializable {
 	public abstract void loginIn();
 
 	public abstract void loginOut();
-	
+
 	public abstract String GetUserName();
 
-	public abstract boolean commit_regist(CardRegistInfo info);
-	//abstract boolean commit_regist_after_do();
+	public abstract void bindUiHandler(MessageSpreader h);
 
-	public abstract boolean commit_verify(CardVerifyInfo info);
-	public abstract boolean commit_verify_after_do(CardVerifyInfo info);
-	
 	abstract boolean commit_find(QueryUnit unit);
 
-	
+	public abstract boolean commit_regist(CardRegistInfo info);
+	// abstract boolean commit_regist_after_do();
 
-	public abstract void bindHandler(MessageSpreader h);
+	public abstract boolean commit_verify(CardVerifyInfo info);
+
+	public abstract boolean commit_verify_after_do(CardVerifyInfo info);
 
 }

@@ -51,9 +51,6 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:hint="@string/string_userpassword"
-            android:imeActionId="@+id/login"
-            android:imeActionLabel="@string/action_sign_in_short"
-            android:imeOptions="actionUnspecified"
             android:inputType="textPassword"
             />
 

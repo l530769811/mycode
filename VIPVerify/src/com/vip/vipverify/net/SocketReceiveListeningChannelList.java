@@ -1,6 +1,12 @@
 package com.vip.vipverify.net;
 
-public abstract class SocketReceiveListeningChannelList {
+import java.io.Serializable;
+
+public abstract class SocketReceiveListeningChannelList implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private SocketReceiveListeningChannelList next_listener = null;
 
 	private SocketReceiveListeningChannelList GetNextListener() {

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
-import com.vip.vipverify.Md5Unit;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.my_arg.EmptyMyArg;
 import com.vip.vipverify.net.NetSocketData;
@@ -46,7 +45,7 @@ public class ClientManager implements Serializable {
 	private Context context = null;
 
 	private MyBaseDataProxy db = null;
-	private ClientUser cur_login_user = null;
+	private ClientUserCreator cur_login_user = null;
 	private ServerNetInfo server_info = null;
 	protected String user_password;
 	protected String user_name;
@@ -58,14 +57,22 @@ public class ClientManager implements Serializable {
 	private NetDataParsesCollection parsers = new NetDataParsesCollection();
 
 	private MessageSpreader ui_message_handler = new HandleMessageSpreader() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		@SuppressLint("SimpleDateFormat")
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case login_verify_suc_key:
 				if (server_info != null) {
-					cur_login_user = new OnlineClientUser(server_info, new ClientUserInfo(user_name, user_password), db,
-							m_threadSend, client_listener);
+//					cur_login_user = new OnlineClientUser(server_info, new ClientUserInfo(user_name, user_password), db,
+//							m_threadSend, client_listener);
+					
+					cur_login_user = new OnlineClientUserCreator(server_info, new ClientUserInfo(user_name, user_password), db,
+							m_threadSend, null);
 				}
 
 				break;
@@ -81,8 +88,7 @@ public class ClientManager implements Serializable {
 	public ClientManager(Context context) {
 		// TODO Auto-generated constructor stub
 		this.client_listener = new ClientManagerSocketReceiveListening();
-		if (this.m_threadSend != null) {
-		}
+		
 		this.context = context;
 		if (this.context != null) {
 			String sdPath = "/data/data";
@@ -90,13 +96,18 @@ public class ClientManager implements Serializable {
 			String db_path = sdPath + "/" + this.context.getPackageName() + "/" + "databases/" + string_db_name;
 			this.db = new MyBaseDataProxy(context, db_path, null, 1);
 
-			cur_login_user = new OfflineClientUser(db);
+			cur_login_user = new OfflineClientUserCreator(db);
 		}
 
 		parsers.createObject(new EmptyMyArg());
 	}
 
 	class EmptySocketReceiveListening extends SocketReceiveListeningChannelList {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public boolean receive_data(byte[] data, int len) {
@@ -184,7 +195,7 @@ public class ClientManager implements Serializable {
 
 	}
 
-	public ClientUser get_cur_loginuser() {
+	public ClientUserCreator get_cur_user_Creator() {
 		return this.cur_login_user;
 	}
 

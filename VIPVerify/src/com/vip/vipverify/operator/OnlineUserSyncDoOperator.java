@@ -1,12 +1,17 @@
 package com.vip.vipverify.operator;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.vip.vipverify.client.OnlineClientUser;
 import com.vip.vipverify.client.CardRegistInfo;
 
-public class OnlineUserSyncDoOperator implements DoOperator {
+public class OnlineUserSyncDoOperator implements DoOperator , Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String[] data = null;
 	private OnlineClientUser client =  null;
 	

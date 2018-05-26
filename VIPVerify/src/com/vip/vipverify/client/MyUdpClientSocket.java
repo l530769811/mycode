@@ -1,13 +1,15 @@
 package com.vip.vipverify.client;
 
-import com.vip.vipverify.thread.WakeThread;
-
 public class MyUdpClientSocket extends MyClientSocket {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public final static int net_client_code = 1;
 	
 
-	public MyUdpClientSocket(Thread rev_thread, WakeThread send_thread, SockketDataListening listrenling) {
-		super(rev_thread, send_thread, listrenling);
+	public MyUdpClientSocket(Thread rev_thread, SockketDataListening listrenling) {
+		super(rev_thread, listrenling, null);
 		// TODO Auto-generated constructor stub
 	}
 

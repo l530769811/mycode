@@ -132,13 +132,14 @@ public class MyLoginPreferences extends MyPreferences {
 
 	public void saveRememberPassword() {
 		boolean temp = this.readBoolean(preferences_login_remember_password, false);
-		if (temp != this.bLoginAuto) {
+		if (temp != this.bRemPassword) {
 			this.writeBoolean(preferences_login_remember_password, this.bRemPassword);
-			if (this.bRemPassword) {
-				this.writeString(preferences_login_user_password_key, user_password);
-			} else {
-				this.writeString(preferences_login_user_password_key, "");
-			}
+		}
+		
+		if (this.bRemPassword) {
+			this.writeString(preferences_login_user_password_key, user_password);
+		} else {
+			this.writeString(preferences_login_user_password_key, "");
 		}
 	}
 

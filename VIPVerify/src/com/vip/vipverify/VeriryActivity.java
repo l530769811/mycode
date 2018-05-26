@@ -30,6 +30,7 @@ import com.google.zxing.client.android.result.ResultHandlerFactory;
 import com.vip.vipverify.AutoAlertDialog;
 import com.vip.vipverify.AutoAlertDialog.LeaveMyDialogListener;
 import com.vip.vipverify.client.ClientUser;
+import com.vip.vipverify.client.ClientUserCreator;
 import com.vip.vipverify.client.CardRegistInfo;
 import com.vip.vipverify.client.CardVerifyInfo;
 import com.vip.vipverify.net_data_parse.CardVerifyResultNetDataParse;
@@ -41,6 +42,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -96,6 +98,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	public static final int KeyCardUserVerifyDeletetSuc = 0x0005;
 	public static final int KeyCardUserVerifyDeleteFail = 0x0006;
 	public static final int KeYSyncToServer = 0x0007;
+	public static final int KeyConectResult = 0x0008;
 
 	private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
 	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
@@ -132,6 +135,8 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	final int DIALOG_VERIFY_CONFIRM_ID = 1;
 	private Dialog verify_confirm_dialog = null;
 	final String key_verify_info = "key_verify_info";
+	
+	private ProgressDialog loading_dialog = null;
 
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle bundle) {
@@ -245,14 +250,25 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 				if (obj instanceof OnlineUserSyncDoOperator) {
 					Dialog notify_sync = new AutoAlertDialog(VeriryActivity.this,
 							VeriryActivity.this.getResources().getString(R.string.string_sync_data),
-							VeriryActivity.this.getResources().getString(R.string.string_sync_local_data_to_server), 
-							5,
+							VeriryActivity.this.getResources().getString(R.string.string_sync_local_data_to_server), 5,
 							new SyncLeaveMyDialogListener((OnlineUserSyncDoOperator) obj));
 					notify_sync.setTitle(R.string.string_sync_data);
 
 					notify_sync.show();
 				}
+				break;
 
+			case KeyConectResult:
+				boolean connect_result = (boolean) msg.obj;
+				if(loading_dialog!=null) {
+					loading_dialog.dismiss();
+				}
+				if (connect_result) {
+					VeriryActivity.this.setVisible(true);
+				} else {
+					Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(R.string.string_connect_fail), Toast.LENGTH_LONG).show();
+					VeriryActivity.this.finish();
+				}
 				break;
 			default:
 				break;
@@ -465,7 +481,8 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		edit = (EditText) this.findViewById(R.id.edit_carduser_phone);
 		String string_phone = edit.getText().toString();
 
-		CardRegistInfo info = new CardRegistInfo(string_card_number, string_phone, first_password, nSex, string_first_name);
+		CardRegistInfo info = new CardRegistInfo(string_card_number, string_phone, first_password, nSex,
+				string_first_name);
 		info.setString_call_name(string_call_name);
 
 		return info;
@@ -500,36 +517,31 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		return ret;
 	}
 
-	
-	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
 		getMenuInflater().inflate(R.menu.login_user_menu, menu);
 		MenuItem item = menu.getItem(0);
-		
-		if(item!=null && this.loginUser!=null)
-		{
+
+		if (item != null && this.loginUser != null) {
 			item.setTitle(loginUser.GetUserName());
 		}
-		return  super.onCreateOptionsMenu(menu);
+		return super.onCreateOptionsMenu(menu);
 	}
-	
-	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
-		
+
 		switch (item.getItemId()) {
 		case R.id.login_user_menu_info:
-			
+
 			break;
 
 		case R.id.login_user_menu_loginout:
 			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-					this.getResources().getString(R.string.string_sure_loginout), 5, new ExitLeaveMyDialogListener(this));
+					this.getResources().getString(R.string.string_sure_loginout), 5,
+					new ExitLeaveMyDialogListener(this));
 			dialog.show();
 			break;
 		default:
@@ -537,7 +549,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			break;
 
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -549,26 +561,27 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 
 		Intent intent = this.getIntent();
 		Serializable obj = intent.getSerializableExtra(MainActivity.key_loginuser);
-		if (obj != null && obj instanceof ClientUser) {
-			loginUser = (ClientUser) obj;
+		if (obj != null && obj instanceof ClientUserCreator) {
+			ClientUserCreator loginUserCreator = (ClientUserCreator) obj;
+			loginUser = loginUserCreator.createClientUser();
 		}
 
 		if (loginUser != null) {
+			this.setVisible(false);
+			
+			loading_dialog = ProgressDialog.show(this, "", getResources().getString(R.string.string_connectting));
+			loginUser.bindUiHandler(ui_message_handler);
 			loginUser.loginIn();
-			loginUser.bindHandler(ui_message_handler);
+		}
+		else
+		{
+			this.finish();
 		}
 
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 		beepManager = new BeepManager(this);
 		ambientLightManager = new AmbientLightManager(this);
-
-		// registInfoFrament = new FragmentRegistInfo();
-		// fm = getFragmentManager();
-		// ft = fm.beginTransaction();
-
-		// if (ft != null)
-		// ft.add(R.id.framelayout_regist_info, registInfoFrament).commit();
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		SharedPreferences share_pre = PreferenceManager.getDefaultSharedPreferences(this);
@@ -750,7 +763,6 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		this.initLayout();
 	}
 
 	@Override
@@ -1413,7 +1425,8 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			if (source == IntentSource.NATIVE_APP_INTENT) {
 				setResult(RESULT_CANCELED);
 				AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-						this.getResources().getString(R.string.string_sure_loginout), 5, new ExitLeaveMyDialogListener(this));
+						this.getResources().getString(R.string.string_sure_loginout), 5,
+						new ExitLeaveMyDialogListener(this));
 				dialog.show();
 				// finish();
 				return true;

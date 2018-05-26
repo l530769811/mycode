@@ -1,8 +1,15 @@
 package com.vip.vipverify.client;
 
+import java.io.Serializable;
+
 import com.vip.vipverify.thread.WakeThread;
 
-public abstract class MyClientSocket implements Runnable {
+public abstract class MyClientSocket implements Runnable, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	protected abstract boolean how_connect_socket(String addr, int port);
 
@@ -19,9 +26,12 @@ public abstract class MyClientSocket implements Runnable {
 	private Thread rev_thread = null;
 	private boolean isRevThreadOutside = false;
 
-	private WakeThread send_thread = null;
 	final int MaxBuff = 1024;
 	private SockketDataListening listener = null;
+	private ConnectResultListening connect_listener = null;
+
+	private String ip = "";
+	private int port = 0;
 
 	public interface SockketDataListening {
 		public int rev_data(byte[] data, int len);
@@ -29,28 +39,28 @@ public abstract class MyClientSocket implements Runnable {
 		public int send_data(byte[] data, int len);
 	}
 
-	public MyClientSocket(Thread rev_thread, WakeThread send_thread, SockketDataListening listener) {
+	public interface ConnectResultListening {
+		public void connect_result(boolean bresult, String ip, int port);
+	}
+
+	public MyClientSocket(Thread rev_thread, SockketDataListening listener, ConnectResultListening connect_listener) {
 		this.rev_thread = rev_thread;
 		if (this.rev_thread != null) {
 			isRevThreadOutside = true;
 		}
 
-		this.send_thread = send_thread;
-		if (this.send_thread != null) {
-			;
-		}
-
 		this.listener = listener;
+		this.connect_listener = connect_listener;
 	}
 
 	public final boolean connect_socket(String addr, int port) {
 		boolean ret = false;
-
-		if (this.how_connect_socket(addr, port) == true) {
-			if (this.rev_thread == null && isRevThreadOutside == false) {
-				this.rev_thread = new Thread(this);
-				this.rev_thread.start();
-			}
+		if (isRevThreadOutside == true) {
+			ret = this.how_connect_socket(addr, port);
+		} else {
+			ip = addr;
+			this.port = port;
+			ret = true;
 		}
 		return ret;
 	}
@@ -73,23 +83,28 @@ public abstract class MyClientSocket implements Runnable {
 
 	public final boolean close_socket() {
 		boolean ret = false;
+		this.disconnect_socket();
 		ret = this.how_close_socket();
 		return ret;
 	}
 
 	public final boolean init_socket() {
 		boolean ret = false;
-		ret = this.how_init_socket();
+		if ((ret = this.how_init_socket()) == true) {
+			if (this.rev_thread == null && isRevThreadOutside == false) {
+				this.rev_thread = new Thread(this);
+				this.rev_thread.start();
+			}
+		}
+
 		return ret;
 	}
 
 	public final int send_data(byte[] data, int len) {
 		int bret = 0;
-		if (send_thread == null) {
-			this.how_send_data(data, len);
-		} else {
-			this.how_send_data(data, len);
-		}
+
+		bret = this.how_send_data(data, len);
+
 		return bret;
 	}
 
@@ -100,13 +115,29 @@ public abstract class MyClientSocket implements Runnable {
 	@Override
 	public final void run() {
 		// TODO Auto-generated method stub
+		int connect_times = 0;
 		while (!Thread.currentThread().isInterrupted()) {
 			byte[] data = new byte[MaxBuff];
 			int len = data.length;
-			if ((len = how_rev_data(data, len)) > 0) {
-				if (listener != null) {
-					listener.rev_data(data, len);
+			if (this.how_connect_socket(this.ip, this.port)) {
+				if (this.connect_listener != null) {
+					this.connect_listener.connect_result(true, this.ip, this.port);
 				}
+
+				if ((len = how_rev_data(data, len)) > 0) {
+					if (listener != null) {
+						listener.rev_data(data, len);
+					}
+				}
+			} else {
+				if (connect_times >= 4) {
+					if (this.connect_listener != null) {
+						this.connect_listener.connect_result(false, this.ip, this.port);
+					}
+					this.close_socket();
+					break;
+				}
+				connect_times++;
 			}
 		}
 	}
