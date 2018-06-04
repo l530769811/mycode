@@ -15,12 +15,12 @@ public:
 	virtual CIOCompletePortOverlapped* Clone();
 	virtual bool Copy(const CIOCompletePortOverlapped &p);
 
-	void Update(const DWORD &nsocket,  const BYTE *rev_buf, UINT rev_len);
+	void Update(const unsigned long &nsocket,  const BYTE *rev_buf, UINT rev_len);
 
 private:
 	BYTE  m_data[1024];
 	UINT data_len;
-	DWORD m_nsocket;
+	unsigned long m_nsocket;
 	CSocketRecevier *m_pRecevier;
 	
 };

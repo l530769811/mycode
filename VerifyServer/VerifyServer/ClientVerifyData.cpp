@@ -21,6 +21,6 @@ CClientVerifyData::~CClientVerifyData(void)
 MyString CClientVerifyData::ToSql() const
 {
 	TCHAR sql[MAX_PATH] = {0};
-	_stprintf(sql, select_Login, m_strUserName, m_strUserPassword);
+	_stprintf(sql, select_Login, m_strUserName.c_str(), m_strUserPassword.c_str());
 	return MyString(sql);
 }

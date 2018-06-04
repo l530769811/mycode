@@ -29,6 +29,11 @@ CThreadSocketRecevier::CThreadSocketRecevier(CSocketRecevier *pRecevier)
 		m_pIoCompletePorts[i] = new CIOCompletePort();
 		m_pIoCompletePorts[i]->CreateCompletePort();
 	}
+
+	if(m_pRecevier!=0)
+	{
+		m_pRecevier->BindSocket(this->GetSocket());
+	}
 }
 
 CThreadSocketRecevier::~CThreadSocketRecevier()
@@ -41,7 +46,7 @@ CThreadSocketRecevier::~CThreadSocketRecevier()
 	::DeleteCriticalSection(&m_csLockOverLapped);
 }
 
-void CThreadSocketRecevier::Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len)
+void CThreadSocketRecevier::Recevie(unsigned long uSokcetID, BYTE *rev_buf, UINT rev_len)
 {
 	assert(m_pRecevier!=NULL);
 	if ( m_pRecevier!=NULL )
@@ -50,11 +55,11 @@ void CThreadSocketRecevier::Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len
 		MyString strData(pUnicodeBuf);
 		
 		
-		CStringIOCompletePortOverlapped p(m_pRecevier);
-		p.Update(uSokcetID, rev_buf, rev_len);
+		CStringIOCompletePortOverlapped *p = new CStringIOCompletePortOverlapped(m_pRecevier);
+		p->Update(uSokcetID, rev_buf, rev_len);
 		if (m_pIoCompletePorts[m_nCurPort]!=NULL)
 		{
-			m_pIoCompletePorts[m_nCurPort]->IOCompletePortPost(0, NULL, &p);
+			m_pIoCompletePorts[m_nCurPort]->IOCompletePortPost(1, NULL, p);
 		}
 		CLock lock(&m_csLock);
 		if (m_nCurPort<nPortCount-1)
@@ -68,11 +73,11 @@ void CThreadSocketRecevier::Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len
 	}
 }
 
-void CThreadSocketRecevier::connect_coming(DWORD socketid, unsigned int nport)
+void CThreadSocketRecevier::connect_coming(unsigned long socketid, unsigned int nport)
 {
 
 }
-void CThreadSocketRecevier::unconnect_coming(DWORD socketid, unsigned int nport)
+void CThreadSocketRecevier::unconnect_coming(unsigned long socketid, unsigned int nport)
 {
 
 }

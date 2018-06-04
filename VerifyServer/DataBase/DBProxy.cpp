@@ -42,5 +42,19 @@ CDBProxy::~CDBProxy(void)
 
 }
 
+int CDBProxy::ExecSqlInStep(const TCHAR *sql, int (*callback)(void *data, int argc, char **argv, char **azColName), void *data)
+{
+	int nret = -1;
+
+	return nret;
+}
+
+int CDBProxy::ExecSqlInStep(const TCHAR *sql)
+{
+	int nret = -1;
+	this->ExecSqlInStep(sql, 0, 0);
+	return nret;
+}
+
 
 

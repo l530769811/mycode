@@ -15,7 +15,8 @@ CSearchServerNetSocketDataParse::~CSearchServerNetSocketDataParse(void)
 {
 }
 
-bool CSearchServerNetSocketDataParse::_isType(const unsigned char* data, long len){
+bool CSearchServerNetSocketDataParse::_isType(const unsigned char* data, long len)
+{
 	bool bret = false;
 	TCHAR unicode[1024] = {0};
 	GlobalUtf8ToUnicode((const char*)data, unicode, 1023);
@@ -34,7 +35,7 @@ bool CSearchServerNetSocketDataParse::_isType(const unsigned char* data, long le
 	return bret;
 }
 
-bool CSearchServerNetSocketDataParse::_parseData(const unsigned char* data, long len){
+bool CSearchServerNetSocketDataParse::_parseData(unsigned long socket_id, const unsigned char* data, long len){
 	bool bret = false;
 
 	TCHAR unicode[1024] = {0};
@@ -64,9 +65,7 @@ bool CSearchServerNetSocketDataParse::_parseData(const unsigned char* data, long
 	return bret;
 }
 
-void CSearchServerNetSocketDataParse::RefreshOperator(COperater *operate){
-	if(operate!=0){
-		//CDBSqlExecOperate o;
-		//operate->Copy(o);
-	}
+CUseCount<COperater> CSearchServerNetSocketDataParse::CreateOperater()
+{
+	return CUseCount<COperater>(0);
 }

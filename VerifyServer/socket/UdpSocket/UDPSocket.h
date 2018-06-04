@@ -37,10 +37,13 @@ using namespace std;
 
 using namespace std; 
 
-#define SOCKET int
-#define  CRITICAL_SECTION   pthread_mutex_t
-#endif //endif WIN32
+#ifndef WIN32
 
+	#define SOCKET int
+	#define  CRITICAL_SECTION   pthread_mutex_t
+	#endif 
+
+#endif//endif WIN32
 
 #ifdef WIN32 
 //windows program

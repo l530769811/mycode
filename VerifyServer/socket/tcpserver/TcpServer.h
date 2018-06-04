@@ -42,7 +42,8 @@ enum ESocketOperation
 	SO_ACCEPT,
 	SO_CONNECT,
 	SO_READ,
-	SO_WRITE
+	SO_WRITE,
+	SO_HAS_WRITE
 };
 
 struct MyTcpKeepAlive   

@@ -11,8 +11,9 @@ public:
 	virtual int ExecSql(const TCHAR *sql, 
 		int (*callback)(void *data, int argc, char **argv, char **azColName), 
 		void *data);
-	virtual int ExeSql(const TCHAR *sql);
+	virtual int ExecSql(const TCHAR *sql);
 
+	virtual int ExecSqlInStep(const TCHAR *sql, int (*callback)(void *data, int argc, char **argv, char **azColName), void *data);
 
 private:
 	sqlite3 *m_pdb;

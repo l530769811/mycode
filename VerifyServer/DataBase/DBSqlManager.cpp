@@ -2,6 +2,7 @@
 #include "DBSqlManager.h"
 #include "DBProxy.h"
 #include <process.h>
+#include "SqlExecDoOperator.h"
 
 
 CDBSqlManager::CDBSqlManager(void)
@@ -42,16 +43,17 @@ unsigned int __stdcall CDBSqlManager::_SqlexecThreadProc(void * pParam)
 	{
 		if (pManager->m_sql_exec_queue.empty()==true)
 		{
+			::ResetEvent(pManager->m_hEvent);
 			::WaitForSingleObject(pManager->m_hEvent, INFINITE);
 		}
 
-		CSqlExecNode *p = NULL;
+		CDBDoOperator *p = NULL;
 		::EnterCriticalSection(&pManager->m_criQueueLock);
 		p = pManager->m_sql_exec_queue.back();
 		pManager->m_sql_exec_queue.pop();
 		::LeaveCriticalSection(&pManager->m_criQueueLock);
 
-		pManager->ExecSql(p->m_sql.c_str(), p->callback, p->m_data);
+		p->Exec(pManager);
 		delete p;
 		::Sleep(100);
 		ret = 1;
@@ -101,7 +103,7 @@ int CDBSqlManager::CloseStack()
 	
 	while(m_sql_exec_queue.empty()==false)
 	{
-		CSqlExecNode*p = m_sql_exec_queue.back();
+		CDBDoOperator *p = m_sql_exec_queue.back();
 		m_sql_exec_queue.pop();
 		if (p != NULL)
 		{
@@ -134,12 +136,26 @@ int CDBSqlManager::ExecSqlInStack(const TCHAR *sql,
 	OpenStack();
 	if(m_bthreadRunning == true){
 		::EnterCriticalSection(&m_criQueueLock);
-		CSqlExecNode *pnode = new CSqlExecNode(sql, callback, data);
+		CSqlExecDoOperator *pnode = new CSqlExecDoOperator(sql, callback, data);
 		m_sql_exec_queue.push(pnode);
 		::LeaveCriticalSection(&m_criQueueLock);
 		::SetEvent(m_hEvent);
 	}
 	
+	return ret;
+}
+
+int CDBSqlManager::ExecSqlInStack(CDBDoOperator *pdoop)
+{
+	int ret = -1;
+	OpenStack();
+	if(m_bthreadRunning == true){
+		::EnterCriticalSection(&m_criQueueLock);		
+		m_sql_exec_queue.push(pdoop);
+		::LeaveCriticalSection(&m_criQueueLock);
+		::SetEvent(m_hEvent);
+	}
+
 	return ret;
 }
 
@@ -150,7 +166,7 @@ int CDBSqlManager::ExecSqlInStack(const TCHAR *sql)
 	if(m_bthreadRunning == true){
 
 		::EnterCriticalSection(&m_criQueueLock);
-		CSqlExecNode *pnode = new CSqlExecNode(sql);
+		CSqlExecDoOperator *pnode = new CSqlExecDoOperator(sql, 0, 0);
 		m_sql_exec_queue.push(pnode);
 		::LeaveCriticalSection(&m_criQueueLock);
 		::SetEvent(m_hEvent);
@@ -164,8 +180,7 @@ int CDBSqlManager::ExecSql(const TCHAR *sql,
 {
 	int bRet = -1;
 	if (m_pDB!=NULL)
-	{
-		
+	{		
 			bRet = m_pDB->ExecSql(sql, callback, data);
 	}
 
@@ -178,9 +193,18 @@ int CDBSqlManager::ExecSql(const TCHAR *sql)
 
 	if (m_pDB!=NULL)
 	{
-
 		ret = m_pDB->ExecSql(sql, NULL, NULL);
 	}
 
+	return ret;
+}
+
+int CDBSqlManager::ExecSqlInStep(const TCHAR *sql, int (*callback)( void *data, int argc, char **argv, char **azColName), void *data)
+{
+	int ret = -1;
+	if (m_pDB!=NULL)
+	{
+		ret = m_pDB->ExecSqlInStep(sql, callback, data);
+	}
 	return ret;
 }

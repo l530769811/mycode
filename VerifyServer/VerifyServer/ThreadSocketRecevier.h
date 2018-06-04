@@ -14,9 +14,9 @@ public:
 	virtual ~CThreadSocketRecevier();
 
 public:
-	virtual void Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len);
-	virtual void connect_coming(DWORD socketid, unsigned int nport);
-	virtual void unconnect_coming(DWORD socketid, unsigned int nport);
+	virtual void Recevie(unsigned long uSokcetID, BYTE *rev_buf, UINT rev_len);
+	virtual void connect_coming(unsigned long socketid, unsigned int nport);
+	virtual void unconnect_coming(unsigned long socketid, unsigned int nport);
 
 private:
 	CIOCompletePortOverlapped* _getOverlapped();

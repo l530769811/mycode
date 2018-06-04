@@ -1,11 +1,11 @@
 #ifndef __CLIENT_USER_H__
 #define __CLIENT_USER_H__
 
-class CClientUser
+class CClientUserInfo
 {
 public:
-	CClientUser(void);
-	~CClientUser(void);
+	CClientUserInfo(void);
+	~CClientUserInfo(void);
 };
 
 #endif //__CLIENT_USER_H__

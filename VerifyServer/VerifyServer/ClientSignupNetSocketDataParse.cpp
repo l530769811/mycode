@@ -7,23 +7,28 @@
 #include "ClientManager.h"
 #include "Operater.h"
 #include "IdentifyCodeSignupMethods.h"
+#include "SignupData.h"
+#include "UseCount.h"
 
 
+const MyString CClientSignupNetSocketDataParse::m_strRequest = _T("user_regist_request");
 
-const MyString ClientSignupNetSocketDataParse::m_strRequest = _T("user_regist_request");
-
-ClientSignupNetSocketDataParse::ClientSignupNetSocketDataParse(CClientManager *mgr, COperater *operate)
+CClientSignupNetSocketDataParse::CClientSignupNetSocketDataParse(CClientManager *mgr)
 	: m_clientMgr(mgr)
-	, m_operator(operate)
 {
 }
 
 
-ClientSignupNetSocketDataParse::~ClientSignupNetSocketDataParse(void)
+CClientSignupNetSocketDataParse::~CClientSignupNetSocketDataParse(void)
 {
 }
 
-bool ClientSignupNetSocketDataParse::_isType(const unsigned char* data, long len){
+CClientSignupData CClientSignupNetSocketDataParse::GetSignupData()
+{
+	return CClientSignupData(m_strUserName, m_strUserPassword, m_strUserPhone);
+}
+
+bool CClientSignupNetSocketDataParse::_isType(const unsigned char* data, long len){
 	bool bret = false;
 	TCHAR unicode[1024] = {0};
 	GlobalUtf8ToUnicode((const char*)data, unicode, 1023);
@@ -42,7 +47,7 @@ bool ClientSignupNetSocketDataParse::_isType(const unsigned char* data, long len
 	return bret;
 }
 
-bool ClientSignupNetSocketDataParse::_parseData(const unsigned char* data, long len){
+bool CClientSignupNetSocketDataParse::_parseData(unsigned long socket_id, const unsigned char* data, long len){
 	bool bret = false;
 
 	TCHAR unicode[1024] = {0};
@@ -83,16 +88,16 @@ bool ClientSignupNetSocketDataParse::_parseData(const unsigned char* data, long 
 					strUserIdentifyCode = p->valuestring;
 				}
 
-				TCHAR sql[MAX_PATH] = {0};
-				_stprintf(sql, MAX_PATH-1, insert_clientuser_data, strUserName, strUserPassword,strUserPhone, _T(""), _T(""));
-				this->m_strSignupSql = sql;
+				m_strUserName = strUserName;
+				m_strUserPassword = strUserPassword;
+				m_strUserPhone = strUserPhone;
+				m_strIdentifyCode = strUserIdentifyCode;
+
+				TCHAR sql[1024] = {0};
+				MyString str_empty;
+				_stprintf(sql, 1024-1, insert_clientuser_data, strUserName.c_str(), strUserPassword.c_str(),strUserPhone.c_str(), str_empty.c_str(), str_empty.c_str());
+				this->m_strSignupSql = sql;				
 				
-				if (m_clientMgr!=0)
-				{
-					CUseCount<CClientSignupData> data(new CClientSignupData(strUserName, strUserPassword, strUserPhone));
-					CUseCount<CSignupMethods> methods(new CIdentifyCodeSignupMethods());
-					m_clientMgr->ClientSignup(data, methods);
-				}
 			}
 		}
 	}
@@ -100,18 +105,7 @@ bool ClientSignupNetSocketDataParse::_parseData(const unsigned char* data, long 
 	return bret;
 }
 
-void ClientSignupNetSocketDataParse::RefreshOperator(COperater *operate){
-	if(operate!=0){
-		//CDBSqlExecOperate o;
-		//operate->Copy(o);
-	}
-}
-
-//
-//COperater ClientSignupNetSocketDataParse::CreateOperater()
-//{
-//	CClientSignupOperate operate;
-//
-//	return operate;
-//	//return CClientSignupOperate();
-//}
+ CUseCount<COperater> CClientSignupNetSocketDataParse::CreateOperater()
+ {
+	 return CUseCount<COperater>(0);
+ }

@@ -14,8 +14,12 @@ public:
 	virtual int ExecSql(const TCHAR *sql, 
 		int (*callback)(void *data, int argc, char **argv, char **azColName), 
 		void *data) = 0;
-	virtual int ExeSql(const TCHAR *sql) = 0;
+	virtual int ExecSql(const TCHAR *sql) = 0;
 
+	virtual int ExecSqlInStep(const TCHAR *sql, 
+		int (*callback)(void *data, int argc, char **argv, char **azColName), 
+		void *data);
+	virtual int ExecSqlInStep(const TCHAR *sql);
 };
 
 #endif //__DBLIB_CDBPROXY_H__

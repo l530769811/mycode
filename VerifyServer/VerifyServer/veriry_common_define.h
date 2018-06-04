@@ -7,6 +7,6 @@
 #define UDP_REV_PORT		3602
 #define UDP_SEND_PORT		3601
 
-#define TCP_PORT			3601
+#define TCP_PORT			3602
 
 #endif

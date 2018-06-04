@@ -9,12 +9,11 @@ class CSearchServerNetSocketDataParse :
 public:
 	CSearchServerNetSocketDataParse(void);
 	virtual ~CSearchServerNetSocketDataParse(void);
-public:
-	virtual void RefreshOperator(COperater *operate);
 
 protected:
 	virtual bool _isType(const unsigned char* data, long len);
-	virtual bool _parseData(const unsigned char* data, long len);
+	virtual bool _parseData(unsigned long socket_id, const unsigned char* data, long len);
+	virtual CUseCount<COperater> CreateOperater();
 
 private:
 	MyString m_strType;

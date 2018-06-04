@@ -12,7 +12,7 @@ CNetSocketDataParse::~CNetSocketDataParse(void)
 {
 }
 
-bool CNetSocketDataParse::ParseData(const unsigned char* data, long len, CEncrypter *pEncrypter /*= 0*/){
+bool CNetSocketDataParse::ParseData(unsigned long socket_id, const unsigned char* data, long len, CEncrypter *pEncrypter /*= 0*/){
 	bool ret = false;
 	
 	NO_NULL(pEncrypter){
@@ -21,14 +21,8 @@ bool CNetSocketDataParse::ParseData(const unsigned char* data, long len, CEncryp
 
 	if ((ret=_isType(data, len)) == true)
 	{
-		_parseData(data, len);
+		_parseData(socket_id, data, len);
 	}
 	
 	return ret;
-}
-
-void CNetSocketDataParse::RefreshOperator(COperater *operate){
-	//if(operate  != 0 ){
-	//	operate->Copy(this->CreateOperater());
-	//}
 }

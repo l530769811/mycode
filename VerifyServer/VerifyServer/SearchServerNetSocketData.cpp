@@ -32,7 +32,7 @@ int CSearchServerNetSocketData::_prepare_data(unsigned char* out_data, long len)
 			cJSON_AddNumberToObject(pjson_value, JSON_PORT_KEY, m_nport);
 			cJSON_AddNumberToObject(pjson_value, JSON_NET_KIND_KEY, m_nkind);
 			TCHAR user_name[20] = {0};
-			DWORD user_name_len = 19;
+			unsigned long user_name_len = 19;
 			::GetUserName(user_name, &user_name_len);
 			m_strServerName = user_name;
 			cJSON_AddStringToObject(pjson_value, JSON_SERVERNAME_KEY, m_strServerName.c_str());

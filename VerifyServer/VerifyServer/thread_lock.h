@@ -12,7 +12,7 @@
 typedef HANDLE pthread_t;
 typedef HANDLE pthread_mutex_t;
 typedef HANDLE pthread_cond_t;
-typedef DWORD pthread_key_t;
+typedef unsigned long pthread_key_t;
 #endif
 
 class CLock

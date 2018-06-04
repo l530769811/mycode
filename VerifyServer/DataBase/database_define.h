@@ -17,5 +17,12 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
+#include <string>
+
+#ifdef _UNICODE
+#define DbString std::wstring
+#else
+#define DbString std::string
+#endif
 
 #endif //_DATABASE_DEFINE_H__

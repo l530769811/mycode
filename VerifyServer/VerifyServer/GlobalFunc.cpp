@@ -77,7 +77,7 @@ TCHAR* GetLocalIP(TCHAR* pIp)
 			int nIpLen = ::strlen(IP);
 
 			::memcpy(chIP, IP, nIpLen);
-			DWORD dwMun = ::MultiByteToWideChar(CP_ACP, 
+			unsigned long dwMun = ::MultiByteToWideChar(CP_ACP, 
 				0, 
 				chIP,
 				-1, 
@@ -116,7 +116,7 @@ BOOL CreateDirectoryMulti(TCHAR* path)
 		if (*tmp == _T('\\') || *tmp == _T('/'))
 		{
 			*tmp = _T('\0');
-			DWORD fileAttr = GetFileAttributes(path);
+			unsigned long fileAttr = GetFileAttributes(path);
 			if (fileAttr == 0xFFFFFFFF || !(fileAttr & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				if(PathFileExists(path) == FALSE)

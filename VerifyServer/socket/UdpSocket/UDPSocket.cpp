@@ -161,7 +161,8 @@ bool CUDPSocket::_InitSocket(unsigned short usPort)
 	
 	m_addrRevice.sin_family=AF_INET;  
 	m_addrRevice.sin_addr.s_addr=htonl(INADDR_ANY);  
-	m_addrRevice.sin_port=htons(usPort);  
+	m_addrRevice.sin_port=htons(usPort); 
+	
 	
 
 	const int opt = 1;
@@ -219,7 +220,7 @@ RESULT_THREAD CUDPSocket::_RevThread(void* pParam)
 			if (pThis->m_pRevInterface != NULL)
 			{
 				char *ip = ::inet_ntoa(pThis->m_addrRevice.sin_addr);
-				unsigned short port = pThis->m_addrRevice.sin_port;
+				unsigned short port = ::ntohs(pThis->m_addrRevice.sin_port);
 
 				pThis->m_pRevInterface->rev_data((const unsigned char*)buffer, ret, ip, port);
 			}

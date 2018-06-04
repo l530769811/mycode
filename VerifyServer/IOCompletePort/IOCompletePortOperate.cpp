@@ -23,7 +23,7 @@ bool CIOCompletePortOperate::IOCompletePortPost()
 
 	if (m_pIOCompletePort!=NULL)
 	{
-		bret = m_pIOCompletePort->IOCompletePortPost(0, 0, m_pOL);
+		bret = m_pIOCompletePort->IOCompletePortPost(1, 1, m_pOL);
 	}
 
 	return bret;

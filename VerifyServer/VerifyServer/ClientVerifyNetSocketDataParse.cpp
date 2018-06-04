@@ -5,6 +5,7 @@
 #include "sqlite_sql.h"
 #include "ClientManager.h"
 #include "ClientVerifyData.h"
+#include "UseCount.h"
 
 
 const MyString CClientVerifyNetSocketDataParse::m_strRequest = _T("verify_login_request");
@@ -39,7 +40,7 @@ bool CClientVerifyNetSocketDataParse::_isType(const unsigned char* data, long le
 	return bret;
 }
 
-bool CClientVerifyNetSocketDataParse::_parseData(const unsigned char* data, long len){
+bool CClientVerifyNetSocketDataParse::_parseData(unsigned long socket_id, const unsigned char* data, long len){
 	bool bret = false;
 
 	TCHAR unicode[1024] = {0};
@@ -69,14 +70,11 @@ bool CClientVerifyNetSocketDataParse::_parseData(const unsigned char* data, long
 				}
 
 				TCHAR sql[MAX_PATH] = {0};
-				_stprintf(sql, MAX_PATH-1, select_Login, strUserName, strUserPassword,strUserPhone, _T(""), _T(""));
+				_stprintf(sql, MAX_PATH-1, select_Login, strUserName.c_str(), strUserPassword.c_str());
 				this->m_strSql = sql;
+				m_strUserName = strUserName;
+				m_strUserPassword = strUserPassword;
 
-				if (m_clientMgr!=0)
-				{
-					CUseCount<CClientVerifyData> data(new CClientVerifyData(strUserName, strUserPassword));
-					m_clientMgr->ClientVerify(data);
-				}
 			}
 		}
 	}
@@ -84,9 +82,12 @@ bool CClientVerifyNetSocketDataParse::_parseData(const unsigned char* data, long
 	return bret;
 }
 
-void CClientVerifyNetSocketDataParse::RefreshOperator(COperater *operate){
-	if(operate!=0){
-		//CDBSqlExecOperate o;
-		//operate->Copy(o);
-	}
+CUseCount<COperater>  CClientVerifyNetSocketDataParse::CreateOperater()
+{
+	return CUseCount<COperater>(0);
+}
+
+CClientVerifyData CClientVerifyNetSocketDataParse::GetVerifyData()
+{
+	return CClientVerifyData(m_strUserName, m_strUserPassword);
 }

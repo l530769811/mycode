@@ -53,7 +53,7 @@ bool CStringIOCompletePortOverlapped::Copy(const CIOCompletePortOverlapped &p)
 	return bret;
 }
 
-void CStringIOCompletePortOverlapped::Update(const DWORD &nsocket,  const BYTE *rev_buf, UINT rev_len)
+void CStringIOCompletePortOverlapped::Update(const unsigned long &nsocket,  const BYTE *rev_buf, UINT rev_len)
 {
 	m_nsocket = nsocket;
 	if(rev_len <= 1024)

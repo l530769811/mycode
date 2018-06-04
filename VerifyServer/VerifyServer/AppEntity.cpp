@@ -10,27 +10,43 @@
 #include "veriry_common_define.h"
 #include "ClientManager.h"
 #include "MyServiceAppMain.h"
+#include "sqlite_sql.h"
 
 CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
 	: m_pmain(pmain)
 {
 	m_pDbManager = new CDBSqlManager();
+	m_pAppFileData = new CAppDataFileCopy(PROJECT_NAME, DATABASE_NAME);
+	
+	mystring strname  = m_pAppFileData->GetAppDataFileName();
+
+	m_pdbproxy = new CDBSqlite3Proxy(strname.c_str());
+	m_pDbManager->AttachDB(m_pdbproxy);	
+
 	m_pclient_manager = new CClientManager(m_pDbManager);
 
 	m_pRecevier = new CThreadSocketRecevier(m_pclient_manager);
-	m_tcpServer.Start(m_pRecevier, ("0,0,0,0"), TCP_PORT);
+	m_tcpServer = new CTcpServer();
+	m_tcpServer->Start(m_pRecevier, ("0.0.0.0"), TCP_PORT);
+	m_pclient_manager->BindSocket(m_tcpServer);
 
-	m_pAppFileData = new CAppDataFileCopy(PROJECT_NAME, DATABASE_NAME);
-	mystring strname = m_pAppFileData->GetAppDataFileName();
-	m_pdbproxy = new CDBSqlite3Proxy(strname.c_str());
-	m_pDbManager->AttachDB(m_pdbproxy);
+	m_pDbManager->ExecSql(create_user_table);
+	m_pDbManager->ExecSql(create_user_index);
 
+	m_pDbManager->ExecSql(create_cardregister_table);
+	m_pDbManager->ExecSql(create_cardregister_index);
 	
 }
 
 
 CAppEntity::~CAppEntity(void)
 {
+	NO_NULL(m_tcpServer){
+		m_tcpServer->Stop();
+		delete m_tcpServer;
+		m_tcpServer = 0;
+	}
+
 	NO_NULL(m_pRecevier){
 		delete m_pRecevier;
 		m_pRecevier = NULL;
@@ -42,7 +58,7 @@ CAppEntity::~CAppEntity(void)
 	SAFE_DELETE(m_pclient_manager);
 }
 
-int CAppEntity::RecevieData(DWORD id, MyString &data)
+int CAppEntity::RecevieData(unsigned long id, MyString &data)
 {
 	int ret = -1;
 

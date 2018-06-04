@@ -1,10 +1,11 @@
 #include <my_assist_define.h>
-
+#include "ClientManager.h"
 #include <DBSqlManager.h>
 #include "GlobalFunc.h"
 #include "UdpNetSocketProxy.h"
 #include "UDPSocket.h"
-#include "ClientManager.h"
+#include <iterator>
+
 #include "veriry_common_define.h"
 #include "SignupMethods.h"
 #include "DBSqlExecOperate.h"
@@ -12,10 +13,17 @@
 #include "NetSocketProxy.h"
 #include "LoginVerifyReponseNetSocketData.h"
 #include "UdpNetSocketProxy.h"
-#include "ClientVerifyReponseOperater.h"
+#include "ClientVerifyOperator.h"
 #include "ClientVerifyNetSocketDataParse.h"
 #include "SearchServerNetSocketDataParse.h"
 #include "SearchServerNetSocketData.h"
+#include "error_id_define.h"
+#include "ClientSignupNetSocketDataParse.h"
+#include "ClientSignupDBDoOperator.h"
+#include "SignupReponseNetSocketData.h"
+#include "CheckInLoginInfoNetSocketDataParse.h"
+#include "CheckInLogoutInfoNetSocketDataParse.h"
+#include "UserClient.h"
 
 CClientManager::CClientManager(CDBSqlManager *pdb)
 	: m_pUdpVerify(NULL)
@@ -23,6 +31,10 @@ CClientManager::CClientManager(CDBSqlManager *pdb)
 {
 	m_pUdpVerify = new CUDPSocket(this);
 	m_pUdpVerify->Start(UDP_REV_PORT);
+
+	::InitializeCriticalSection(&m_client_lock);
+	m_net_parse_list.push_back(new CCheckInLoginInfoNetSocketDataParse(this));
+	m_net_parse_list.push_back(new CCheckInLogoutInfoNetSocketDataParse(this));
 	
 }
 
@@ -44,87 +56,124 @@ bool CClientManager::Close()
 CClientManager::~CClientManager(void)
 {
 	SAFE_DELETE(m_pUdpVerify);
+	std::list<CNetSocketDataParse*>::iterator it_begin = m_net_parse_list.begin();
+	for(; it_begin!=m_net_parse_list.end(); it_begin++)
+	{
+		CNetSocketDataParse* p = *it_begin;
+		delete p;
+		p = 0;
+	}
+
+	for(std::map<MyString, CClient*>::iterator it_begin=m_client_list.begin(); it_begin!=m_client_list.end(); it_begin++)
+	{
+		 CClient* p = it_begin->second;
+		 delete p;
+	}
+	::DeleteCriticalSection(&m_client_lock);
 }
 
 int CClientManager::rev_data(const unsigned char * data, long len, char *ip_from, unsigned short port_from){
 	int nret = 0;
 	
-	CClientVerifyNetSocketDataParse verify_parse(this);
-	if (verify_parse.ParseData(data, len)==true)
-	{
+	TCHAR str_ip[20] = {0};
+	GlobalUtf8ToUnicode(ip_from, str_ip, 19);
 
+	CClientVerifyNetSocketDataParse verify_parse(this);
+	if (verify_parse.ParseData(0, data, len)==true)
+	{
+		CClientVerifyData verify_data = verify_parse.GetVerifyData();
+		int nresult = 0;
+		nresult = this->ClientVerify(verify_data) ? 0 : LOGIN_VERIFY_ERROR;
+		CLoginVerifyReponseNetSocketData socket_data(nresult);
+		CUdpNetSocketProxy proxy(this->m_pUdpVerify, str_ip, port_from);
+		this->ClientReponse(socket_data, proxy);
 	}
 
 	CSearchServerNetSocketDataParse search_server_parse;
-	if (search_server_parse.ParseData(data, len) == true)
+	if (search_server_parse.ParseData(0, data, len) == true)
 	{
-		CSearchServerNetSocketData data(UDP_REV_PORT, -1);
-		TCHAR str_ip[20] = {0};
-		GlobalUtf8ToUnicode(ip_from, str_ip, 19);
-		CUdpNetSocketProxy proxy(this->m_pUdpVerify, str_ip, UDP_SEND_PORT);
-		this->ClientReponse(data, proxy);
+		CSearchServerNetSocketData socket_data(UDP_REV_PORT, -1);
+		
+		CUdpNetSocketProxy proxy(this->m_pUdpVerify, str_ip, port_from);
+		this->ClientReponse(socket_data, proxy);
 	}
 	
+	CClientSignupNetSocketDataParse signup_parse(this);
+	if (signup_parse.ParseData(0, data, len) == true)
+	{
+		CClientSignupData signup_data = signup_parse.GetSignupData();
+		
+		int nresult = -1;
+		nresult = this->ClientSignup(signup_data, 0) == true ?  0 : SIGNUP_ERROR;
+		CSignupReponseNetSocketData socket_data(nresult);
+		CUdpNetSocketProxy proxy(this->m_pUdpVerify, str_ip, port_from);
+		this->ClientReponse(socket_data, proxy);
+	}
 
 	return nret;
 }
 
-void CClientManager::Recevie(DWORD uSokcetID, BYTE *rev_buf, UINT rev_len){
+void CClientManager::Recevie(unsigned long uSokcetID, BYTE *rev_buf, UINT rev_len)
+{
+	int i = 0;
+	std::list<CNetSocketDataParse*>::iterator it_begin = m_net_parse_list.begin();
+	for(; it_begin!=m_net_parse_list.end(); it_begin++)
+	{
+			CNetSocketDataParse* p = *it_begin;
+			if(p!=0&& p->ParseData(uSokcetID, rev_buf, rev_len)==true)
+			{
+				CUseCount<COperater> op = p->CreateOperater();
+				op->Operate();
+				break;
+			}
+	}
+}
+
+void CClientManager::connect_coming(unsigned long socketid, unsigned int nport){
 
 }
 
-void CClientManager::connect_coming(DWORD socketid, unsigned int nport){
+void CClientManager::unconnect_coming(unsigned long socketid, unsigned int nport){
 
 }
 
-void CClientManager::unconnect_coming(DWORD socketid, unsigned int nport){
-
-}
-
-bool CClientManager::ClientSignup(CUseCount<CClientSignupData> data, CUseCount< CSignupMethods> signupMethods)
+bool CClientManager::ClientSignup(CClientSignupData &data,  CSignupMethods *signupMethods)
 {
 	bool bret = false;
-	if(signupMethods->signupMethodVerify())
+	if(signupMethods!=0 &&signupMethods->signupMethodVerify())
 	{
-		MyString sql = data->ToSql();
+		MyString sql = data.ToSql();
 		if(m_db!=0)
 		{
-			m_db->ExecSqlInStack(sql.c_str());
+			CClientSignupDBDoOperator signupReponse(sql);
+			bret = signupReponse.Exec(m_db) ==0 ? true : false;			
+		}
+	}
+	else
+	{
+		MyString sql = data.ToSql();
+		if(m_db!=0)
+		{
+			CClientSignupDBDoOperator signupReponse(sql);
+			bret = signupReponse.Exec(m_db) ==0 ? true : false;
+			
 		}
 	}
 	
 	return bret;
 }
 
-//int CClientManager::ClientVerifyCallback(void *data, int argc, char **argv, char **azColName)
-//{
-//	int ret = 0;
-//
-//	if(data!=0 && typeid(data)==typeid(CClientManager))
-//	{
-//		CClientManager *pclient = reinterpret_cast <CClientManager*>(data);
-//		CLoginVerifyReponseNetSocketData data(0);
-//		CUdpNetSocketProxy proxy(pclient->m_pUdpVerify, _T(""), 000);
-//		pclient->ClientReponse(data, proxy);
-//
-//	}
-//
-//	return ret;
-//}
 
-bool CClientManager::ClientVerify(CUseCount<CClientVerifyData> data)
+bool CClientManager::ClientVerify(CClientVerifyData &data)
 {
 	bool ret = false;
 
-	MyString sql = data->ToSql();
+	MyString sql = data.ToSql();
 	if(m_db!=0)
-	{
-		if(pveryfyReponse==0)
-		{
-			pveryfyReponse = new CClientVerifyReponseOperater(this, m_pUdpVerify, &pveryfyReponse);
-		}
-
-		m_db->ExecSqlInStack(sql.c_str(), CClientVerifyReponseOperater::ClientVerifyCallback, pveryfyReponse);
+	{		
+		CClientVerifyOperator veryfyReponse(sql);
+		veryfyReponse.Exec(m_db);
+		ret=veryfyReponse.GetVerifyResult();
 	}
 
 	return ret;
@@ -134,5 +183,52 @@ bool CClientManager::ClientReponse(CNetSocketData &data, CNetSocketProxy &proxy)
 {
 	bool ret = false;
 	ret = data.BeSend(&proxy) > 0;
+	return ret;
+}
+
+int CClientManager::AddConnectClient(unsigned long nid, MyString strUserName, MyString strUserPassword)
+{
+	int ret = -1;
+	CClient* pcur = 0;
+	::EnterCriticalSection(&m_client_lock);
+	try{
+		pcur = m_client_list.at(strUserName);
+	}
+	catch(out_of_range e)
+	{
+		pcur = 0;
+	}
+
+	if ( pcur==0 )
+	{
+		CClient* puser = new CUserClient(nid, strUserName, strUserPassword);
+		m_client_list.insert(map<MyString, CClient*>::value_type(strUserName, puser));
+		ret = 0;
+	}
+	::LeaveCriticalSection(&m_client_lock);
+	return ret;
+}
+
+int CClientManager::DeleteConnectClient(unsigned long nid, MyString strUserName, MyString strUserPassword)
+{
+	int ret = -1;
+	CClient* pcur = 0;
+	::EnterCriticalSection(&m_client_lock);
+	try{
+		pcur = m_client_list.at(strUserName);
+	}
+	catch(out_of_range e)
+	{
+		pcur = 0;
+	}
+
+	if ( pcur!=0 )
+	{
+		m_client_list.erase(strUserName);
+		delete pcur;
+		ret = 0;
+	}
+	::LeaveCriticalSection(&m_client_lock);
+
 	return ret;
 }

@@ -23,7 +23,7 @@ CClientSignupData::~CClientSignupData(void)
 
 MyString CClientSignupData::ToSql() const
 {
-	TCHAR sql[MAX_PATH] = {0};
-	_stprintf(sql, insert_clientuser_data, m_strUserName, m_strUserPassword, m_strPhone, _T(""), _T(""));
+	TCHAR sql[1024] = {0};
+	_stprintf(sql, insert_clientuser_data, m_strUserName.c_str(), m_strUserPassword.c_str(), m_strPhone.c_str(), _T(""), _T(""));
 	return MyString(sql);
 }

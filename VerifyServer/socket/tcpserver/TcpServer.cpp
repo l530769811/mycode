@@ -95,6 +95,10 @@ BOOL CTcpServer::Start(CSocketRecevier *pReciver, const char* bind_address, cons
 		return TRUE;
 
 	m_pRecevier = pReciver;
+	if ( m_pRecevier!=0 )
+	{
+		m_pRecevier->BindSocket(this);
+	}
 
 	// Init Socket
 	WSADATA wsaData;
@@ -117,12 +121,14 @@ BOOL CTcpServer::Start(CSocketRecevier *pReciver, const char* bind_address, cons
 	struct sockaddr_in addr;
 	ZeroMemory((char *)&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(bind_address);	//addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_addr.s_addr = inet_addr(bind_address);	
+	
 	addr.sin_port = htons(port);
 
 	// Bind our name to the socket
 	if (::bind(m_sockListen, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR)
 	{
+		DWORD err_code = ::GetLastError();
 		
 		closesocket(m_sockListen);
 		return FALSE;
@@ -324,7 +330,7 @@ BOOL CTcpServer::_send(const DWORD& nID, const BYTE* pBuf, const int& nLen, BOOL
 		pIO->so = SO_WRITE;
 		pIO->sockAccept = pSock->sock;
 		if (bPostQueued)
-			::PostQueuedCompletionStatus(m_hCompletionPort, 0, (ULONG_PTR)pIO, &pIO->ol);
+			::PostQueuedCompletionStatus(m_hCompletionPort, 1, (ULONG_PTR)pIO, &pIO->ol);
 		else
 			result = PostSend(pIO);
 		if (result != 0)
@@ -344,7 +350,7 @@ BOOL CTcpServer::Send(const DWORD& nID, const BYTE* pBuf, const int& nLen, BOOL 
 {
 	BYTE pSendBuf[1024] = {0};
 	int nNum = PrepareSendBuf(pSendBuf, pBuf, nLen, 50);
-	return this->_send(nID, pSendBuf, nNum);
+	return this->_send(nID, pSendBuf, nNum, bPostQueued);
 }
 
 BOOL CTcpServer::SendEx(const DWORD& nID, const mystring& csBuf)
@@ -626,7 +632,11 @@ int CTcpServer::ProcessSend(DWORD dwConnID, PSOCKET_CONTEXT pSock, PIO_CONTEXT p
 	//	}
 	//}
 
-	AddFreeIOContext(pIO);
+	result = PostSend(pIO);
+	if (result != 0)
+	{
+		AddFreeIOContext(pIO); 	
+	}
 	
 	return result;
 }
@@ -839,7 +849,7 @@ int CTcpServer::PostSend(PIO_CONTEXT pIO)
 {
 	int result = 0;
 	DWORD dwBytes = 0;
-	pIO->so = SO_WRITE;
+	pIO->so = SO_HAS_WRITE;
 
 	if ((result=::WSASend(
 		pIO->sockAccept, 
