@@ -60,22 +60,15 @@ import android.widget.Toast;
  */
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
-	/**
-	 * The instance of the {@link SystemUiHider} for this activity.
-	 */
-
-	private ClientUserCreator loginUser = null;
 	public static final String key_loginuser = "login_user";
 	public static final String key_client_manager = "client_manager";
 	public final String string_db_name = "datadb.db";
 
 	public final static int notify_key = 0x0011;
 	public final static int login_notify_key = 0x0012;
-
+	public final static int verify_notify_key = 0x0013;
 	private ClientManager client_manager = null;
 
-	
-	
 	private String server_ip = "0.0.0.0";
 	private int server_port = 000;
 	private int server_net_kind = -1;
@@ -100,6 +93,11 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 	private MyLoginPreferences preferences_login = null;
 
 	private MessageSpreader ui_message_handler = new HandleMessageSpreader() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -107,39 +105,42 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 				if (msg.obj instanceof String) {
 					String string_error = (String) msg.obj;
 					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
-				}				
+				}
+				break;
+
+			case login_notify_key:
+				boolean result = (boolean) msg.obj;
+				if (result) {
+					_start_login();
+				}
 				break;
 				
-			case login_notify_key:
-				//if(msg.obj instanceof int)
-				{
-					boolean result = (boolean)msg.obj;
-					if(result)
-					{
-						_start_login();
-					}
+			case verify_notify_key:
+				if (loading_dialog != null) {
+					loading_dialog.dismiss();
 				}
+				break;
 
 			default:
 				break;
 			}
 		}
 	};
-	
+
 	class MySignupListening implements SignupListening {
 
 		@Override
 		public void Signup(UserSignupInfo info) {
 			// TODO Auto-generated method stub
-			if(client_manager!=null) {
-				loading_dialog = ProgressDialog.show(MainActivity.this, "", getResources().getString(R.string.string_notify_signuping));
+			if (client_manager != null) {
+				loading_dialog = ProgressDialog.show(MainActivity.this, "",
+						getResources().getString(R.string.string_notify_signuping));
 				NetSocketData data = new UserSignupNetSocketData(info);
 				client_manager.signin_user(data, server_ip, server_port);
 			}
 		}
-		
+
 	}
-	
 
 	class MySelectServerListening implements SelectServerListening, Serializable {
 		/**
@@ -172,7 +173,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		@Override
 		public boolean receive_data(byte[] data, int len) {
 			// TODO Auto-generated method stub
-			
+
 			if (parses != null) {
 				parses.parse(data, len, new ParseResultListening() {
 
@@ -183,7 +184,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 							VerifyLoginNetDataParse net_parse_login = (VerifyLoginNetDataParse) parser;
 							int result = net_parse_login.getNresult();
 							int no_error = MyErrors.NoError.nid;
-							if (result !=   no_error) {
+							if (result != no_error) {
 								Message msg = Message.obtain();
 								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
@@ -196,7 +197,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								preferences_login.login_result(
 										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
 										(user_password), true);
-								//_start_login();
+								// _start_login();
 								Message msg = Message.obtain();
 								msg.what = login_notify_key;
 								msg.obj = true;
@@ -212,8 +213,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
 								msg.obj = MainActivity.this.getResources().getString(string_id);
 								ui_message_handler.sendMessage(msg);
-							}
-							else {
+							} else {
 								Message msg = Message.obtain();
 								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
@@ -222,17 +222,17 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 							}
 						}
 
-						if (loading_dialog != null) {
-							loading_dialog.dismiss();
-						}
+						Message msg = Message.obtain();
+						msg.what = verify_notify_key;
+						ui_message_handler.sendMessage(msg);
 					}
 
 					@Override
 					public void parse_fail(byte[] rev_data, int len) {
 						// TODO Auto-generated method stub
-						if (loading_dialog != null) {
-							loading_dialog.dismiss();
-						}
+						Message msg = Message.obtain();
+						msg.what = verify_notify_key;
+						ui_message_handler.sendMessage(msg);
 					}
 				});
 			}
@@ -257,7 +257,11 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			execute(" ");
+			// execute(" ");
+			if (info != null && user_name != null && user_name.isEmpty() == false && user_password != null
+					&& user_password.isEmpty() == false) {
+				MainActivity.this._loginUser(this.info, this.user_name, this.user_password);
+			}
 		}
 
 		@Override
@@ -278,7 +282,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		public void ToAutoLogin(ServerNetInfo info, String user_name, String user_password) {
 			// TODO Auto-generated method stub
 			View view_main = MainActivity.this.findViewById(android.R.id.content);
-			//MainActivity.this.ContentView
+			// MainActivity.this.ContentView
 			if (view_main != null) {
 				view_main.post(new LoginTask(info, user_name, user_password));
 			}
@@ -324,16 +328,14 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		
-		
-				 
-		client_manager = new ClientManager(this);
+
+		client_manager = ClientManager.getInstance(this);
 		client_manager.init();
 		preferences_login = new MyLoginPreferences(this, R.xml.preferences, client_manager);
 		preferences_login.autoLogin(my_auito_login);
 
 		parses.createObject(new EmptyMyArg());
-		
+
 		popup_menu = new PopupMenu(this, this.findViewById(R.id.button_main_menu));
 		menu = popup_menu.getMenu();
 		MenuInflater menuInflater = getMenuInflater();
@@ -342,10 +344,10 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		this.server_ip = preferences_login.getServerIp();
 		this.server_port = preferences_login.getServerPort();
 		this.server_net_kind = preferences_login.getServer_net_kind();
-		
+
 		this.user_name = preferences_login.getUser_name();
 		this.user_password = preferences_login.getUser_password();
-		
+
 		String server_name = server_ip + " : " + String.valueOf(server_port);
 		TextView textview_ipport = (TextView) MainActivity.this.findViewById(R.id.textView_ipport);
 		textview_ipport.setText(server_name);
@@ -400,13 +402,17 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		CheckBox autologin_password = (CheckBox) findViewById(R.id.checkBox_main_autologin);
 		autologin_password.setChecked(preferences_login.isAutoLogin());
 		autologin_password.setOnCheckedChangeListener(this);
+
+		// SingletonTemplete<ClientManager> instance =
+		// SingletonTemplete<ClientManager>.getInstance();
+
 	}
 
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		super.onDestroy();			 
-		
+		super.onDestroy();
+
 		if (client_manager != null) {
 			client_manager.exit();
 		}
@@ -416,26 +422,23 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		loading_dialog = ProgressDialog.show(this, "", getResources().getString(R.string.string_notify_logining));
 		if (client_manager != null) {
 
-			client_manager.verify_login(new ClientUserInfo(user_name, user_password),
-					new ServerNetInfo("unknow", server_ip, server_port, server_net_kind));
+			client_manager.verify_login(new ClientUserInfo(user_name, user_password), info);
 		}
 	}
 
 	private void _start_login() {
 
-		if (client_manager != null) {
-			loginUser = client_manager.get_cur_user_Creator();
-		}
+		// if (client_manager != null) {
+		// loginUser = client_manager.get_cur_user_Creator();
+		// }
 
-		
 		Intent intent = null;
-		
-		Bundle bundle = new Bundle();
 		intent = new Intent(this, VeriryActivity.class);
-	
-		bundle.putSerializable(key_loginuser, loginUser);
-		intent.putExtras(bundle);
-		
+
+		// Bundle bundle = new Bundle();
+		// bundle.putSerializable(key_loginuser, loginUser);
+		// intent.putExtras(bundle);
+
 		this.startActivity(intent);
 	}
 
@@ -452,15 +455,13 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 				user_password = edit_user_password.getText().toString();
 			}
 
-			_loginUser(new ServerNetInfo("unknow", server_ip, server_port, server_net_kind),
-					user_name,
+			_loginUser(new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
 					(user_password));
-			
 
 			break;
 		case R.id.button_signup:
-			
-			if (singn_up_dialog == null) {				
+
+			if (singn_up_dialog == null) {
 				singn_up_dialog = new SignupActivity(this, client_manager, new MySignupListening());
 				singn_up_dialog.setTitle(R.string.string_signin);
 			}
@@ -469,12 +470,13 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 			break;
 
 		case R.id.textbutton_offline:
-			_start_login();
+			_loginUser(null, "Unline User", "000000");
 			
+
 			break;
 		case R.id.textView_ipport:
 			break;
-			
+
 		case R.id.button_main_menu:
 			if (popup_menu != null) {
 				popup_menu.show();
@@ -525,7 +527,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 
 		} else {
 			finish();
-			
+
 		}
 	}
 

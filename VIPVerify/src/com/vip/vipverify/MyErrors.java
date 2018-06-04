@@ -5,11 +5,12 @@ public enum MyErrors {
 	NetError(-1, R.string.string_net_error),
 	NoError(0, R.string.string_do_done),
 	LoginVerifyError(1, R.string.string_login_verify_error),
-	SignupError(2, R.string.string_signup_error);
+	SignupError(2, R.string.string_signup_error),
+	ReloginUserError(3, R.string.string_relogin_user),
+	DiffLoginUserError(4, R.string.string_diff_loginuser);
 	
-	
-	final int nid;
-	final int string_id;
+	public final int nid;
+	public final int string_id;
 	
 	MyErrors(int nid, int string_id){
 		this.nid = nid;

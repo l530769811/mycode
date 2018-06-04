@@ -213,5 +213,7 @@
     <string name="string_notify_signuping">正在注册</string>
     <string name="string_connectting">正在连接服务器</string>
     <string name="string_connect_fail">连接失败！请检查网络状态</string>
+    <string name="string_relogin_user">重复登录的用户</string>
+    <string name="string_diff_loginuser">不匹配的登录用户</string>
 
 </resources>

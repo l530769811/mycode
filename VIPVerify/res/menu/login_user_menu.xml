@@ -4,7 +4,7 @@
         android:id="@+id/login_user_menu_info"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:orderInCategory="1"
-        android:showAsAction="withText|ifRoom"
+        android:showAsAction="withText|always"
         android:title="@string/string_username">
     </item>
     <item

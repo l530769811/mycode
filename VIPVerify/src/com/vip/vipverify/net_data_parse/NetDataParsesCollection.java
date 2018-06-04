@@ -19,7 +19,9 @@ public class NetDataParsesCollection {
 
 		VerifyLoginNetDataParse(VerifyLoginNetDataParse.class, "verify_login_request", "verify_login_reponse"),
 
-		VerifyResultNetDataParse(CardVerifyResultNetDataParse.class, "card_verify_request", "card_verify_reponse");
+		VerifyResultNetDataParse(CardVerifyResultNetDataParse.class, "card_verify_request", "card_verify_reponse"),
+		
+		LoginAffirmNetDataParse(LoginAffirmNetDataParse.class, "login_affirm_request", "login_affirm_reponse");
 
 		private final Class<? extends NetDataParse> NetDataParseClass;
 		private final String request_string;

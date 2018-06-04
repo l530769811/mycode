@@ -9,9 +9,11 @@ public class OfflineClientUserCreator extends ClientUserCreator {
 	 */
 	private static final long serialVersionUID = 1L;
 	private MyBaseDataProxy db;
+	private ClientUserInfo user_info;
 
-	public OfflineClientUserCreator(MyBaseDataProxy db) {
+	public OfflineClientUserCreator(ClientUserInfo user_info, MyBaseDataProxy db) {
 		super();
+		this.user_info = user_info;
 		this.db = db;
 	}
 
@@ -19,7 +21,7 @@ public class OfflineClientUserCreator extends ClientUserCreator {
 	public
 	ClientUser createClientUser() {
 		// TODO Auto-generated method stub
-		return new OfflineClientUser(db);
+		return new OfflineClientUser(user_info, db);
 	}
 
 }

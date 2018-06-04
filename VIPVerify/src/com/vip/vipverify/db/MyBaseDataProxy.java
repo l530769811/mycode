@@ -79,8 +79,8 @@ public class MyBaseDataProxy implements Serializable {
 	final String open_pragma = "PRAGMA FOREIGN_KEYS=ON;";
 
 	final String create_user_table = "CREATE TABLE tlVeriryClientUser( ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-			+ " UserName VARCHAR(20) NOT NULL, " + " Password VARCHAR(20) NOT NULL, " + " Phone VARCHAR(20) NOT NULL," + " Describe VARCHAR(255), "
-			+ " CreateTime DATE NOT NULL , " + " ExtraText TEXT, UNIQUE (UserName));";
+			+ " UserName VARCHAR(20) NOT NULL, " + " Password VARCHAR(20) NOT NULL, " + " Phone VARCHAR(20) NOT NULL,"
+			+ " Describe VARCHAR(255), " + " CreateTime DATE NOT NULL , " + " ExtraText TEXT, UNIQUE (UserName));";
 	final String create_user_index = "CREATE UNIQUE INDEX UserNameIndex ON tlVeriryClientUser (UserName);";
 
 	final String create_cardregister_table = "CREATE TABLE tlVeriryCardUser("
@@ -155,19 +155,19 @@ public class MyBaseDataProxy implements Serializable {
 					final String regex_table_string = "FROM(.*)WHERE";
 					Pattern pattern = Pattern.compile(regex_table_string, Pattern.CASE_INSENSITIVE);
 					Matcher matcher = pattern.matcher(sql);
-					if(matcher.find()) {
+					if (matcher.find()) {
 						table = matcher.group(1).trim();
 					}
-					
+
 					final String regex_where_string = "where(.*)";
 					pattern = Pattern.compile(regex_table_string, Pattern.CASE_INSENSITIVE);
 					matcher = pattern.matcher(sql);
-					if(matcher.find()) {
+					if (matcher.find()) {
 						whereClause = matcher.group(1).replace(';', '\0').trim();
 					}
-					
-					bret = mdb.delete(table, whereClause, whereArgs)==0 ? false : true ;
-					
+
+					bret = mdb.delete(table, whereClause, whereArgs) == 0 ? false : true;
+
 				}
 			}
 		} catch (Exception e) {
@@ -323,7 +323,10 @@ public class MyBaseDataProxy implements Serializable {
 		}
 
 		if (mdb != null) {
-			if (operateWakeThread != null) {
+			if (operateWakeThread == null) {
+				operateWakeThread = new SqlExecOperateWakeThread();
+			}
+			if (operateWakeThread.isAlive() == false) {
 				operateWakeThread.start();
 			}
 		}
@@ -332,6 +335,7 @@ public class MyBaseDataProxy implements Serializable {
 	public void stop() {
 		if (operateWakeThread != null) {
 			operateWakeThread.exit();
+			operateWakeThread = null;
 		}
 		if (mdb != null)
 			mdb.close();

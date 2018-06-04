@@ -36,27 +36,27 @@ public class TcpStreamPack implements Serializable {
 
 	public byte[] pack_prepare(byte[] in_buf, int buf_len, int param)
 			throws UnsupportedEncodingException, JSONException {
+
+		// String str_in = new String(in_buf, "UTF-8");
+		//
+		// JSONObject json_object = new JSONObject(str_in);
+		// // json_object = JSONObject.parseObject(str_in);
+		//
+		// JSONObject json_content = new JSONObject();
+		// json_content = json_object.getJSONObject(Content);
+		// // String str_content = json_content.toJSONString();
+		// String str_content = json_content.toString();
+		//
+		// JsonEncryptPack crypto_pack = new JsonEncryptPack();
+		// crypto_pack.setContent(str_content);
+		// crypto_pack.encrypt();
+		//
+		// String str_json = JSON.toJSONString(crypto_pack);
+		//
+		// in_buf = str_json.getBytes("UTF-8");
 		// 发送数据格式
 		// 字节数: 2 4 4 x 4 1
 		// 内容 : 'S:'+ 参数 + 长度 + 数据 + 检验码 +'E'
-
-		String str_in = new String(in_buf, "UTF-8");
-
-		JSONObject json_object = new JSONObject(str_in);
-		// json_object = JSONObject.parseObject(str_in);
-
-		JSONObject json_content = new JSONObject();
-		json_content = json_object.getJSONObject(Content);
-		// String str_content = json_content.toJSONString();
-		String str_content = json_content.toString();
-
-		JsonEncryptPack crypto_pack = new JsonEncryptPack();
-		crypto_pack.setContent(str_content);
-		crypto_pack.encrypt();
-
-		String str_json = JSON.toJSONString(crypto_pack);
-
-		in_buf = str_json.getBytes("UTF-8");
 		buf_len = in_buf.length;
 
 		int index = 0;
@@ -93,28 +93,30 @@ public class TcpStreamPack implements Serializable {
 	}
 
 	public byte[] pack_prepare(byte[] in_buf, int buf_len) throws UnsupportedEncodingException, JSONException {
-		// 发送数据格式
-		// 字节数: 2 4 4 x 4 1
-		// 内容 : 'S:'+ 参数 + 长度 + 数据 + 检验码 +'E'
+
 		/*
 		 * aes+base64 to encrpt send data;
 		 */
-		String str_in = new String(in_buf, "UTF-8");
-
-		JSONObject json_object = new JSONObject(str_in);
-		// json_object = JSONObject.parseObject(str_in);
-
-		JSONObject json_content = new JSONObject();
-		json_content = json_object.getJSONObject("content");
-		String str_content = json_content.toString();
-
-		JsonEncryptPack crypto_pack = new JsonEncryptPack();
-		crypto_pack.setContent(str_content);
-		crypto_pack.encrypt();
-
-		String str_json = JSON.toJSONString(crypto_pack);
-
-		in_buf = str_json.getBytes("UTF-8");
+		// String str_in = new String(in_buf, "UTF-8");
+		//
+		// JSONObject json_object = new JSONObject(str_in);
+		// // json_object = JSONObject.parseObject(str_in);
+		//
+		// JSONObject json_content = new JSONObject();
+		// json_content = json_object.getJSONObject("content");
+		// String str_content = json_content.toString();
+		//
+		// JsonEncryptPack crypto_pack = new JsonEncryptPack();
+		// crypto_pack.setContent(str_content);
+		// crypto_pack.encrypt();
+		//
+		// String str_json = JSON.toJSONString(crypto_pack);
+		//
+		// in_buf = str_json.getBytes("UTF-8");
+		
+		// 发送数据格式
+		// 字节数: 2 4 4 x 4 1
+		// 内容 : 'S:'+ 参数 + 长度 + 数据 + 检验码 +'E'
 		buf_len = in_buf.length;
 
 		final int param = 50;
@@ -288,40 +290,40 @@ public class TcpStreamPack implements Serializable {
 				 * decrypto
 				 */
 
-				String str_in = new String(out_buf, 0, pack_len - 15, "UTF-8");
-
-				JsonDecryptPack decrypt_pack = new JsonDecryptPack();
-
-				JSONObject json_object = new JSONObject(str_in);
-				Log.d(TAG, "parse-json: " + str_in);
-				// json_object = JSONObject.parseObject(str_in);
-				String str_transitionid = null;
-				try {
-					str_transitionid = json_object.getString(TransitionID);
-				} catch (JSONException e) {
-					int debug = 0;
-
-				}
-
-				String str_magicID = null;
-				try {
-					str_magicID = json_object.getString(MagicID);
-				} catch (JSONException e) {
-					int debug = 0;
-				}
-
-				if ((str_transitionid != null && str_transitionid != "null")
-						&& (str_magicID != null && str_magicID != "null")) {
-					decrypt_pack.setTransitionID(str_transitionid);
-					decrypt_pack.setMagicID(str_magicID);
-					String str_content = json_object.getString(Content);
-
-					decrypt_pack.decrypt(str_content);
-
-					String str_out = JSON.toJSONString(decrypt_pack);
-					Log.d(TAG, "decrypt json : " + str_out);
-					out_buf = str_out.getBytes("UTF-8");
-				}
+				// String str_in = new String(out_buf, 0, pack_len - 15, "UTF-8");
+				//
+				// JsonDecryptPack decrypt_pack = new JsonDecryptPack();
+				//
+				// JSONObject json_object = new JSONObject(str_in);
+				// Log.d(TAG, "parse-json: " + str_in);
+				// // json_object = JSONObject.parseObject(str_in);
+				// String str_transitionid = null;
+				// try {
+				// str_transitionid = json_object.getString(TransitionID);
+				// } catch (JSONException e) {
+				// int debug = 0;
+				//
+				// }
+				//
+				// String str_magicID = null;
+				// try {
+				// str_magicID = json_object.getString(MagicID);
+				// } catch (JSONException e) {
+				// int debug = 0;
+				// }
+				//
+				// if ((str_transitionid != null && str_transitionid != "null")
+				// && (str_magicID != null && str_magicID != "null")) {
+				// decrypt_pack.setTransitionID(str_transitionid);
+				// decrypt_pack.setMagicID(str_magicID);
+				// String str_content = json_object.getString(Content);
+				//
+				// decrypt_pack.decrypt(str_content);
+				//
+				// String str_out = JSON.toJSONString(decrypt_pack);
+				// Log.d(TAG, "decrypt json : " + str_out);
+				// out_buf = str_out.getBytes("UTF-8");
+				// }
 
 				// /////////////////////////////////////////////////////
 				pack_list.add(out_buf);

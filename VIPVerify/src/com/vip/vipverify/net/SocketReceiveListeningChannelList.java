@@ -14,15 +14,6 @@ public abstract class SocketReceiveListeningChannelList implements Serializable 
 	}
 
 	public final void SetOnSocketReceiveListening(SocketReceiveListeningChannelList listener) {
-//		if (next_listener != null) {
-//			SocketReceiveListeningChannelList nextlistener = this.next_listener.GetNextListener();
-//			if(nextlistener!=null) {
-//				nextlistener = nextlistener.GetNextListener();
-//			}
-//			
-//			listener.SetOnSocketReceiveListening(nextlistener);
-//		}
-//		next_listener = listener;
 		
 		if (next_listener != null) {
 			SocketReceiveListeningChannelList nextlistener = this.next_listener.GetNextListener();

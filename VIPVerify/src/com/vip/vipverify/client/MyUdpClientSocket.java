@@ -9,7 +9,7 @@ public class MyUdpClientSocket extends MyClientSocket {
 	
 
 	public MyUdpClientSocket(Thread rev_thread, SockketDataListening listrenling) {
-		super(rev_thread, listrenling, null);
+		super(rev_thread);
 		// TODO Auto-generated constructor stub
 	}
 

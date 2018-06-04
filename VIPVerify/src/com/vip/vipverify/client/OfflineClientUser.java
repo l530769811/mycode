@@ -61,9 +61,11 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 	final static String select_card_info_name_pass_encrypt = "SELECT * FROM tlVeriryCardUser WHERE CardNumber='%s'   "
 			+ "											   and CardPasswordEncrypt='%s';";
 	private MyBaseDataProxy mdb = null;
+	private ClientUserInfo user_info;
 	private MessageSpreader ui_message_handler = null;
 
-	public OfflineClientUser(MyBaseDataProxy db) {
+	public OfflineClientUser(ClientUserInfo user_info, MyBaseDataProxy db) {
+		this.user_info = user_info;
 		mdb = db;
 	}
 
@@ -158,6 +160,9 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 	@Override
 	public String GetUserName() {
 		// TODO Auto-generated method stub
+		if(user_info!=null) {
+			return user_info.getUser_name();
+		}
 		return string_username;
 	}
 }

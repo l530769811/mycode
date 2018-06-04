@@ -2,10 +2,14 @@ package com.vip.vipverify.client;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
+import com.vip.vipverify.MyErrors;
+import com.vip.vipverify.SingletonTemplete;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.my_arg.EmptyMyArg;
+import com.vip.vipverify.net.Jsonkey;
 import com.vip.vipverify.net.NetSocketData;
 import com.vip.vipverify.net.ServerNetInfo;
 import com.vip.vipverify.net.SocketProxy;
@@ -68,11 +72,8 @@ public class ClientManager implements Serializable {
 			switch (msg.what) {
 			case login_verify_suc_key:
 				if (server_info != null) {
-//					cur_login_user = new OnlineClientUser(server_info, new ClientUserInfo(user_name, user_password), db,
-//							m_threadSend, client_listener);
-					
 					cur_login_user = new OnlineClientUserCreator(server_info, new ClientUserInfo(user_name, user_password), db,
-							m_threadSend, null);
+							m_threadSend, client_listener);
 				}
 
 				break;
@@ -84,6 +85,20 @@ public class ClientManager implements Serializable {
 			}
 		}
 	};
+	
+	private static volatile ClientManager instance = null;
+
+	public static synchronized ClientManager getInstance(Context context) {
+		if (instance == null) {
+			synchronized (ClientManager.class) {
+				if (instance == null) {
+					instance = new ClientManager(context);
+				}
+			}
+
+		}
+		return instance;
+	}
 
 	public ClientManager(Context context) {
 		// TODO Auto-generated constructor stub
@@ -96,7 +111,7 @@ public class ClientManager implements Serializable {
 			String db_path = sdPath + "/" + this.context.getPackageName() + "/" + "databases/" + string_db_name;
 			this.db = new MyBaseDataProxy(context, db_path, null, 1);
 
-			cur_login_user = new OfflineClientUserCreator(db);
+			cur_login_user = new OfflineClientUserCreator(new ClientUserInfo("Unline User", "000000"), db);
 		}
 
 		parsers.createObject(new EmptyMyArg());
@@ -201,16 +216,16 @@ public class ClientManager implements Serializable {
 
 	public void verify_login(ClientUserInfo user_info, ServerNetInfo info) {
 
-		if (udp_client == null) {
-			udp_client = new UDPClient(this.context, udp_receiver_port, null, m_threadSend, client_listener);
-		}
-		if (user_info != null) {
-			user_name = user_info.getUser_name();
-			user_password = user_info.getUser_password();
-		}
-
-		udp_client.UDPClientInit();
 		if (info != null) {
+			if (udp_client == null) {
+				udp_client = new UDPClient(this.context, udp_receiver_port, null, m_threadSend, client_listener);
+			}
+			if (user_info != null) {
+				user_name = user_info.getUser_name();
+				user_password = user_info.getUser_password();
+			}
+
+			udp_client.UDPClientInit();
 			server_info = info;
 			SocketProxy udp_proxy = new UdpSocketProxy(udp_client, info.getIp(), info.getPort());
 			if (isInsert == false) {
@@ -225,6 +240,32 @@ public class ClientManager implements Serializable {
 			} else {
 				operator.ToDoOperate();
 			}
+		}
+		else
+		{
+			cur_login_user = new OfflineClientUserCreator(user_info, db);
+			// Unlined user just send success
+			JSONObject json_object = new JSONObject();
+			try {
+				json_object.put(Jsonkey.string_transitionid_key, "");
+				json_object.put(Jsonkey.string_magicid_key, "");
+				JSONObject json_content = new JSONObject();
+				json_object.put(Jsonkey.string_content_key, json_content);
+				json_content.put(Jsonkey.string_ctype_key, "verify_login_reponse");
+				JSONObject json_cvalue = new JSONObject();
+				json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
+				json_cvalue.put(Jsonkey.string_result_key, MyErrors.NoError.nid);
+				json_cvalue.put(Jsonkey.string_result_info_key, "0x0001");
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			String json_string = json_object.toString();
+			byte[] ret_byte = json_string.getBytes();
+			if (this.client_listener != null) {
+				client_listener.RevData(ret_byte, ret_byte.length);
+			}
+			
+		
 		}
 
 	}
@@ -264,6 +305,8 @@ public class ClientManager implements Serializable {
 
 		if (m_threadSend != null) {
 			m_threadSend.exit();
+			m_threadSend = null;
+			
 		}
 	}
 

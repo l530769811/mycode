@@ -9,70 +9,65 @@ import org.json.JSONException;
 
 import com.vip.vipverify.tcp_socket.TcpStreamPack;
 
-public class AnalyzeTcpNetData implements AnalyzeNetData, Serializable{
-
-	
+public class AnalyzeTcpNetData implements AnalyzeNetData, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private TcpStreamPack pack = new TcpStreamPack(1024);
-	private TcpAnalyzeRunningListener revListener = null;
-	
-	public interface TcpAnalyzeRunningListener{
-		public int rev_data(final AnalyzeNetData data,  byte[] buf_data, int len);
-		public int send_data(final AnalyzeNetData data,  byte[] buf_data, int len);
-	}	
+	private Encrypter crypter = null;
 
-	public AnalyzeTcpNetData(TcpAnalyzeRunningListener revListener) {
+	public interface TcpAnalyzeRunningListener {
+		public int analyze_data(final AnalyzeNetData data, byte[] buf_data, int len);
+
+		public int unanalyze_data(final AnalyzeNetData data, byte[] buf_data, int len);
+	}
+
+	public AnalyzeTcpNetData(Encrypter crypter) {
 		super();
-		this.revListener = revListener;
+		this.crypter = crypter;
+
 	}
 
 	@Override
-	public boolean analyze( byte[] buf_data, int len) {
-		// TODO Auto-generated method stub
-		boolean bret = false;
-		
+	public List<byte[]> analyze(byte[] buf_data, int len) {
+		List<byte[]> listPack = null;
 		try {
-			List<byte[]> listPack = pack.pack_parse(buf_data, len);
-			Iterator<byte[]> it = listPack.iterator();
-			while(it.hasNext())
-			{
-				byte[] pack_data = it.next();
-				if ( revListener!=null )
-				{
-					revListener.rev_data(this, pack_data, pack_data.length);
+			listPack = pack.pack_parse(buf_data, len);
+			
+			if (crypter != null) {
+				Iterator<byte[]> it = listPack.iterator();
+				List<byte[]> list = null; 
+				while (it.hasNext()) {
+					byte[] pack_data = it.next();
+					
+					list.add(crypter.Decrypt(pack_data, pack_data.length));
 				}
+				listPack = list;
 			}
-			bret = true;
-			
+
 		} catch (UnsupportedEncodingException | JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return bret;
+
+		return listPack;
 	}
 
 	@Override
-	public boolean unanalyze(byte[] buff_data, int len) {
-		// TODO Auto-generated method stub
-		boolean bret = false;
+	public byte[] unanalyze(byte[] buff_data, int len) {
+		byte[] send_data = null;
 		try {
-			
-			byte[] send_data = pack.pack_prepare(buff_data, len);
-			if ( revListener!=null )
-			{
-				revListener.send_data(this, send_data, send_data.length);
+			if (crypter != null) {
+				send_data = crypter.Encrypt(send_data, len);
 			}
-			bret = true;
+			send_data = pack.pack_prepare(buff_data, len);
 		} catch (UnsupportedEncodingException | JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return bret;
+		return send_data;
 	}
 
 }

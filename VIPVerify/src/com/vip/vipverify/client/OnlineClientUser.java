@@ -1,23 +1,16 @@
 package com.vip.vipverify.client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
+import com.vip.vipverify.MyErrors;
 import com.vip.vipverify.VeriryActivity;
 import com.vip.vipverify.client.MyClientSocket.ConnectResultListening;
 import com.vip.vipverify.client.MyClientSocket.SockketDataListening;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.db.QueryUnit;
-import com.vip.vipverify.net.AnalyzeNetData;
 import com.vip.vipverify.net.AnalyzeTcpNetData;
-import com.vip.vipverify.net.AnalyzeTcpNetData.TcpAnalyzeRunningListener;
 import com.vip.vipverify.net.CheckInLoginInfoNetSocketData;
 import com.vip.vipverify.net.CheckInLoginoutInfoNetSocketData;
 import com.vip.vipverify.net.NetSocketData;
@@ -26,6 +19,7 @@ import com.vip.vipverify.net.ServerNetInfo;
 import com.vip.vipverify.net.SocketProxy;
 import com.vip.vipverify.net.SocketReceiveListeningChannelList;
 import com.vip.vipverify.net.VerifyCardNetSocketData;
+import com.vip.vipverify.net_data_parse.LoginAffirmNetDataParse;
 import com.vip.vipverify.operator.DeleteSqlDoOperator;
 import com.vip.vipverify.operator.DoOperator;
 import com.vip.vipverify.operator.OnlineUserSyncDoOperator;
@@ -34,11 +28,9 @@ import com.vip.vipverify.operator.SocketSendDoOperator;
 import com.vip.vipverify.thread.WakeThread;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Handler;
 import android.os.Message;
 
-public class OnlineClientUser extends ClientUser implements Serializable, Runnable {
+public class OnlineClientUser extends ClientUser implements Serializable {
 	final static String insert_clientuser_data = "INSERT INTO tlVeriryClientUser ( "
 			+ "										 UserName, " + "										 Password, "
 			+ "										 Describe, "
@@ -86,7 +78,6 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 	private MyBaseDataProxy mdb = null;
 	private MessageSpreader ui_message_handler = null;
 
-	private Socket socketClient = null;
 	private MyClientSocket client_socket = null;
 
 	private String addr_ip;
@@ -98,15 +89,7 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 	private Thread socketThread = null;
 	private WakeThread send_thread = null;
 
-	private DataInputStream in;
-	private DataOutputStream out;
-
-	private final int buff_len = 1024;
-	private AnalyzeNetData net_data_analyzer = null;
-
 	private SocketReceiveListeningChannelList socket_receive_list = null;
-	private Activity app = null;
-
 	final int message_key_suc = 0x1011;
 	final int message_key_fail = 0x1012;
 
@@ -144,46 +127,9 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 		}
 	};
 
+	
 
-	class DataRevRunningListener implements TcpAnalyzeRunningListener, Serializable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public int rev_data(final AnalyzeNetData data, byte[] buf_data, int len) {
-			// TODO Auto-generated method stub
-
-			if (socket_receive_list != null) {
-				socket_receive_list.RevData(buf_data, len);
-			}
-
-			return 0;
-		}
-
-		@Override
-		public int send_data(AnalyzeNetData data, byte[] buf_data, int len) {
-			// TODO Auto-generated method stub
-			int nlen = -1;
-			if (OnlineClientUser.this.out != null) {
-
-				try {
-					out.write(buf_data);
-					nlen = len;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			return nlen;
-		}
-
-	}
-
-	class OnlineUserSockketDataListening implements SockketDataListening , Serializable{
+	class OnlineUserSockketDataListening implements SockketDataListening, Serializable {
 
 		/**
 		 * 
@@ -193,7 +139,58 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 		@Override
 		public int rev_data(byte[] data, int len) {
 			// TODO Auto-generated method stub
-			revTcpData(data, len);
+			LoginAffirmNetDataParse parser = new LoginAffirmNetDataParse(null);
+			if(parser.Parse(data, len)==true)
+			{
+				int result = parser.getNresult();
+				if(result==0) {
+					String strUserName = parser.getStrUserName();
+					String strUserPassword = parser.getStrUserPassword();
+					if(user_info!=null) {
+						boolean b  = strUserName.equalsIgnoreCase(user_info.getUser_name());
+//						b = strUserPassword.equalsIgnoreCase(user_info.getUser_password());
+						if(b)
+						{
+							if (ui_message_handler != null) {
+								Message msg = Message.obtain();
+								msg.what = VeriryActivity.KeyConectResult;
+								msg.obj = MyErrors.NoError.nid;
+								ui_message_handler.sendMessage(msg);
+							}
+							syncLocalToServer();
+						}
+						else {
+							if (ui_message_handler != null) {
+								Message msg = Message.obtain();
+								msg.what = VeriryActivity.KeyConectResult;
+								msg.obj = MyErrors.DiffLoginUserError.nid;
+								ui_message_handler.sendMessage(msg);
+							}
+						}
+					}
+					
+				} else {
+					if (ui_message_handler != null) {
+						Message msg = Message.obtain();
+						msg.what = VeriryActivity.KeyConectResult;
+						msg.obj = MyErrors.ReloginUserError.nid;
+						ui_message_handler.sendMessage(msg);
+					}
+				}
+				
+				
+				DoOperator op = parser.createOperator();
+				if (op != null) {
+					op.ToDoOperate();
+				}
+			}
+			else
+			{
+				if (socket_receive_list != null) {
+					socket_receive_list.RevData(data, len); 
+				}
+			}
+		
 			return 0;
 		}
 
@@ -207,15 +204,13 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 
 	private ConnectResultListening connect_listener = new ConnectResultListening() {
 		public void connect_result(boolean bresult, String ip, int port) {
-			if(ui_message_handler!=null) {
-				Message msg = Message.obtain();
-				msg.what =  VeriryActivity.KeyConectResult;
-				msg.obj = bresult;
-				ui_message_handler.sendMessage(msg);
+			if (bresult) {				
+				loginin_to_server(user_info);
 			}
+			
 		}
 	};
-	
+
 	public OnlineClientUser(ServerNetInfo info, ClientUserInfo user_info, MyBaseDataProxy db, WakeThread send_thread,
 			SocketReceiveListeningChannelList socket_receive_list) {
 		// TODO Auto-generated constructor stub
@@ -270,13 +265,13 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 			}
 		};
 		DoOperator operator = new SocketSendDoOperator(data, proxy);
-		
-		//do not use thread to send data in here
+
+		// do not use thread to send data in here
 		operator.ToDoOperate();
 
 	}
 
-	private boolean connect_to_server(String addr, int port)  {
+	private boolean connect_to_server(String addr, int port) {
 		boolean bret = false;
 
 		if (client_socket != null) {
@@ -286,24 +281,20 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 		return bret;
 	}
 
-	private boolean close_connect() throws IOException {
+	private boolean close_connect() {
 		boolean bret = false;
 
 		if (client_socket != null) {
 			client_socket.disconnect_socket();
+			client_socket.close_socket();
 		}
+		
 		return bret;
-	}
-
-	private void revTcpData(byte[] buff, int len) {
-		if (len <= 0)
-			return;
-		net_data_analyzer.analyze(buff, len);
 	}
 
 	private void syncLocalToServer() {
 		if (mdb != null) {
-			
+
 			mdb.PostExecSql(new SelectSqlDoOperator(select_card_info_all, mdb, message_handler, message_key_suc,
 					message_key_fail));
 
@@ -321,21 +312,24 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 			switch (net_kind) {
 			case -1:
 			case MyTcpClientSocket.net_client_code:
-				client_socket = new MyTcpClientSocket(socketThread, new OnlineUserSockketDataListening(), connect_listener);
-				net_data_analyzer = new AnalyzeTcpNetData(new DataRevRunningListener());
+				client_socket = new MyTcpClientSocket( 
+						socketThread, 
+						new OnlineUserSockketDataListening(),
+						connect_listener, new AnalyzeTcpNetData(null)
+						);
+				
 				break;
-			// case MyUdpClientSocket.net_client_code:
-			// client_socket = new MyUdpClientSocket(socketThread, null, null);
-			// net_data_analyzer = new AnalyzeUdpNetData();
-			// break;
+			case MyUdpClientSocket.net_client_code:
+				client_socket = new MyUdpClientSocket(socketThread, null);
+			
+				break;
 
 			default:
 				break;
 			}
 			client_socket.init_socket();
 			if (connect_to_server(this.addr_ip, this.port)) {
-				loginin_to_server(user_info);
-				syncLocalToServer();
+				;
 			}
 		}
 	}
@@ -343,11 +337,11 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 	@Override
 	public void loginOut() {
 		// TODO Auto-generated method stub
-	
+
 		if (client_socket != null) {
 			loginout_to_server(user_info);
-			client_socket.disconnect_socket();
-			client_socket.close_socket();
+			this.close_connect();
+			
 		}
 		if (mdb != null) {
 			mdb.stop();
@@ -405,6 +399,7 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 				return 0;
 			}
 		};
+		
 		DoOperator operator = new SocketSendDoOperator(card_verify_data, proxy);
 		if (send_thread != null) {
 			send_thread.postOperate(operator);
@@ -432,125 +427,16 @@ public class OnlineClientUser extends ClientUser implements Serializable, Runnab
 		ui_message_handler = h;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
-		while (!Thread.currentThread().isInterrupted()) {
-			if (in != null) {
-				byte[] rev_buf = new byte[buff_len];
-				int length = -1;
-				try {
-					while ((length = in.read(rev_buf)) != -1) {
-						revTcpData(rev_buf, length);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-
-					break;
-				}
-			} else {
-
-				break;
-			}
-		}
-
-		try {
-			close_connect();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	class SocketSendWakeThread extends WakeThread implements Serializable {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private List<byte[]> listOperate = new ArrayList<byte[]>();
-
-		//
-		// public boolean postOperate(DoOperator operate) {
-		// boolean bret = false;
-		// synchronized (listOperate) {
-		// bret = listOperate.add(operate);
-		// }
-		// this.wakeUp();
-		//
-		// return bret;
-		// }
-		//
-		// private DoOperator GetOperate() {
-		// DoOperator operate_ret = null;
-		// synchronized (listOperate) {
-		// if (listOperate.size() > 0)
-		// operate_ret = listOperate.remove(0);
-		// }
-		// return operate_ret;
-		// }
-		public boolean send_data(byte[] send_buff, int len) {
-			boolean bret = false;
-			if (OnlineClientUser.this.socketClient != null && socketClient.isClosed() == false) {
-				synchronized (send_buff) {
-					listOperate.add(send_buff);
-				}
-			}
-			return bret;
-		}
-
-		private byte[] get_data() {
-			byte[] ret = null;
-			synchronized (listOperate) {
-				ret = listOperate.remove(0);
-			}
-			return ret;
-		}
-
-		private void clear_data() {
-			synchronized (listOperate) {
-				listOperate.clear();
-			}
-		}
-
-		@Override
-		public void myRun() throws InterruptedException {
-			// TODO Auto-generated method stub
-			if (OnlineClientUser.this.out != null) {
-				byte[] send_buff = get_data();
-				if (net_data_analyzer != null) {
-					net_data_analyzer.unanalyze(send_buff, send_buff.length);
-				}
-			} else {
-				clear_data();
-			}
-
-		}
-
-		@Override
-		public boolean postOperate(DoOperator operate) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public DoOperator GetOperate() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	}
 
 	@Override
 	public String GetUserName() {
 		// TODO Auto-generated method stub
-		String str_name = "inknow";
-		if(user_info!=null)
-		{
-			str_name = user_info.getUser_name();;
+		String str_name = "unknow";
+		if (user_info != null) {
+			str_name = user_info.getUser_name();
+			;
 		}
-		
+
 		return str_name;
 	}
 }

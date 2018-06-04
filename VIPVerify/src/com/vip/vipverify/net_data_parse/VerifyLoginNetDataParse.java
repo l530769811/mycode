@@ -10,8 +10,6 @@ import com.vip.vipverify.operator.DoOperator;
 public class VerifyLoginNetDataParse extends NetDataParse {
 	public static final String ResponseSearchServerType = "verify_login_reponse";
 	private int nresult = -1;
-	private String str_string = "";
-
 	public VerifyLoginNetDataParse(MyArg arg) {
 		// TODO Auto-generated constructor stub
 	}
@@ -61,7 +59,7 @@ public class VerifyLoginNetDataParse extends NetDataParse {
 			if (json_cvalue != null) {
 				nresult = json_cvalue.getInt(Jsonkey.string_result_key);
 				try {
-					str_string = json_cvalue.getString(Jsonkey.string_result_info_key);
+					json_cvalue.getString(Jsonkey.string_result_info_key);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}

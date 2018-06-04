@@ -49,6 +49,7 @@ public class SelectSqlDoOperator implements DoOperator, Serializable {
 
 			} catch (Exception e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 			if (ret == -1) {
 				if (message_handler != null) {

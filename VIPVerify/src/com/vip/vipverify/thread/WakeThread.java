@@ -29,9 +29,22 @@ public abstract class WakeThread extends Thread implements Serializable {
 		return bwakeup;
 	}
 
+	
+
+	public void exit() {
+		
+		this.wakeUp();
+		this.interrupt();
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	final private boolean wake() {
 		boolean bret = false;
-
 		synchronized (this) {
 			if (isWakeUp() == false) {
 				try {
@@ -43,25 +56,13 @@ public abstract class WakeThread extends Thread implements Serializable {
 					e.printStackTrace();
 					bret = false;
 				} finally {
-
+					
 				}
 			} else {
-				bret = true;
+				bret = true;				
 			}
 		}
-
 		return bret;
-	}
-
-	public void exit() {
-		this.wakeUp();
-		this.interrupt();
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -72,12 +73,14 @@ public abstract class WakeThread extends Thread implements Serializable {
 				break;
 			try {
 				myRun();
+				wakeDown();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				break;
 			}
 		}
+		int i = 0;
 	}
 
 	public abstract void myRun() throws InterruptedException;

@@ -2,7 +2,7 @@ package com.vip.vipverify.client;
 
 import java.io.Serializable;
 
-import com.vip.vipverify.thread.WakeThread;
+import com.vip.vipverify.net.AnalyzeNetData;
 
 public abstract class MyClientSocket implements Runnable, Serializable {
 
@@ -27,9 +27,6 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 	private boolean isRevThreadOutside = false;
 
 	final int MaxBuff = 1024;
-	private SockketDataListening listener = null;
-	private ConnectResultListening connect_listener = null;
-
 	private String ip = "";
 	private int port = 0;
 
@@ -43,14 +40,11 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 		public void connect_result(boolean bresult, String ip, int port);
 	}
 
-	public MyClientSocket(Thread rev_thread, SockketDataListening listener, ConnectResultListening connect_listener) {
+	public MyClientSocket(Thread rev_thread) {
 		this.rev_thread = rev_thread;
 		if (this.rev_thread != null) {
 			isRevThreadOutside = true;
 		}
-
-		this.listener = listener;
-		this.connect_listener = connect_listener;
 	}
 
 	public final boolean connect_socket(String addr, int port) {
@@ -83,7 +77,7 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 
 	public final boolean close_socket() {
 		boolean ret = false;
-		this.disconnect_socket();
+		ret = this.disconnect_socket();
 		ret = this.how_close_socket();
 		return ret;
 	}
@@ -115,30 +109,19 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 	@Override
 	public final void run() {
 		// TODO Auto-generated method stub
-		int connect_times = 0;
+
 		while (!Thread.currentThread().isInterrupted()) {
 			byte[] data = new byte[MaxBuff];
 			int len = data.length;
 			if (this.how_connect_socket(this.ip, this.port)) {
-				if (this.connect_listener != null) {
-					this.connect_listener.connect_result(true, this.ip, this.port);
-				}
 
-				if ((len = how_rev_data(data, len)) > 0) {
-					if (listener != null) {
-						listener.rev_data(data, len);
-					}
+				while ((len = how_rev_data(data, len)) > 0) {
+					;
 				}
-			} else {
-				if (connect_times >= 4) {
-					if (this.connect_listener != null) {
-						this.connect_listener.connect_result(false, this.ip, this.port);
-					}
-					this.close_socket();
-					break;
-				}
-				connect_times++;
 			}
+
+			this.close_socket();
+			break;
 		}
 	}
 

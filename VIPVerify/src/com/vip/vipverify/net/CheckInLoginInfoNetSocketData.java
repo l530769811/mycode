@@ -3,6 +3,7 @@ package com.vip.vipverify.net;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.vip.vipverify.Md5Unit;
 import com.vip.vipverify.client.ClientUserInfo;
 
 public class CheckInLoginInfoNetSocketData extends NetSocketData {
@@ -32,7 +33,7 @@ public class CheckInLoginInfoNetSocketData extends NetSocketData {
 			json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
 			if (info != null) {
 				json_cvalue.put(Jsonkey.string_user_name_key, info.getUser_name());
-				json_cvalue.put(Jsonkey.string_user_password_key, info.getUser_password());
+				json_cvalue.put( Jsonkey.string_user_password_key, Md5Unit.EncodeToMd5String(info.getUser_password()) );
 
 			}
 

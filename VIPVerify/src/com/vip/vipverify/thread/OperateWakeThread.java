@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.vip.vipverify.operator.DoOperator;
 
+import android.text.method.SingleLineTransformationMethod;
+
 public class OperateWakeThread extends WakeThread {
 
 	/**
@@ -23,6 +25,7 @@ public class OperateWakeThread extends WakeThread {
 		this.wakeUp();
 
 		return bret;
+		
 	}
 
 	@Override

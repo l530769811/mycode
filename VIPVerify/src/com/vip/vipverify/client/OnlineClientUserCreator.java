@@ -16,8 +16,7 @@ public class OnlineClientUserCreator extends ClientUserCreator {
 	private ClientUserInfo user_info;
 	private MyBaseDataProxy db;
 	private WakeThread send_thread;
-
-	
+	private SocketReceiveListeningChannelList socket_receive_list = null;	
 
 	public OnlineClientUserCreator(ServerNetInfo info, ClientUserInfo user_info, MyBaseDataProxy db,
 			WakeThread send_thread, SocketReceiveListeningChannelList socket_receive_list) {
@@ -26,7 +25,7 @@ public class OnlineClientUserCreator extends ClientUserCreator {
 		this.user_info = user_info;
 		this.db = db;
 		this.send_thread = send_thread;
-		
+		this.socket_receive_list = socket_receive_list;
 	}
 
 
@@ -34,7 +33,7 @@ public class OnlineClientUserCreator extends ClientUserCreator {
 	public
 	ClientUser createClientUser() {
 		// TODO Auto-generated method stub
-		return new OnlineClientUser(info, user_info, db, send_thread, null);
+		return new OnlineClientUser(info, user_info, db, send_thread, socket_receive_list);
 	}
 
 }
