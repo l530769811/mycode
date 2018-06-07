@@ -124,6 +124,7 @@ BOOL CTcpServer::Start(CSocketRecevier *pReciver, const char* bind_address, cons
 	addr.sin_addr.s_addr = inet_addr(bind_address);	
 	
 	addr.sin_port = htons(port);
+	
 
 	// Bind our name to the socket
 	if (::bind(m_sockListen, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR)
@@ -338,7 +339,7 @@ BOOL CTcpServer::_send(const DWORD& nID, const BYTE* pBuf, const int& nLen, BOOL
 			AddFreeIOContext(pIO); 
 			break;
 		}
-		//TRACE(_T("===========\n%s\n"), pBuf);
+		
 		remain -= bufferSize;
 		pBuf += bufferSize;
 	}
@@ -703,9 +704,13 @@ void CTcpServer::AddFreeSocketContext(DWORD dwConnID, ESocketCloseFlag eFlag /* 
 	if (pSock)
 	{
 		::EnterCriticalSection(&m_csMapSocket);
-		ManualCloseSocket(pSock->sock);
+		int close_result = ManualCloseSocket(pSock->sock);
 		m_mpClientSocket.erase(dwConnID);
 		::LeaveCriticalSection(&m_csMapSocket);
+		if(m_pRecevier!=0 && close_result==0)
+		{
+			m_pRecevier->unconnect_coming(dwConnID, ::ntohs(pSock->addr.sin_port));
+		}
 		
 		::EnterCriticalSection(&m_csFreeOl);
 		m_lsFreeSocketContext.push_back(pSock);
@@ -817,6 +822,7 @@ int CTcpServer::ManualCloseSocket(SOCKET sock, int nShutDownFlag /* = 0xFF */, B
 		shutdown(sock, nShutDownFlag);
 
 	result = closesocket(sock);
+	
 
 	return result;
 }
@@ -862,7 +868,12 @@ int CTcpServer::PostSend(PIO_CONTEXT pIO)
 	{
 		result = ::WSAGetLastError();
 		if (result == WSA_IO_PENDING)
-			result = 0;
+			result = 0;		
+	}
+	if(result==0){
+#ifdef _DEBUG
+		_tprintf(_T("===========\n%s\n"), pIO->wsaBuf.buf);
+#endif
 	}
 
 	return result;

@@ -23,10 +23,13 @@
 #include "SignupReponseNetSocketData.h"
 #include "CheckInLoginInfoNetSocketDataParse.h"
 #include "CheckInLogoutInfoNetSocketDataParse.h"
+#include "VerifyCardNetSocketDataParse.h"
+#include "RegistCardNetSocketDataParse.h"
 #include "UserClient.h"
 
-CClientManager::CClientManager(CDBSqlManager *pdb)
+CClientManager::CClientManager(CDBSqlManager *pdb, CVIPCardManager *pvip_mgr)
 	: m_pUdpVerify(NULL)
+	, m_pvip_mgr(pvip_mgr)
 	, m_db(pdb)
 {
 	m_pUdpVerify = new CUDPSocket(this);
@@ -35,7 +38,8 @@ CClientManager::CClientManager(CDBSqlManager *pdb)
 	::InitializeCriticalSection(&m_client_lock);
 	m_net_parse_list.push_back(new CCheckInLoginInfoNetSocketDataParse(this));
 	m_net_parse_list.push_back(new CCheckInLogoutInfoNetSocketDataParse(this));
-	
+	m_net_parse_list.push_back(new CVerifyCardNetSocketDataParse(m_pvip_mgr, this));
+	m_net_parse_list.push_back(new CRegistCardNetSocketDataParse(m_pvip_mgr, this));
 }
 
 bool CClientManager::Open()
@@ -135,6 +139,7 @@ void CClientManager::connect_coming(unsigned long socketid, unsigned int nport){
 
 void CClientManager::unconnect_coming(unsigned long socketid, unsigned int nport){
 
+	DeleteConnectClient(socketid);
 }
 
 bool CClientManager::ClientSignup(CClientSignupData &data,  CSignupMethods *signupMethods)
@@ -203,6 +208,7 @@ int CClientManager::AddConnectClient(unsigned long nid, MyString strUserName, My
 	{
 		CClient* puser = new CUserClient(nid, strUserName, strUserPassword);
 		m_client_list.insert(map<MyString, CClient*>::value_type(strUserName, puser));
+		m_client_id_list.insert(map<unsigned long, CClient*>::value_type(nid, puser));
 		ret = 0;
 	}
 	::LeaveCriticalSection(&m_client_lock);
@@ -224,6 +230,7 @@ int CClientManager::DeleteConnectClient(unsigned long nid, MyString strUserName,
 
 	if ( pcur!=0 )
 	{
+		m_client_id_list.erase(nid);
 		m_client_list.erase(strUserName);
 		delete pcur;
 		ret = 0;
@@ -231,4 +238,59 @@ int CClientManager::DeleteConnectClient(unsigned long nid, MyString strUserName,
 	::LeaveCriticalSection(&m_client_lock);
 
 	return ret;
+}
+
+int CClientManager::DeleteConnectClient(unsigned long nid)
+{
+	int ret = -1;
+	CClient* p = 0;
+	::EnterCriticalSection(&m_client_lock);
+	try{
+		p = m_client_id_list.at(nid);
+	}
+	catch(out_of_range e)
+	{
+		p = 0;
+	}
+	
+	std::map<MyString, CClient*>::iterator it_begin =  m_client_list.begin();
+	for (; it_begin != m_client_list.end(); it_begin++)
+	{
+		map<MyString, CClient*>::value_type pvalue = *it_begin;
+		if (pvalue.second == p)
+		{
+			m_client_id_list.erase(nid);
+			m_client_list.erase(it_begin);
+			delete p;
+			ret = 0;
+			break;
+		}
+	}
+	::LeaveCriticalSection(&m_client_lock);
+	return ret;
+}
+
+CClient* CClientManager::FindConnectClient(unsigned long nid)
+{
+	CClient* pclient = 0;
+	::EnterCriticalSection(&m_client_lock);
+	CClient* p = m_client_id_list.at(nid);
+	if(p!=0){
+		std::map<MyString, CClient*>::iterator it_begin =  m_client_list.begin();
+		for (; it_begin != m_client_list.end(); it_begin++)
+		{
+			map<MyString, CClient*>::value_type pvalue = *it_begin;
+			if (pvalue.second == p)
+			{
+				//m_client_id_list.erase(nid);
+				//m_client_list.erase(it_begin);
+				//delete p;
+				pclient = p;
+				break;
+			}
+		}
+	}
+
+	::LeaveCriticalSection(&m_client_lock);
+	return pclient;
 }

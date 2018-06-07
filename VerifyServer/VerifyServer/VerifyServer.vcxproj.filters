@@ -165,6 +165,42 @@
     <ClInclude Include="CheckInLogoutInfoOperater.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="RegistCardNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegistCardOperater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VIPCardManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VerifyCardNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VerifyCardOperater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VerifyCardDBDoOperator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegistCardDBDoOperator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VerifyCardReponseNetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegistCardReponseNetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumeCardReponseNetSocketData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumeCardOperater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumeCardDBDoOperator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -291,6 +327,42 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CheckInLogoutInfoOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegistCardNetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegistCardOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VIPCardManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyCardNetSocketDataParse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyCardOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyCardDBDoOperator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegistCardDBDoOperator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyCardReponseNetSocketData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegistCardReponseNetSocketData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumeCardReponseNetSocketData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumeCardOperater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumeCardDBDoOperator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

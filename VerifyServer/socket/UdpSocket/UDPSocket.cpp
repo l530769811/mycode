@@ -297,12 +297,16 @@ bool CUDPSocket::SendData(BYTE chData[], int nLen)
 	::send(m_sockServer, (char*)chData, nLen, 0);
 	if(ret<0)  
 	{  
+		#ifdef _DEBUG
 		printf("send error....\n"); 
+		#endif
 		bResult = false;
 	}  
 	else  
-	{         
+	{   
+#ifdef _DEBUG
 		printf("ok \n");
+#endif
 
 		bResult = true;
 	} 
@@ -318,12 +322,16 @@ bool CUDPSocket::SendData(BYTE chData[], int nLen, const struct sockaddr_in &sen
 	int ret = ::sendto(m_sockServer, (char*)chData, nLen, 0, (sockaddr*)&send_to, n);  
 	if(ret<0)  
 	{  
+#ifdef _DEBUG
 		printf("send error....\n"); 
+#endif
 		bResult = false;
 	}  
 	else  
 	{         
+#ifdef _DEBUG
 		printf("ok \n");
+#endif
 		//CLogFile file1;
 		//unsigned long *pUULen = (unsigned long *)(chSendData +3+sizeof(unsigned long)*3);
 		//unsigned long nUULen = *pUULen;

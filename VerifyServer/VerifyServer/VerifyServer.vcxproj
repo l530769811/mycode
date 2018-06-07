@@ -107,6 +107,9 @@
     <ClInclude Include="ClientVerifyData.h" />
     <ClInclude Include="ClientVerifyNetSocketDataParse.h" />
     <ClInclude Include="ClientVerifyOperator.h" />
+    <ClInclude Include="ConsumeCardDBDoOperator.h" />
+    <ClInclude Include="ConsumeCardOperater.h" />
+    <ClInclude Include="ConsumeCardReponseNetSocketData.h" />
     <ClInclude Include="DBSqlExecOperate.h" />
     <ClInclude Include="ClientUserInfo.h" />
     <ClInclude Include="DBSqlite3Proxy.h" />
@@ -122,6 +125,10 @@
     <ClInclude Include="NetSocketDataParse.h" />
     <ClInclude Include="NetSocketProxy.h" />
     <ClInclude Include="Operater.h" />
+    <ClInclude Include="RegistCardDBDoOperator.h" />
+    <ClInclude Include="RegistCardNetSocketDataParse.h" />
+    <ClInclude Include="RegistCardOperater.h" />
+    <ClInclude Include="RegistCardReponseNetSocketData.h" />
     <ClInclude Include="SearchServerNetSocketData.h" />
     <ClInclude Include="SearchServerNetSocketDataParse.h" />
     <ClInclude Include="SignupData.h" />
@@ -140,7 +147,12 @@
     <ClInclude Include="thread_lock.h" />
     <ClInclude Include="UdpNetSocketProxy.h" />
     <ClInclude Include="UserClient.h" />
+    <ClInclude Include="VerifyCardDBDoOperator.h" />
+    <ClInclude Include="VerifyCardNetSocketDataParse.h" />
+    <ClInclude Include="VerifyCardOperater.h" />
+    <ClInclude Include="VerifyCardReponseNetSocketData.h" />
     <ClInclude Include="veriry_common_define.h" />
+    <ClInclude Include="VIPCardManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppDataFileCopy.cpp" />
@@ -157,6 +169,9 @@
     <ClCompile Include="ClientVerifyData.cpp" />
     <ClCompile Include="ClientVerifyNetSocketDataParse.cpp" />
     <ClCompile Include="ClientVerifyOperator.cpp" />
+    <ClCompile Include="ConsumeCardDBDoOperator.cpp" />
+    <ClCompile Include="ConsumeCardOperater.cpp" />
+    <ClCompile Include="ConsumeCardReponseNetSocketData.cpp" />
     <ClCompile Include="DBSqlExecOperate.cpp" />
     <ClCompile Include="ClientUserInfo.cpp" />
     <ClCompile Include="DBSqlite3Proxy.cpp" />
@@ -171,6 +186,10 @@
     <ClCompile Include="NetSocketDataParse.cpp" />
     <ClCompile Include="NetSocketProxy.cpp" />
     <ClCompile Include="Operater.cpp" />
+    <ClCompile Include="RegistCardDBDoOperator.cpp" />
+    <ClCompile Include="RegistCardNetSocketDataParse.cpp" />
+    <ClCompile Include="RegistCardOperater.cpp" />
+    <ClCompile Include="RegistCardReponseNetSocketData.cpp" />
     <ClCompile Include="SearchServerNetSocketData.cpp" />
     <ClCompile Include="SearchServerNetSocketDataParse.cpp" />
     <ClCompile Include="SignupData.cpp" />
@@ -184,7 +203,12 @@
     <ClCompile Include="ThreadSocketRecevier.cpp" />
     <ClCompile Include="UdpNetSocketProxy.cpp" />
     <ClCompile Include="UserClient.cpp" />
+    <ClCompile Include="VerifyCardDBDoOperator.cpp" />
+    <ClCompile Include="VerifyCardNetSocketDataParse.cpp" />
+    <ClCompile Include="VerifyCardOperater.cpp" />
+    <ClCompile Include="VerifyCardReponseNetSocketData.cpp" />
     <ClCompile Include="VerifyServer.cpp" />
+    <ClCompile Include="VIPCardManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

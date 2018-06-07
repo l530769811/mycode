@@ -7,7 +7,7 @@ class CCheckInLogoutInfoOperater :
 	public COperater
 {
 public:
-	CCheckInLogoutInfoOperater(CClientManager *pmgr, unsigned long nid, MyString strUserName, MyString strUserPassword);
+	CCheckInLogoutInfoOperater(CClientManager *pmgr, unsigned long nid, MyString strUserName, MyString strUserPassword, int result);
 	virtual ~CCheckInLogoutInfoOperater(void);
 
 protected:
@@ -18,5 +18,6 @@ private:
 	unsigned long m_socket_id;
 	MyString m_strUserName;
 	MyString m_strUserPassword;
+	int m_result;
 };
 

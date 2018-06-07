@@ -21,6 +21,8 @@ private:
 	MyString m_strUserName;
 	MyString m_strUserPassword;
 
+	int m_resulte;
+
 	CClientManager *m_pgmr;
 	unsigned long m_socketid;
 	static const MyString m_strRequest ;

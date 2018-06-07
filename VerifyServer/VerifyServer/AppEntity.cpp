@@ -8,6 +8,7 @@
 #include "DBSqlite3Proxy.h"
 #include "AppDataFileCopy.h"
 #include "veriry_common_define.h"
+#include "VIPCardManager.h"
 #include "ClientManager.h"
 #include "MyServiceAppMain.h"
 #include "sqlite_sql.h"
@@ -23,7 +24,8 @@ CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
 	m_pdbproxy = new CDBSqlite3Proxy(strname.c_str());
 	m_pDbManager->AttachDB(m_pdbproxy);	
 
-	m_pclient_manager = new CClientManager(m_pDbManager);
+	m_pvipcard_manager = new CVIPCardManager(m_pDbManager);
+	m_pclient_manager = new CClientManager(m_pDbManager, m_pvipcard_manager);
 
 	m_pRecevier = new CThreadSocketRecevier(m_pclient_manager);
 	m_tcpServer = new CTcpServer();
@@ -55,6 +57,7 @@ CAppEntity::~CAppEntity(void)
 		m_pDbManager->DetachDB();
 	}
 	SAFE_DELETE(m_pdbproxy);
+	SAFE_DELETE(m_pvipcard_manager);
 	SAFE_DELETE(m_pclient_manager);
 }
 

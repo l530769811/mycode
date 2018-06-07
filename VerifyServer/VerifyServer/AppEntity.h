@@ -15,6 +15,7 @@ class CSocketRecevier;
 class CTcpServer;
 class CAppOperate;
 class CClientManager;
+class CVIPCardManager;
 class CAppEntity
 {
 public:
@@ -37,7 +38,7 @@ private:
 	CDBProxy *m_pdbproxy;
 	CAppDataFileCopy *m_pAppFileData;
 	CClientManager *m_pclient_manager;
-
+	CVIPCardManager *m_pvipcard_manager;
 
 };
 

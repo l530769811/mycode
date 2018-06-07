@@ -75,11 +75,17 @@ void CThreadSocketRecevier::Recevie(unsigned long uSokcetID, BYTE *rev_buf, UINT
 
 void CThreadSocketRecevier::connect_coming(unsigned long socketid, unsigned int nport)
 {
-
+	if(m_pRecevier!=0)
+	{
+		m_pRecevier->connect_coming(socketid, nport);
+	}
 }
 void CThreadSocketRecevier::unconnect_coming(unsigned long socketid, unsigned int nport)
 {
-
+	if(m_pRecevier!=0)
+	{
+		m_pRecevier->unconnect_coming(socketid, nport);
+	}
 }
 
 

@@ -9,6 +9,7 @@ const MyString CCheckInLogoutInfoNetSocketDataParse::m_strRequest = _T("checkin_
 CCheckInLogoutInfoNetSocketDataParse::CCheckInLogoutInfoNetSocketDataParse(CClientManager *mgr)
 	: m_pgmr(mgr)
 	, m_socketid(-1)
+	, m_resulte(0)
 {
 }
 
@@ -66,6 +67,12 @@ bool CCheckInLogoutInfoNetSocketDataParse::_parseData(unsigned long socket_id, c
 					strUserPassword = p->valuestring;
 				}
 
+				p = cJSON_GetObjectItem(pvalue, JSON_RESULT_KEY);
+				if (p!=0 && p->type==cJSON_Number)
+				{
+					m_resulte = p->valueint;
+				}
+
 				m_strUserName = strUserName;
 				m_strUserPassword = strUserPassword;
 			}
@@ -77,5 +84,5 @@ bool CCheckInLogoutInfoNetSocketDataParse::_parseData(unsigned long socket_id, c
 
 CUseCount<COperater> CCheckInLogoutInfoNetSocketDataParse::CreateOperater()
 {
-	return CUseCount<COperater>( new CCheckInLogoutInfoOperater(m_pgmr, m_socketid, m_strUserName, m_strUserPassword));
+	return CUseCount<COperater>( new CCheckInLogoutInfoOperater(m_pgmr, m_socketid, m_strUserName, m_strUserPassword, m_resulte));
 }
