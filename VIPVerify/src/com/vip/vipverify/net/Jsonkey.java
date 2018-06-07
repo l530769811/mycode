@@ -21,4 +21,5 @@ public class Jsonkey {
 	public static final String string_card_password_key = "card_password";
 	public static final String string_card_user_name_key = "card_user_name";
 	public static final String string_sex = "sex";
-}
+	public static final String string_user_first_name = "first_name";
+ }

@@ -7,34 +7,31 @@ import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.my_arg.MyArg;
 import com.vip.vipverify.net.Jsonkey;
 import com.vip.vipverify.operator.DoOperator;
-import com.vip.vipverify.operator.MessageNotifyTextDoOperator;
 import com.vip.vipverify.operator.MessageReponseDoOperator;
 
-public class CardRegistResultNetDataParse extends NetDataParse {
+public class ConsumeCardResultNetDataParse extends NetDataParse {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public static final int regist_suc_message_id = 0x1001;
-	public static final int regist_fail_message_id = 0x1002;
-
-	public static final String string_type_const = "card_regist_reponse";
+	public static final String string_type_const = "consume_card_reponse";
 
 	private MessageSpreader message_handle = null;
 
 	private int nresult = -1;
+	private String strResult = "";
 	private int msg_what = 0;
-	public CardRegistResultNetDataParse(MyArg message_handle) {
-	
-		if (message_handle != null) {
-			int[] int_args = message_handle.getArgInts();
+
+	public ConsumeCardResultNetDataParse(MyArg arg) {
+		if (arg != null) {
+			
+			int[] int_args = arg.getArgInts();
 			if(int_args!=null) {
-				this.msg_what = int_args[0];
+				this.msg_what = int_args[1];
 			}
 			
-			Object[] objs = message_handle.getArgObjects();
+			Object[] objs = arg.getArgObjects();
 			if(objs!=null) {
 				this.message_handle = (MessageSpreader)objs[0];
 			}
@@ -82,8 +79,8 @@ public class CardRegistResultNetDataParse extends NetDataParse {
 			if (json_cvalue != null) {
 				nresult = json_cvalue.getInt(Jsonkey.string_result_key);
 				try {
-				json_cvalue.getString(Jsonkey.string_strresult_key);
-				}catch (JSONException e) {
+					strResult = json_cvalue.getString(Jsonkey.string_strresult_key);
+				} catch (JSONException e) {
 					// TODO: handle exception
 				}
 				bret = true;
@@ -102,9 +99,8 @@ public class CardRegistResultNetDataParse extends NetDataParse {
 		// TODO Auto-generated method stub
 		DoOperator do_operator = null;
 
-		do_operator = new MessageNotifyTextDoOperator(message_handle, nresult, msg_what);
+		do_operator = new MessageReponseDoOperator(message_handle, nresult, msg_what, strResult);
 
 		return do_operator;
 	}
-
 }

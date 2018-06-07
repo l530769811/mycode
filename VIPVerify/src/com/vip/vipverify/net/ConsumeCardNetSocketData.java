@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.vip.vipverify.net;
 
 import org.json.JSONException;
@@ -5,20 +8,26 @@ import org.json.JSONObject;
 
 import com.vip.vipverify.Md5Unit;
 import com.vip.vipverify.client.CardVerifyInfo;
-import com.vip.vipverify.net_data_parse.CardVerifyResultNetDataParse;
-import com.vip.vipverify.net_data_parse.NetDataParsesCollection;
 
-public class VerifyCardNetSocketData extends NetSocketData {
+/**
+ * @author Administrator
+ *
+ */
+public class ConsumeCardNetSocketData extends NetSocketData {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private CardVerifyInfo info = null;
+	private String strCardNumber = "";
+	private String strCardPassword = "";
+	
+	
+	
+	public ConsumeCardNetSocketData(String strCardNumber, String strCardPassword) {
 
-	public VerifyCardNetSocketData(CardVerifyInfo info) {
-		super();
-		this.info = info;
+		this.strCardNumber = strCardNumber;
+		this.strCardPassword = strCardPassword;
 	}
 
 	@Override
@@ -31,21 +40,22 @@ public class VerifyCardNetSocketData extends NetSocketData {
 			json_object.put(Jsonkey.string_magicid_key, "");
 			JSONObject json_content = new JSONObject();
 			json_object.put(Jsonkey.string_content_key, json_content);
-			json_content.put(Jsonkey.string_ctype_key, NetDataParsesCollection.getRequestType(CardVerifyResultNetDataParse.class));
+			json_content.put(Jsonkey.string_ctype_key, "consume_card_request");
 			JSONObject json_cvalue = new JSONObject();
 			json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
-			if (info != null) {
-				json_cvalue.put(Jsonkey.string_card_number, info.getString_card_number());
-				json_cvalue.put(Jsonkey.string_card_password_key, Md5Unit.EncodeToMd5String(info.getString_card_password()));				
-			}
+
+			json_cvalue.put(Jsonkey.string_card_number, strCardNumber);
+			json_cvalue.put(Jsonkey.string_card_password_key, Md5Unit.EncodeToMd5String(strCardPassword));
 
 			String json_string = json_object.toString();
 			ret_byte = json_string.getBytes();
-		} catch (JSONException e) {
+		} catch (
+
+		JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		return ret_byte;
 	}
 

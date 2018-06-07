@@ -91,7 +91,7 @@ import android.widget.ToggleButton;
 public class VeriryActivity extends Activity implements SurfaceHolder.Callback, Runnable, OnClickListener {
 
 	private static final String TAG = VeriryActivity.class.getSimpleName();
-	public static final int KeyCardUserVerifySuc = 0x0001;
+	public static final int KeyCardUserVerifyResult = 0x0001;
 	public static final int KeyCardUserVerifyFail = 0x0002;
 	public static final int KeyCardUserRegistSuc = 0x0003;
 	public static final int KeyCardUserRegistFail = 0x0004;
@@ -100,6 +100,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	public static final int KeyCardUserVerifyDeleteFail = 0x0006;
 	public static final int KeYSyncToServer = 0x0007;
 	public static final int KeyConectResult = 0x0008;
+	public static final int KeyNotifyText = 0x0009;
 
 	private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
 	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
@@ -136,7 +137,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	final int DIALOG_VERIFY_CONFIRM_ID = 1;
 	private Dialog verify_confirm_dialog = null;
 	final String key_verify_info = "key_verify_info";
-	
+
 	private ProgressDialog loading_dialog = null;
 
 	@Override
@@ -151,7 +152,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 				verify_confirm_dialog.setCancelable(false);
 				Button button_confirm = (Button) verify_confirm_dialog.findViewById(R.id.button_info_confirm);
 				button_confirm.setOnClickListener(this);
-				Button button_recycle = (Button) verify_confirm_dialog.findViewById(R.id.button_info_recycle);
+				Button button_recycle = (Button) verify_confirm_dialog.findViewById(R.id.button_info_consume);
 				button_recycle.setOnClickListener(this);
 			}
 
@@ -208,7 +209,32 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		public void handleMessage(Message msg) {
 			Log.e(TAG, "rev msg: " + msg.what);
 			switch (msg.what) {
-			case KeyCardUserVerifySuc:
+			case KeyCardUserVerifyResult:
+				int result = msg.arg1;
+				if (result == MyErrors.NoError.nid) {
+
+					String[] info = null;
+					if (msg.obj instanceof String[]) {
+						info = (String[]) msg.obj;
+					}
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(key_verify_info, info);
+					if (verify_confirm_dialog != null) {
+
+						if (info != null) {
+							TextView text_view = (TextView) verify_confirm_dialog
+									.findViewById(R.id.textView_verify_info);
+							text_view.setText(info[0]);
+						}
+					}
+					VeriryActivity.this.showDialog(DIALOG_VERIFY_CONFIRM_ID, bundle);
+				} else {
+					int notify_result = result;
+					int string_id = MyErrors.GetStringIdFromErrorID(notify_result);
+					Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(string_id),
+							Toast.LENGTH_LONG).show();
+				}
+				break;
 			case CardVerifyResultNetDataParse.verify_suc_message_id:
 				// Toast.makeText(VeriryActivity.this, R.string.string_textnotify_verifysuc,
 				// Toast.LENGTH_SHORT).show();
@@ -261,17 +287,26 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 
 			case KeyConectResult:
 				int connect_result = (int) msg.obj;
-				if(loading_dialog!=null) {
+				if (loading_dialog != null) {
 					loading_dialog.dismiss();
 				}
-				if (connect_result==MyErrors.NoError.nid) {
+				if (connect_result == MyErrors.NoError.nid) {
 					VeriryActivity.this.setVisible(true);
 				} else {
 					int string_id = MyErrors.GetStringIdFromErrorID(connect_result);
-					Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(string_id), Toast.LENGTH_LONG).show();
+					Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(string_id),
+							Toast.LENGTH_LONG).show();
 					VeriryActivity.this.finish();
 				}
 				break;
+
+			case KeyNotifyText:
+				int notify_result = (int) msg.obj;
+				int string_id = MyErrors.GetStringIdFromErrorID(notify_result);
+				Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(string_id),
+						Toast.LENGTH_LONG).show();
+				break;
+
 			default:
 				break;
 			}
@@ -562,20 +597,18 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		setContentView(R.layout.activity_veriry);
 
 		ClientManager client_manager = ClientManager.getInstance(this);
-		if (client_manager != null ) {
+		if (client_manager != null) {
 			ClientUserCreator loginUserCreator = client_manager.get_cur_user_Creator();
 			loginUser = loginUserCreator.createClientUser();
 		}
 
 		if (loginUser != null) {
 			this.setVisible(false);
-			
+
 			loading_dialog = ProgressDialog.show(this, "", getResources().getString(R.string.string_connectting));
 			loginUser.bindUiHandler(ui_message_handler);
 			loginUser.loginIn();
-		}
-		else
-		{
+		} else {
 			this.finish();
 		}
 
@@ -1034,7 +1067,6 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		EditText viewResult = (EditText) findViewById(R.id.edit_cardnumber);
 		viewResult.setText(resultText);
 
-
 	}
 
 	public void restartPreviewAfterDelay(long delayMS) {
@@ -1309,7 +1341,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 				verify_confirm_dialog.dismiss();
 			}
 			break;
-		case R.id.button_info_recycle:
+		case R.id.button_info_consume:
 			if (verify_confirm_dialog != null) {
 				verify_confirm_dialog.dismiss();
 				if (loginUser != null) {
@@ -1364,20 +1396,12 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 				return true;
 			}
 
-			if (source == IntentSource.NATIVE_APP_INTENT) {
-				setResult(RESULT_CANCELED);
-				AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-						this.getResources().getString(R.string.string_sure_loginout), 5,
-						new ExitLeaveMyDialogListener(this));
-				dialog.show();
-				// finish();
-				return true;
-			}
-			if ((source == IntentSource.NONE || source == IntentSource.ZXING_LINK) && lastResult != null) {
-				restartPreviewAfterDelay(0L);
-				return true;
-			}
-			break;
+			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
+					this.getResources().getString(R.string.string_sure_loginout), 5,
+					new ExitLeaveMyDialogListener(this));
+			dialog.show();
+			return true;
+
 		case KeyEvent.KEYCODE_FOCUS:
 		case KeyEvent.KEYCODE_CAMERA:
 			// Handle these events so they don't launch the Camera app
@@ -1390,10 +1414,8 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			cameraManager.setTorch(true);
 			return true;
 		}
-		AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-				this.getResources().getString(R.string.string_sure_loginout), 5, new ExitLeaveMyDialogListener(this));
-		dialog.show();
-		return true;
+
+		return super.onKeyDown(keyCode, event);
 	}
 
 }

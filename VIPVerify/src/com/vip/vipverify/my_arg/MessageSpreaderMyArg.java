@@ -4,13 +4,19 @@ import com.common.my_message.MessageSpreader;
 
 public class MessageSpreaderMyArg implements MyArg {
 
-	
-
 	private MessageSpreader message_handler = null;
+	private int msg_what = 0;
 	
-	public MessageSpreaderMyArg(MessageSpreader message_handler) {
+	private int[] int_args = new  int[2];
+	private Object[] obj_args = new Object[2];
+	
+	public MessageSpreaderMyArg(MessageSpreader message_handler, int msg_what, int msg_what2) {
 		super();
 		this.message_handler = message_handler;
+		this.msg_what = msg_what;
+		obj_args[0] = message_handler;
+		int_args[0] = msg_what;
+		int_args[1]	= msg_what2;
 	}
 
 	@Override
@@ -28,13 +34,14 @@ public class MessageSpreaderMyArg implements MyArg {
 	@Override
 	public int getArgInt() {
 		// TODO Auto-generated method stub
-		return 0;
+		return msg_what;
 	}
 
 	@Override
 	public int[] getArgInts() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		return int_args;
 	}
 
 	@Override
@@ -94,7 +101,8 @@ public class MessageSpreaderMyArg implements MyArg {
 	@Override
 	public Object[] getArgObjects() {
 		// TODO Auto-generated method stub
-		return null;
+		
+ 		return obj_args;
 	}
 
 }

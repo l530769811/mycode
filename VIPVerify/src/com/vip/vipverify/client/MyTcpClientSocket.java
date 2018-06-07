@@ -26,12 +26,12 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 	private DataOutputStream out = null;
 	public final static int net_client_code = 0;
 	private AnalyzeNetData analyzer = null;
-	private ConnectResultListening connect_listener = null;
+	private NetConnectResultListening connect_listener = null;
 	private SockketDataListening listrenling = null;
 
 
 	public MyTcpClientSocket(Thread rev_thread, SockketDataListening listrenling,
-			ConnectResultListening connect_listener, AnalyzeNetData analyzer) {
+			NetConnectResultListening connect_listener, AnalyzeNetData analyzer) {
 		super(rev_thread);
 		// TODO Auto-generated constructor stub
 		this.listrenling = listrenling;
@@ -55,7 +55,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 					in = new DataInputStream(socketClient.getInputStream());
 					bret = true;
 					if (this.connect_listener != null) {
-						this.connect_listener.connect_result(true, addr, port);
+						this.connect_listener.connect_result(true, 0, addr, port);
 					}
 					break;
 				}
@@ -68,7 +68,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 				}
 				if(connect_times>=4)
 				if (this.connect_listener != null) {
-					this.connect_listener.connect_result(false, addr, port);
+					this.connect_listener.connect_result(false, 1, addr, port);
 				}
 			}
 			connect_times++;
@@ -158,7 +158,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 	}
 
 	@Override
-	protected int how_send_data(byte[] data, int len) {
+	protected int how_send_data(byte[] data, int len, String addr, int port) {
 		// TODO Auto-generated method stub
 		int nlen = -1;
 		if (out != null) {
@@ -178,6 +178,9 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				if (this.connect_listener != null) {
+					this.connect_listener.net_state(false, Net_error, addr, port);
+				}
 				e.printStackTrace();
 			}
 		}
@@ -186,7 +189,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 	}
 
 	@Override
-	protected int how_rev_data(byte[] rev_data_buff, int len) {
+	protected int how_rev_data(byte[] rev_data_buff, int len, String addr, int port) {
 		// TODO Auto-generated method stub
 		int length = -1;
 		if (in != null) {
@@ -194,7 +197,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 			try {
 				length = in.read(rev_data_buff);
 				if (analyzer != null) {
-					List<byte[]> listPack = analyzer.analyze(rev_data_buff, len);
+					List<byte[]> listPack = analyzer.analyze(rev_data_buff, length);
 					Iterator<byte[]> it = listPack.iterator();
 					while(it.hasNext())
 					{
@@ -208,6 +211,9 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				if (this.connect_listener != null) {
+					this.connect_listener.net_state(false, Net_error, addr, port);
+				}
 
 			}
 		}

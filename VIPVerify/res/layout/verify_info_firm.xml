@@ -31,14 +31,14 @@
             android:text="@string/string_info_confirm" />
 
         <Button
-            android:id="@+id/button_info_recycle"
+            android:id="@+id/button_info_consume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="30dp"
             android:layout_marginRight="30dp"
              android:layout_marginBottom="30dp"
             android:layout_alignParentRight="true"
-            android:text="@string/string_info_recycle" />
+            android:text="@string/string_info_consume" />
     </RelativeLayout>
 
 </LinearLayout>

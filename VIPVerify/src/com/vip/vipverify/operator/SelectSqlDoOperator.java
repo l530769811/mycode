@@ -3,6 +3,7 @@ package com.vip.vipverify.operator;
 import java.io.Serializable;
 
 import com.common.my_message.MessageSpreader;
+import com.vip.vipverify.MyErrors;
 import com.vip.vipverify.db.MyBaseDataProxy;
 
 import android.os.Message;
@@ -40,6 +41,7 @@ public class SelectSqlDoOperator implements DoOperator, Serializable {
 					if (message_handler != null) {
 						Message message = Message.obtain();
 						message.what = this.message_key_suc;
+						message.arg1 = MyErrors.NoError.nid;
 						message.obj = result_string;
 						message_handler.sendMessage(message);
 					}

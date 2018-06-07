@@ -3,6 +3,7 @@ package com.vip.vipverify.net;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.vip.vipverify.Md5Unit;
 import com.vip.vipverify.client.CardRegistInfo;
 import com.vip.vipverify.net_data_parse.CardRegistResultNetDataParse;
 import com.vip.vipverify.net_data_parse.NetDataParsesCollection;
@@ -37,10 +38,11 @@ public class RegistCardNetSocketData extends NetSocketData {
 			json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
 			if (info != null) {
 				json_cvalue.put(Jsonkey.string_card_number, info.getString_card_number());
-				json_cvalue.put(Jsonkey.string_card_password_key, info.getString_password());
-				json_cvalue.put(Jsonkey.string_card_user_name_key, info.getString_first_name());
+				json_cvalue.put(Jsonkey.string_card_password_key, Md5Unit.EncodeToMd5String(info.getString_password()) );
+				json_cvalue.put(Jsonkey.string_card_user_name_key, info.getString_card_own());
 				json_cvalue.put(Jsonkey.string_phone_number, info.getString_phone());
 				json_cvalue.put(Jsonkey.string_sex, info.getN_sex());
+				json_cvalue.put(Jsonkey.string_user_first_name, info.getString_first_name());
 			}
 
 			String json_string = json_object.toString();

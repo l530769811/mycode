@@ -8,6 +8,10 @@ import com.vip.vipverify.net.Jsonkey;
 import com.vip.vipverify.operator.DoOperator;
 
 public class VerifyLoginNetDataParse extends NetDataParse {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String ResponseSearchServerType = "verify_login_reponse";
 	private int nresult = -1;
 	public VerifyLoginNetDataParse(MyArg arg) {

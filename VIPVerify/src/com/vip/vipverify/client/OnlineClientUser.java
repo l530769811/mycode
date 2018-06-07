@@ -6,13 +6,15 @@ import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.MyErrors;
 import com.vip.vipverify.VeriryActivity;
-import com.vip.vipverify.client.MyClientSocket.ConnectResultListening;
+import com.vip.vipverify.client.MyClientSocket.NetConnectResultListening;
 import com.vip.vipverify.client.MyClientSocket.SockketDataListening;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.db.QueryUnit;
+import com.vip.vipverify.my_arg.MessageSpreaderMyArg;
 import com.vip.vipverify.net.AnalyzeTcpNetData;
 import com.vip.vipverify.net.CheckInLoginInfoNetSocketData;
 import com.vip.vipverify.net.CheckInLoginoutInfoNetSocketData;
+import com.vip.vipverify.net.ConsumeCardNetSocketData;
 import com.vip.vipverify.net.NetSocketData;
 import com.vip.vipverify.net.RegistCardNetSocketData;
 import com.vip.vipverify.net.ServerNetInfo;
@@ -20,6 +22,9 @@ import com.vip.vipverify.net.SocketProxy;
 import com.vip.vipverify.net.SocketReceiveListeningChannelList;
 import com.vip.vipverify.net.VerifyCardNetSocketData;
 import com.vip.vipverify.net_data_parse.LoginAffirmNetDataParse;
+import com.vip.vipverify.net_data_parse.NetDataParse;
+import com.vip.vipverify.net_data_parse.NetDataParsesCollection;
+import com.vip.vipverify.net_data_parse.NetDataParsesCollection.ParseResultListening;
 import com.vip.vipverify.operator.DeleteSqlDoOperator;
 import com.vip.vipverify.operator.DoOperator;
 import com.vip.vipverify.operator.OnlineUserSyncDoOperator;
@@ -88,10 +93,13 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 
 	private Thread socketThread = null;
 	private WakeThread send_thread = null;
+	private int login_result = 0;
 
 	private SocketReceiveListeningChannelList socket_receive_list = null;
 	final int message_key_suc = 0x1011;
 	final int message_key_fail = 0x1012;
+
+	private NetDataParsesCollection parsers = new NetDataParsesCollection();
 
 	private MessageSpreader message_handler = new HandleMessageSpreader() {
 		/**
@@ -127,8 +135,6 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		}
 	};
 
-	
-
 	class OnlineUserSockketDataListening implements SockketDataListening, Serializable {
 
 		/**
@@ -140,17 +146,15 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		public int rev_data(byte[] data, int len) {
 			// TODO Auto-generated method stub
 			LoginAffirmNetDataParse parser = new LoginAffirmNetDataParse(null);
-			if(parser.Parse(data, len)==true)
-			{
+			if (parser.Parse(data, len) == true) {
 				int result = parser.getNresult();
-				if(result==0) {
+				login_result = result;
+				if (result == 0) {
 					String strUserName = parser.getStrUserName();
-					String strUserPassword = parser.getStrUserPassword();
-					if(user_info!=null) {
-						boolean b  = strUserName.equalsIgnoreCase(user_info.getUser_name());
-//						b = strUserPassword.equalsIgnoreCase(user_info.getUser_password());
-						if(b)
-						{
+					if (user_info != null) {
+						boolean b = strUserName.equalsIgnoreCase(user_info.getUser_name());
+						// b = strUserPassword.equalsIgnoreCase(user_info.getUser_password());
+						if (b) {
 							if (ui_message_handler != null) {
 								Message msg = Message.obtain();
 								msg.what = VeriryActivity.KeyConectResult;
@@ -158,8 +162,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 								ui_message_handler.sendMessage(msg);
 							}
 							syncLocalToServer();
-						}
-						else {
+						} else {
 							if (ui_message_handler != null) {
 								Message msg = Message.obtain();
 								msg.what = VeriryActivity.KeyConectResult;
@@ -168,7 +171,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 							}
 						}
 					}
-					
+
 				} else {
 					if (ui_message_handler != null) {
 						Message msg = Message.obtain();
@@ -177,20 +180,36 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 						ui_message_handler.sendMessage(msg);
 					}
 				}
-				
-				
+
 				DoOperator op = parser.createOperator();
 				if (op != null) {
 					op.ToDoOperate();
 				}
-			}
-			else
-			{
+			} else {
+				parsers.parse(data, len, new ParseResultListening() {
+
+					@Override
+					public void parse_suc(NetDataParse parser) {
+						// TODO Auto-generated method stub
+						DoOperator op = parser.createOperator();
+						if (op != null) {
+							op.ToDoOperate();
+						}
+					}
+
+					@Override
+					public void parse_fail(byte[] rev_data, int len) {
+						// TODO Auto-generated method stub
+
+					}
+
+				});
+
 				if (socket_receive_list != null) {
-					socket_receive_list.RevData(data, len); 
+					socket_receive_list.RevData(data, len);
 				}
 			}
-		
+
 			return 0;
 		}
 
@@ -202,12 +221,34 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 
 	}
 
-	private ConnectResultListening connect_listener = new ConnectResultListening() {
-		public void connect_result(boolean bresult, String ip, int port) {
-			if (bresult) {				
+	private NetConnectResultListening connect_listener = new NetConnectResultListening() {
+
+		@Override
+		public void connect_result(boolean bresult, int reason, String ip, int port) {
+			// TODO Auto-generated method stub
+			if (bresult) {
 				loginin_to_server(user_info);
+
+				if (ui_message_handler != null) {
+					Message msg = Message.obtain();
+					msg.what = VeriryActivity.KeyNotifyText;
+					msg.obj = MyErrors.NoError.nid;
+					ui_message_handler.sendMessage(msg);
+				}
 			}
-			
+		}
+
+		@Override
+		public void net_state(boolean bresult, int reason, String ip, int port) {
+			// TODO Auto-generated method stub
+			if (bresult == false && reason == MyClientSocket.Net_error) {
+				if (ui_message_handler != null) {
+					Message msg = Message.obtain();
+					msg.what = VeriryActivity.KeyNotifyText;
+					msg.obj = MyErrors.NetConnectBreakError.nid;
+					ui_message_handler.sendMessage(msg);
+				}
+			}
 		}
 	};
 
@@ -223,7 +264,6 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		this.send_thread = send_thread;
 		this.socket_receive_list = socket_receive_list;
 		this.user_info = user_info;
-
 	}
 
 	private void loginin_to_server(ClientUserInfo info) {
@@ -237,7 +277,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 			@Override
 			protected int send_data(byte[] send_byte, int len) {
 				// TODO Auto-generated method stub
-				OnlineClientUser.this.client_socket.send_data(send_byte, len);
+				OnlineClientUser.this.client_socket.send_data(send_byte, len, addr_ip, port);
 				return 0;
 			}
 		};
@@ -250,7 +290,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	}
 
 	private void loginout_to_server(ClientUserInfo info) {
-		NetSocketData data = new CheckInLoginoutInfoNetSocketData(info);
+		NetSocketData data = new CheckInLoginoutInfoNetSocketData(info, login_result);
 		SocketProxy proxy = new SocketProxy() {
 			/**
 			 * 
@@ -260,7 +300,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 			@Override
 			protected int send_data(byte[] send_byte, int len) {
 				// TODO Auto-generated method stub
-				OnlineClientUser.this.client_socket.send_data(send_byte, len);
+				OnlineClientUser.this.client_socket.send_data(send_byte, len, addr_ip, port);
 				return 0;
 			}
 		};
@@ -288,7 +328,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 			client_socket.disconnect_socket();
 			client_socket.close_socket();
 		}
-		
+
 		return bret;
 	}
 
@@ -307,21 +347,18 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		if (mdb != null) {
 			mdb.start();
 		}
-		
+
 		if (client_socket == null) {
 			switch (net_kind) {
 			case -1:
 			case MyTcpClientSocket.net_client_code:
-				client_socket = new MyTcpClientSocket( 
-						socketThread, 
-						new OnlineUserSockketDataListening(),
-						connect_listener, new AnalyzeTcpNetData(null)
-						);
-				
+				client_socket = new MyTcpClientSocket(socketThread, new OnlineUserSockketDataListening(),
+						connect_listener, new AnalyzeTcpNetData(null));
+
 				break;
 			case MyUdpClientSocket.net_client_code:
 				client_socket = new MyUdpClientSocket(socketThread, null);
-			
+
 				break;
 
 			default:
@@ -341,7 +378,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		if (client_socket != null) {
 			loginout_to_server(user_info);
 			this.close_connect();
-			
+
 		}
 		if (mdb != null) {
 			mdb.stop();
@@ -358,7 +395,9 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	@Override
 	public boolean commit_regist(CardRegistInfo info) {
 		// TODO Auto-generated method stub
-
+		if (user_info != null) {
+			info.setString_card_own(this.user_info.getUser_name());
+		}
 		NetSocketData card_regist_data = new RegistCardNetSocketData(info);
 		SocketProxy proxy = new SocketProxy() {
 			/**
@@ -369,7 +408,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 			@Override
 			protected int send_data(byte[] send_byte, int len) {
 				// TODO Auto-generated method stub
-				OnlineClientUser.this.client_socket.send_data(send_byte, len);
+				OnlineClientUser.this.client_socket.send_data(send_byte, len, addr_ip, port);
 				return 0;
 			}
 		};
@@ -395,11 +434,11 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 			@Override
 			protected int send_data(byte[] send_byte, int len) {
 				// TODO Auto-generated method stub
-				OnlineClientUser.this.client_socket.send_data(send_byte, len);
+				OnlineClientUser.this.client_socket.send_data(send_byte, len, addr_ip, port);
 				return 0;
 			}
 		};
-		
+
 		DoOperator operator = new SocketSendDoOperator(card_verify_data, proxy);
 		if (send_thread != null) {
 			send_thread.postOperate(operator);
@@ -412,6 +451,30 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	@Override
 	public boolean commit_verify_after_do(CardVerifyInfo info) {
 		// TODO Auto-generated method stub
+		if (info != null) {
+			NetSocketData card_verify_after_data = new ConsumeCardNetSocketData(info.getString_card_number(),
+					info.getString_card_password());
+			SocketProxy proxy = new SocketProxy() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected int send_data(byte[] send_byte, int len) {
+					// TODO Auto-generated method stub
+					OnlineClientUser.this.client_socket.send_data(send_byte, len, addr_ip, port);
+					return 0;
+				}
+			};
+			
+			DoOperator operator = new SocketSendDoOperator(card_verify_after_data, proxy);
+			if (send_thread != null) {
+				send_thread.postOperate(operator);
+			} else {
+				operator.ToDoOperate();
+			}
+		}
 		return false;
 	}
 
@@ -425,8 +488,10 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	public void bindUiHandler(MessageSpreader h) {
 		// TODO Auto-generated method stub
 		ui_message_handler = h;
+		parsers.createObject(new MessageSpreaderMyArg(ui_message_handler, 
+				VeriryActivity.KeyNotifyText,
+				VeriryActivity.KeyCardUserVerifyResult));
 	}
-
 
 	@Override
 	public String GetUserName() {

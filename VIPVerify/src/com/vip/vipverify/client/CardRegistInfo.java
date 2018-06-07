@@ -9,6 +9,9 @@ public class CardRegistInfo {
 	int n_sex = 0;
 	String string_first_name = null;
 	String string_call_name = null;
+	String string_card_own = "";
+	
+	
 	public CardRegistInfo(String string_carnumber, 
 			String string_phone,
 			String string_password, 
@@ -59,5 +62,11 @@ public class CardRegistInfo {
 		this.string_call_name = string_call_name;
 	}
 	
+	public String getString_card_own() {
+		return string_card_own;
+	}
+	public void setString_card_own(String string_card_own) {
+		this.string_card_own = string_card_own;
+	}
 	
 }

@@ -11,7 +11,9 @@ public class NetDataParsesCollection {
 	public enum NetDataParses {
 		NullNetDataParse(null, "", ""),
 
-		RegistResultNetDataParse(CardRegistResultNetDataParse.class, "card_regist_request", "card_regist_reponse"),
+		CardVerifyResultNetDataParse(CardVerifyResultNetDataParse.class, "card_verify_request", "card_verify_reponse"),
+
+		CardRegistResultNetDataParse(CardRegistResultNetDataParse.class, "card_regist_request", "card_regist_reponse"),
 
 		ServerInfoNetDataParse(ServerInfoNetDataParse.class, "search_server_request", "search_server_reponse"),
 
@@ -19,15 +21,14 @@ public class NetDataParsesCollection {
 
 		VerifyLoginNetDataParse(VerifyLoginNetDataParse.class, "verify_login_request", "verify_login_reponse"),
 
-		VerifyResultNetDataParse(CardVerifyResultNetDataParse.class, "card_verify_request", "card_verify_reponse"),
+		LoginAffirmNetDataParse(LoginAffirmNetDataParse.class, "login_affirm_request", "login_affirm_reponse"),
 		
-		LoginAffirmNetDataParse(LoginAffirmNetDataParse.class, "login_affirm_request", "login_affirm_reponse");
-
+		ConsumeCardResultNetDataParse(ConsumeCardResultNetDataParse.class, "consume_card_request", "consume_card_reponse");
+		
 		private final Class<? extends NetDataParse> NetDataParseClass;
 		private final String request_string;
 		private final String reponse_string;
 
-	
 		NetDataParses(final Class<? extends NetDataParse> activityClass, String request_string, String reponse_string) {
 			this.NetDataParseClass = activityClass;
 			this.request_string = request_string;
@@ -35,14 +36,16 @@ public class NetDataParsesCollection {
 
 		}
 	}
-	
+
 	private final List<NetDataParse> list_net = new ArrayList<NetDataParse>();
+	private boolean bIsCreate = false;
+
 	public interface ParseResultListening {
 		public void parse_suc(NetDataParse parser);
 
 		public void parse_fail(byte[] rev_data, int len);
 	}
-	
+
 	public final static String getRequestType(Class<? extends NetDataParse> obj_class) {
 		String ret = "";
 		for (NetDataParses net_data : NetDataParses.values()) {
@@ -65,7 +68,8 @@ public class NetDataParsesCollection {
 		return ret;
 	}
 
-	public void parse(byte[] rev_data, int len, ParseResultListening listener) {
+	public boolean parse(byte[] rev_data, int len, ParseResultListening listener) {
+		boolean bret = false;
 		Iterator<NetDataParse> itor = list_net.iterator();
 		while (itor.hasNext()) {
 			NetDataParse parser = itor.next();
@@ -74,26 +78,30 @@ public class NetDataParsesCollection {
 					listener.parse_suc(parser);
 				}
 
-				return;
+				bret = true;
+				break;
 			}
 		}
 
-		if (listener != null) {
+		if (bret==false && listener != null) {
 			listener.parse_fail(rev_data, len);
 		}
+		
+		return bret;
 	}
 
 	public void createObject(MyArg argv) {
-
-		for (NetDataParses a : NetDataParses.values()) {
-			try {
-				if (a.NetDataParseClass != null) {
-					addNetDataParse(a.NetDataParseClass.getConstructor(MyArg.class).newInstance(argv));
+		if (bIsCreate == false) {
+			for (NetDataParses a : NetDataParses.values()) {
+				try {
+					if (a.NetDataParseClass != null) {
+						addNetDataParse(a.NetDataParseClass.getConstructor(MyArg.class).newInstance(argv));
+					}
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException | NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}

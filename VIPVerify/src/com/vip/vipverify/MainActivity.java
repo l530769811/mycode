@@ -536,8 +536,9 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			exitBy2Click();
+			return true;
 		}
-		return true;
+		return super.onKeyDown(keyCode, event);
 	}
 
 	/**

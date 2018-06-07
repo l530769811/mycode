@@ -38,13 +38,13 @@ public class MyUdpClientSocket extends MyClientSocket {
 	}
 
 	@Override
-	protected int how_send_data(byte[] data, int len) {
+	protected int how_send_data(byte[] data, int len, String addr, int port) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	protected int how_rev_data(byte[] data, int len) {
+	protected int how_rev_data(byte[] data, int len, String addr, int port) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

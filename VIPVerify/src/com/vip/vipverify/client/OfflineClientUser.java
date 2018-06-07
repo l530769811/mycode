@@ -100,7 +100,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 			str_verify_sql = String.format(select_card_info_name_pass_encrypt, info.getString_card_number(),
 					Md5Unit.EncodePasswordByCardnumber(info.getString_card_number(), info.getString_card_password()));
 			ret = mdb.PostExecSql(new SelectSqlDoOperator(str_verify_sql, mdb, this.ui_message_handler,
-					VeriryActivity.KeyCardUserVerifySuc, VeriryActivity.KeyCardUserVerifyFail));
+					VeriryActivity.KeyCardUserVerifyResult, VeriryActivity.KeyCardUserVerifyResult));
 		}
 
 		return ret;

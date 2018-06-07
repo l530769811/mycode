@@ -6,16 +6,19 @@ import org.json.JSONObject;
 import com.vip.vipverify.client.ClientUserInfo;
 
 public class CheckInLoginoutInfoNetSocketData extends NetSocketData {
-/**
-	 * 
-	 */
+	/**
+		 * 
+		 */
 	private static final long serialVersionUID = 1L;
-private ClientUserInfo info = null;
-	
-	public CheckInLoginoutInfoNetSocketData(ClientUserInfo info) {
+	private ClientUserInfo info = null;
+	private int result = 0;
+
+	public CheckInLoginoutInfoNetSocketData(ClientUserInfo info, int result) {
 		super();
 		this.info = info;
+		this.result = result;
 	}
+
 	@Override
 	protected byte[] prepare_data() {
 		// TODO Auto-generated method stub
@@ -32,7 +35,7 @@ private ClientUserInfo info = null;
 			if (info != null) {
 				json_cvalue.put(Jsonkey.string_user_name_key, info.getUser_name());
 				json_cvalue.put(Jsonkey.string_user_password_key, info.getUser_password());
-
+				json_cvalue.put(Jsonkey.string_result_key, result);
 			}
 
 			String json_string = json_object.toString();

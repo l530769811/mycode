@@ -12,7 +12,7 @@ public abstract class WakeThread extends Thread implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private boolean bwakeup = false;
-	private Lock wakelock = new ReentrantLock();
+	private boolean bexit = false;
 
 	final public void wakeUp() {
 		synchronized (this) {
@@ -34,6 +34,7 @@ public abstract class WakeThread extends Thread implements Serializable {
 	public void exit() {
 		
 		this.wakeUp();
+		this.bexit = true;
 		this.interrupt();
 		try {
 			this.join();
@@ -41,6 +42,7 @@ public abstract class WakeThread extends Thread implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.interrupt();
 	}
 	
 	final private boolean wake() {
@@ -69,6 +71,10 @@ public abstract class WakeThread extends Thread implements Serializable {
 	final public void run() {
 		// TODO Auto-generated method stub
 		while (!currentThread().isInterrupted()) {
+			if(bexit==true) {
+				break;
+			}
+			
 			if (wake() == false)
 				break;
 			try {
