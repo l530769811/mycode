@@ -15,6 +15,7 @@ public:
 		unsigned long socket_id,
 		MyString strCardNumber, 
 		MyString strCardPassword,
+		MyString strCardPasswordEncode,
 		MyString strCardUserName,
 		MyString strCardUserPhone,
 		MyString strCardUserFirstName,
@@ -30,6 +31,7 @@ private:
 	unsigned long m_socket_id;
 	MyString m_strCardNumber;
 	MyString m_strCardPassword;
+	MyString m_strCardPasswordEncode;
 	MyString m_strCardUserName;
 	MyString m_strCardUserPhone;
 	int m_nCardUserSex;

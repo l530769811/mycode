@@ -29,11 +29,12 @@ int CVerifyCardDBDoOperator::VerifyCardCallback(void *data, int argc, char **arg
 			TCHAR strResult[1024] = {0};
 			for (int i=0; i<count_column; i++)
 			{
-				TCHAR	strColName[20] = {0};
-				TCHAR	strColValue[20] = {0};
+				const int buff_len = 255;
+				TCHAR	strColName[buff_len] = {0};
+				TCHAR	strColValue[buff_len] = {0};
 
-				GlobalUtf8ToUnicode(azColName[i], strColName, 19);
-				GlobalUtf8ToUnicode(argv[i], strColValue, 19);
+				GlobalUtf8ToUnicode(azColName[i], strColName, buff_len-1);
+				GlobalUtf8ToUnicode(argv[i], strColValue, buff_len-1);
 				
 				pdata->m_strResult = pdata->m_strResult + strColName + _T(" : ") + strColValue + _T("\n");
 			}			

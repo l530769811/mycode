@@ -61,6 +61,12 @@ bool CRegistCardNetSocketDataParse::_parseData(unsigned long socket_id, const un
 					m_strCardPassword = p->valuestring;
 				}
 
+				p = cJSON_GetObjectItem(pvalue, JSON_CARD_PASSWORD_ENCODE_KEY);
+				if (p!=0 && p->type==cJSON_String)
+				{
+					m_strCardPasswordEncode = p->valuestring;
+				}
+
 				p = cJSON_GetObjectItem(pvalue, JSON_CARD_USER_NAME_KEY);
 				if (p!=0 && p->type==cJSON_String)
 				{
@@ -93,5 +99,5 @@ bool CRegistCardNetSocketDataParse::_parseData(unsigned long socket_id, const un
 
 CUseCount<COperater> CRegistCardNetSocketDataParse::CreateOperater()
 {
-	return CUseCount<COperater>( new CRegistCardOperater(m_pmgr, m_pclient_mgr, m_socketid,  m_strCardNumber, m_strCardPassword, m_strCardUserName, m_strCardUserPhone, m_strCardUserFirstName, m_nCardUserSex));
+	return CUseCount<COperater>( new CRegistCardOperater(m_pmgr, m_pclient_mgr, m_socketid,  m_strCardNumber, m_strCardPassword, m_strCardPasswordEncode, m_strCardUserName, m_strCardUserPhone, m_strCardUserFirstName, m_nCardUserSex));
 }

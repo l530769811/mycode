@@ -201,6 +201,9 @@
     <ClInclude Include="ConsumeCardDBDoOperator.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ConsumeCardNetSocketDataParse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -363,6 +366,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ConsumeCardDBDoOperator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumeCardNetSocketDataParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -25,6 +25,7 @@
 #include "CheckInLogoutInfoNetSocketDataParse.h"
 #include "VerifyCardNetSocketDataParse.h"
 #include "RegistCardNetSocketDataParse.h"
+#include "ConsumeCardNetSocketDataParse.h"
 #include "UserClient.h"
 
 CClientManager::CClientManager(CDBSqlManager *pdb, CVIPCardManager *pvip_mgr)
@@ -40,6 +41,7 @@ CClientManager::CClientManager(CDBSqlManager *pdb, CVIPCardManager *pvip_mgr)
 	m_net_parse_list.push_back(new CCheckInLogoutInfoNetSocketDataParse(this));
 	m_net_parse_list.push_back(new CVerifyCardNetSocketDataParse(m_pvip_mgr, this));
 	m_net_parse_list.push_back(new CRegistCardNetSocketDataParse(m_pvip_mgr, this));
+	m_net_parse_list.push_back(new CConsumeCardNetSocketDataParse(m_pvip_mgr, this));
 }
 
 bool CClientManager::Open()

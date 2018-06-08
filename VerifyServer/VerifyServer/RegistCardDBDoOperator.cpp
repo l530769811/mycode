@@ -38,8 +38,7 @@ int CRegistCardDBDoOperator::Exec(CDBSqlManager *pdb)
 		if (nret==0)
 		{
 			m_result = NO_ERROR;
-		}
-		
+		}		
 	}
 	return nret;
 }

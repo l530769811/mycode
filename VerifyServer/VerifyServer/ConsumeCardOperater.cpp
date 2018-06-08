@@ -27,7 +27,7 @@ bool CConsumeCardOperater::_DoOperate()
 	if(m_pmgr!=0)
 	{
 		TCHAR sql[1024] = {0};
-		_stprintf(sql, select_card_info_name_pass_encrypt, m_strCardNumber.c_str(), m_strCardPassword.c_str());
+		_stprintf(sql, delete_card_info_name_pass, m_strCardNumber.c_str(), m_strCardPassword.c_str());
 		MyString strSql = sql;
 		CConsumeCardDBDoOperator op(strSql);
 		m_pmgr->DoOperate(op);

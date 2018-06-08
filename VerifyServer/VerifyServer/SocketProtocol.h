@@ -32,6 +32,7 @@ cJSON* CrateJsonValue(cJSON *pjson);
 #define JSON_RESULT_INFO_KEY				_T("result_info")
 #define JSON_CARD_NUMBER_KEY					_T("card_number")
 #define JSON_CARD_PASSWORD_KEY				_T("card_password")
+#define JSON_CARD_PASSWORD_ENCODE_KEY		_T("card_password_encode")
 #define JSON_CARD_USER_NAME_KEY				_T("card_user_name")
 #define JSON_SEX_KEY						_T("sex")
 #define JSON_FIRST_NAME_KEY					_T("first_name")

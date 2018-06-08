@@ -108,6 +108,7 @@
     <ClInclude Include="ClientVerifyNetSocketDataParse.h" />
     <ClInclude Include="ClientVerifyOperator.h" />
     <ClInclude Include="ConsumeCardDBDoOperator.h" />
+    <ClInclude Include="ConsumeCardNetSocketDataParse.h" />
     <ClInclude Include="ConsumeCardOperater.h" />
     <ClInclude Include="ConsumeCardReponseNetSocketData.h" />
     <ClInclude Include="DBSqlExecOperate.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="ClientVerifyNetSocketDataParse.cpp" />
     <ClCompile Include="ClientVerifyOperator.cpp" />
     <ClCompile Include="ConsumeCardDBDoOperator.cpp" />
+    <ClCompile Include="ConsumeCardNetSocketDataParse.cpp" />
     <ClCompile Include="ConsumeCardOperater.cpp" />
     <ClCompile Include="ConsumeCardReponseNetSocketData.cpp" />
     <ClCompile Include="DBSqlExecOperate.cpp" />

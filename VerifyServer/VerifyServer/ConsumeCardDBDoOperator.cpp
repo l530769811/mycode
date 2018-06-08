@@ -41,7 +41,10 @@ int CConsumeCardDBDoOperator::Exec(CDBSqlManager *pdb)
 	if(pdb!=0)
 	{
 		nret = pdb->ExecSql(m_sql.c_str(), ConsumeCardCallback, this);
-
+		if (nret==0)
+		{
+			m_result = NO_ERROR;
+		}
 	}
 
 	return nret;

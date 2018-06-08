@@ -67,7 +67,8 @@ const TCHAR insert_carduser_data[] = {_T("INSERT INTO tlVeriryCardUser ( \
 									  '%d',\
 									  DATE('NOW'),\
 									  '%s');")};
-const TCHAR delete_carduser_data[] = { _T("DELETE FROM tlVeriryCardUser WHERE CardNumber='%s';")};
+const TCHAR delete_card_info_data[] = { _T("DELETE FROM tlVeriryCardUser WHERE CardNumber='%s';") };
+const TCHAR delete_card_info_name_pass[] = {_T("DELETE FROM tlVeriryCardUser WHERE CardNumber='%s'and CardPasswordEncrypt='%s';") };
 const TCHAR update_carduser_password_data[] = {_T("UPDATE tlVeriryCardUser SET CardUserPassword='%s',\
 												  CardPasswordEncrypt='%s' WHERE CardNumber='%s';")};
 
