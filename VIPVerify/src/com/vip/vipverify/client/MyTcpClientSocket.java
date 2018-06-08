@@ -88,17 +88,7 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 					SocketChannel channel = socketClient.getChannel();
 					if (channel != null) {
 						channel.close();
-					}
-
-					if (out != null) {
-						out.close();
-						out = null;
-					}
-
-					if (in != null) {
-						in.close();
-						in = null;
-					}
+					}			
 				}
 
 			}
@@ -121,6 +111,16 @@ public class MyTcpClientSocket extends MyClientSocket implements Serializable {
 			if (socketClient != null) {
 				if (socketClient.isClosed() == false)
 					socketClient.close();
+			}
+			
+			if (out != null) {
+				out.close();
+				out = null;
+			}
+
+			if (in != null) {
+				in.close();
+				in = null;
 			}
 
 			bret = true;

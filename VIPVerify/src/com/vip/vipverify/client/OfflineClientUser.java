@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.Md5Unit;
+import com.vip.vipverify.MyErrors;
 import com.vip.vipverify.VeriryActivity;
 import com.vip.vipverify.db.MyBaseDataProxy;
 import com.vip.vipverify.db.QueryUnit;
@@ -72,14 +73,14 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 	@SuppressLint("DefaultLocale")
 	@SuppressWarnings("static-access")
 	@Override
-	public boolean commit_regist(CardRegistInfo info) {
+	public boolean commit_regist(CardRegistInfo info, boolean bPasswordEnctypt) {
 		// TODO Auto-generated method stub
 		boolean ret = false;
 
 		if (mdb != null && info != null) {
 			String str_regist_sql = new String();
 			str_regist_sql = String.format(insert_carduser_data, info.getString_card_number(),
-					info.getString_password(),
+					Md5Unit.EncodeToMd5String(info.getString_password()),
 					Md5Unit.EncodePasswordByCardnumber(info.getString_card_number(), info.getString_password()),
 					info.getString_first_name(), "no describe", this.string_username, info.getString_phone(),
 					info.getN_sex(), "no extra text");
@@ -123,7 +124,7 @@ public class OfflineClientUser extends ClientUser implements Serializable {
 		{
 			Message msg = Message.obtain();
 			msg.what = VeriryActivity.KeyConectResult;
-			msg.obj = true;
+			msg.obj = MyErrors.NoError.nid;
 			ui_message_handler.sendMessage(msg);
 		}
 	}

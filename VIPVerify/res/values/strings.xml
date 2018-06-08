@@ -45,6 +45,7 @@
     <string name="string_search_server">搜索服务器</string>
     <string name="string_notify_select_server">必须选择服务器</string>
     <string name="string_notify_logining">正在登录中</string>
+    <string name="string_notify_logouting">正在退出登录！</string>
     <string name="string_default_ip">0.0.0.0</string>
     <string name="string_default_broadcast_ip">255.255.255.255</string>
     <string name="string_default_port">000</string>
@@ -75,7 +76,6 @@
     <string name="string_exit">退出</string>
     <string name="string_sure_loginout">确定要退出登录吗？</string>
     <string name="string_ip">ip地址</string>
-    
     <string name="title_activity_veriry">VeriryActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="bookmark_picker_name">Bookmarks</string>

@@ -197,7 +197,7 @@ public class MyBaseDataProxy implements Serializable {
 
 					////// get table name//
 
-					final String regex_table_string = "FROM(.*)WHERE";
+					final String regex_table_string = "FROM(.*)(?:WHERE)?";
 					Pattern pattern = Pattern.compile(regex_table_string, Pattern.CASE_INSENSITIVE);
 					Matcher matcher = pattern.matcher(sql);
 

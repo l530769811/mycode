@@ -7,6 +7,7 @@ import com.common.my_message.MessageSpreader;
 import com.vip.vipverify.my_arg.MyArg;
 import com.vip.vipverify.net.Jsonkey;
 import com.vip.vipverify.operator.DoOperator;
+import com.vip.vipverify.operator.MessageNotifyTextDoOperator;
 import com.vip.vipverify.operator.MessageReponseDoOperator;
 
 public class ConsumeCardResultNetDataParse extends NetDataParse {
@@ -20,7 +21,6 @@ public class ConsumeCardResultNetDataParse extends NetDataParse {
 	private MessageSpreader message_handle = null;
 
 	private int nresult = -1;
-	private String strResult = "";
 	private int msg_what = 0;
 
 	public ConsumeCardResultNetDataParse(MyArg arg) {
@@ -28,7 +28,7 @@ public class ConsumeCardResultNetDataParse extends NetDataParse {
 			
 			int[] int_args = arg.getArgInts();
 			if(int_args!=null) {
-				this.msg_what = int_args[1];
+				this.msg_what = int_args[0];
 			}
 			
 			Object[] objs = arg.getArgObjects();
@@ -79,7 +79,7 @@ public class ConsumeCardResultNetDataParse extends NetDataParse {
 			if (json_cvalue != null) {
 				nresult = json_cvalue.getInt(Jsonkey.string_result_key);
 				try {
-					strResult = json_cvalue.getString(Jsonkey.string_strresult_key);
+					json_cvalue.getString(Jsonkey.string_strresult_key);
 				} catch (JSONException e) {
 					// TODO: handle exception
 				}
@@ -99,7 +99,7 @@ public class ConsumeCardResultNetDataParse extends NetDataParse {
 		// TODO Auto-generated method stub
 		DoOperator do_operator = null;
 
-		do_operator = new MessageReponseDoOperator(message_handle, nresult, msg_what, strResult);
+		do_operator = new MessageNotifyTextDoOperator(message_handle, nresult, msg_what);
 
 		return do_operator;
 	}

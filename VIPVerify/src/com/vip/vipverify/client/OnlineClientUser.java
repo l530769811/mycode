@@ -393,12 +393,13 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	}
 
 	@Override
-	public boolean commit_regist(CardRegistInfo info) {
+	public boolean commit_regist(CardRegistInfo info, boolean bPasswordEnctypt) {
 		// TODO Auto-generated method stub
+		boolean bret = false;
 		if (user_info != null) {
 			info.setString_card_own(this.user_info.getUser_name());
 		}
-		NetSocketData card_regist_data = new RegistCardNetSocketData(info);
+		NetSocketData card_regist_data = new RegistCardNetSocketData(info, bPasswordEnctypt);
 		SocketProxy proxy = new SocketProxy() {
 			/**
 			 * 
@@ -414,11 +415,14 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 		};
 		DoOperator operator = new SocketSendDoOperator(card_regist_data, proxy);
 		if (send_thread != null) {
-			send_thread.postOperate(operator);
+			bret = send_thread.postOperate(operator);
+
 		} else {
-			operator.ToDoOperate();
+			if (operator.ToDoOperate() > 0) {
+				bret = true;
+			}
 		}
-		return false;
+		return bret;
 	}
 
 	@Override
@@ -467,7 +471,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 					return 0;
 				}
 			};
-			
+
 			DoOperator operator = new SocketSendDoOperator(card_verify_after_data, proxy);
 			if (send_thread != null) {
 				send_thread.postOperate(operator);
@@ -488,8 +492,7 @@ public class OnlineClientUser extends ClientUser implements Serializable {
 	public void bindUiHandler(MessageSpreader h) {
 		// TODO Auto-generated method stub
 		ui_message_handler = h;
-		parsers.createObject(new MessageSpreaderMyArg(ui_message_handler, 
-				VeriryActivity.KeyNotifyText,
+		parsers.createObject(new MessageSpreaderMyArg(ui_message_handler, VeriryActivity.KeyNotifyText,
 				VeriryActivity.KeyCardUserVerifyResult));
 	}
 

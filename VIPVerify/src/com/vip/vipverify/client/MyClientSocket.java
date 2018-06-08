@@ -74,24 +74,21 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 
 	public final boolean close_socket() {
 		boolean ret = false;
+		ret = this.disconnect_socket();
+		ret = this.how_close_socket();
+
 		if (this.rev_thread != null && isRevThreadOutside == false) {
 
 			this.brev_thread_exit = true;
-			
 			try {
 				this.rev_thread.join();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			this.rev_thread.interrupt();
-			
-
 		}
 
-		ret = this.disconnect_socket();
-		ret = this.how_close_socket();
 		return ret;
 	}
 
@@ -127,7 +124,7 @@ public abstract class MyClientSocket implements Runnable, Serializable {
 		while (!Thread.currentThread().isInterrupted()) {
 			byte[] data = new byte[MaxBuff];
 			int len = data.length;
-			if(this.brev_thread_exit == true) {
+			if (this.brev_thread_exit == true) {
 				break;
 			}
 			if (this.how_connect_socket(this.ip, this.port)) {

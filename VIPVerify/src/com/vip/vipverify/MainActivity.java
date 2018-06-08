@@ -106,13 +106,24 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 					String string_error = (String) msg.obj;
 					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
 				}
+				else
+				{
+					int result = (int)msg.obj;
+					int string_id = MyErrors.GetStringIdFromErrorID(result);
+					String string_error = MainActivity.this.getResources().getString(string_id);
+					Toast.makeText(MainActivity.this, string_error, Toast.LENGTH_SHORT).show();
+				}
 				break;
 
 			case login_notify_key:
 				boolean result = (boolean) msg.obj;
 				if (result) {
 					_start_login();
-				}
+				}				
+				preferences_login.login_result(
+						new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
+						(user_password), result);
+				
 				break;
 				
 			case verify_notify_key:
@@ -186,18 +197,15 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 							int no_error = MyErrors.NoError.nid;
 							if (result != no_error) {
 								Message msg = Message.obtain();
-								msg.what = notify_key;
-								int string_id = MyErrors.GetStringIdFromErrorID(result);
-								msg.obj = MainActivity.this.getResources().getString(string_id);
+								msg.what = notify_key;								
+								msg.obj = no_error;
 								ui_message_handler.sendMessage(msg);
-								preferences_login.login_result(
-										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
-										(user_password), false);
+								msg = Message.obtain();
+								msg.what = login_notify_key;
+								msg.obj = false;
+								ui_message_handler.sendMessage(msg);
+								
 							} else {
-								preferences_login.login_result(
-										new ServerNetInfo("unknow", server_ip, server_port, server_net_kind), user_name,
-										(user_password), true);
-								// _start_login();
 								Message msg = Message.obtain();
 								msg.what = login_notify_key;
 								msg.obj = true;
@@ -211,13 +219,13 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 								Message msg = Message.obtain();
 								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
-								msg.obj = MainActivity.this.getResources().getString(string_id);
+								msg.obj = result;
 								ui_message_handler.sendMessage(msg);
 							} else {
 								Message msg = Message.obtain();
 								msg.what = notify_key;
 								int string_id = MyErrors.GetStringIdFromErrorID(result);
-								msg.obj = MainActivity.this.getResources().getString(string_id);
+								msg.obj = result;
 								ui_message_handler.sendMessage(msg);
 							}
 						}
@@ -329,7 +337,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 
 		setContentView(R.layout.activity_main);
 
-		client_manager = ClientManager.getInstance(this);
+		client_manager = ClientManager.getInstance(this, this.ui_message_handler);
 		client_manager.init();
 		preferences_login = new MyLoginPreferences(this, R.xml.preferences, client_manager);
 		preferences_login.autoLogin(my_auito_login);
@@ -351,6 +359,7 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 		String server_name = server_ip + " : " + String.valueOf(server_port);
 		TextView textview_ipport = (TextView) MainActivity.this.findViewById(R.id.textView_ipport);
 		textview_ipport.setText(server_name);
+		textview_ipport.setOnClickListener(this);
 
 		SelectServerListening select_server_listenner = new MySelectServerListening();
 		if (searchserver_dialog == null) {
@@ -475,6 +484,9 @@ public class MainActivity extends Activity implements OnClickListener, OnChecked
 
 			break;
 		case R.id.textView_ipport:
+			if (network_setting_dialog != null) {
+				network_setting_dialog.show();
+			}
 			break;
 
 		case R.id.button_main_menu:

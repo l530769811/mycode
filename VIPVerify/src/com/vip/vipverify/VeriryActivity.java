@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+
+import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
+
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
 import com.google.zxing.BarcodeFormat;
@@ -101,6 +104,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	public static final int KeYSyncToServer = 0x0007;
 	public static final int KeyConectResult = 0x0008;
 	public static final int KeyNotifyText = 0x0009;
+	public static final int KeyNotifyExit = 0x0010;
 
 	private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
 	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
@@ -139,6 +143,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	final String key_verify_info = "key_verify_info";
 
 	private ProgressDialog loading_dialog = null;
+	private boolean bExitFinish = false;
 
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle bundle) {
@@ -190,6 +195,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			case R.id.button_autodialog_ok:
 				if (operator != null) {
 					operator.ToDoOperate();
+					operator = null;
 				}
 
 				break;
@@ -305,6 +311,16 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 				int string_id = MyErrors.GetStringIdFromErrorID(notify_result);
 				Toast.makeText(VeriryActivity.this, VeriryActivity.this.getResources().getString(string_id),
 						Toast.LENGTH_LONG).show();
+				if (notify_result == MyErrors.NetConnectBreakError.nid) {
+					exit_finish();
+				}
+				break;
+
+			case KeyNotifyExit:
+				if (loading_dialog != null) {
+					loading_dialog.dismiss();
+				}
+				VeriryActivity.this.finish();
 				break;
 
 			default:
@@ -519,7 +535,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		String string_phone = edit.getText().toString();
 
 		CardRegistInfo info = new CardRegistInfo(string_card_number, string_phone, first_password, nSex,
-				string_first_name);
+				string_first_name, string_call_name);
 		info.setString_call_name(string_call_name);
 
 		return info;
@@ -540,7 +556,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 	private boolean commit_regist(CardRegistInfo info) {
 		boolean ret = false;
 		if (loginUser != null) {
-			ret = loginUser.commit_regist(info);
+			ret = loginUser.commit_regist(info, true);
 		}
 
 		return ret;
@@ -576,10 +592,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			break;
 
 		case R.id.login_user_menu_loginout:
-			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-					this.getResources().getString(R.string.string_sure_loginout), 5,
-					new ExitLeaveMyDialogListener(this));
-			dialog.show();
+			exit_finish();
 			break;
 		default:
 
@@ -596,7 +609,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 
 		setContentView(R.layout.activity_veriry);
 
-		ClientManager client_manager = ClientManager.getInstance(this);
+		ClientManager client_manager = ClientManager.getInstance(this, ui_message_handler);
 		if (client_manager != null) {
 			ClientUserCreator loginUserCreator = client_manager.get_cur_user_Creator();
 			loginUser = loginUserCreator.createClientUser();
@@ -800,11 +813,20 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 
 	@Override
 	protected void onDestroy() {
+		bExitFinish = true;
 		this.closeScan();
 		inactivityTimer.shutdown();
-		if (loginUser != null) {
-			loginUser.loginOut();
-		}
+		// if (loginUser != null) {
+		// // ProgressDialog loading_dialog = ProgressDialog.show(VeriryActivity.this,
+		// "",
+		// // getResources().getString(R.string.string_notify_logouting));
+		// //
+		// loginUser.loginOut();
+		//
+		// // if(loading_dialog!=null) {
+		// // loading_dialog.dismiss();
+		// // }
+		// }
 
 		if (verify_confirm_dialog != null) {
 			this.removeDialog(DIALOG_VERIFY_CONFIRM_ID);
@@ -1354,6 +1376,29 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 		}
 	}
 
+	class Exit_login_Runnable implements Runnable {
+		private Activity app = null;
+
+		public Exit_login_Runnable(Activity app) {
+			this.app = app;
+		}
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			if (app != null) {
+
+				if (loginUser != null) {
+					bExitFinish = true;
+					loginUser.loginOut();
+				}
+
+				VeriryActivity.this.ui_message_handler.sendEmptyMessage(VeriryActivity.KeyNotifyExit);
+			}
+		}
+
+	}
+
 	class ExitLeaveMyDialogListener implements LeaveMyDialogListener {
 		private Activity app = null;
 
@@ -1367,9 +1412,20 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			// TODO Auto-generated method stub
 			switch (view.getId()) {
 			case R.id.button_autodialog_ok:
-				if (app != null) {
-					app.finish();
-				}
+				loading_dialog = ProgressDialog.show(app, "",
+						getResources().getString(R.string.string_notify_logouting));
+				Thread exit_thread = new Thread(new Exit_login_Runnable(app));
+
+				exit_thread.start();
+				// if (app != null) {
+				//
+				// app.finish();
+				// if (loginUser != null) {
+				// bExitFinish = true;
+				// loginUser.loginOut();
+				//
+				// }
+				// }
 				break;
 
 			default:
@@ -1377,6 +1433,15 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 			}
 		}
 
+	}
+
+	private void exit_finish() {
+		if (bExitFinish == false) {
+			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
+					this.getResources().getString(R.string.string_sure_loginout), 5,
+					new ExitLeaveMyDialogListener(this));
+			dialog.show();
+		}
 	}
 
 	@Override
@@ -1395,11 +1460,7 @@ public class VeriryActivity extends Activity implements SurfaceHolder.Callback, 
 
 				return true;
 			}
-
-			AutoAlertDialog dialog = new AutoAlertDialog(this, this.getResources().getString(R.string.string_exit),
-					this.getResources().getString(R.string.string_sure_loginout), 5,
-					new ExitLeaveMyDialogListener(this));
-			dialog.show();
+			exit_finish();
 			return true;
 
 		case KeyEvent.KEYCODE_FOCUS:

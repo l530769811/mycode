@@ -9,13 +9,13 @@ public class MessageReponseDoOperator implements DoOperator {
 	private MessageSpreader message_handler = null;
 	private  int msg_what = -1;
 	private int result = 0;
-	private String strMessage = null;
+	private String[] strMessage = new String[10];
 	
 	public MessageReponseDoOperator(MessageSpreader message_handler, int result, int msg_what, String message_string) {
 		this.message_handler = message_handler;
 		this.msg_what = msg_what;
 		this.result = result;
-		this.strMessage = message_string;
+		this.strMessage[0] = message_string;
 	}
 	
 	protected void _reponse()

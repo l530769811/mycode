@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.alibaba.fastjson.JSONObject;
 import com.common.my_message.HandleMessageSpreader;
 import com.common.my_message.MessageSpreader;
+import com.vip.vipverify.MainActivity;
 import com.vip.vipverify.MyErrors;
 import com.vip.vipverify.SingletonTemplete;
 import com.vip.vipverify.db.MyBaseDataProxy;
@@ -59,8 +60,9 @@ public class ClientManager implements Serializable {
 	private boolean isInsert = false;
 
 	private NetDataParsesCollection parsers = new NetDataParsesCollection();
+	private MessageSpreader ui_message_handler = null;
 
-	private MessageSpreader ui_message_handler = new HandleMessageSpreader() {
+	private MessageSpreader message_handler = new HandleMessageSpreader() {
 		/**
 		 * 
 		 */
@@ -72,8 +74,11 @@ public class ClientManager implements Serializable {
 			switch (msg.what) {
 			case login_verify_suc_key:
 				if (server_info != null) {
-					cur_login_user = new OnlineClientUserCreator(server_info, new ClientUserInfo(user_name, user_password), db,
-							m_threadSend, client_listener);
+					cur_login_user = new OnlineClientUserCreator(server_info,
+							new ClientUserInfo(user_name, user_password), db, m_threadSend, client_listener);
+					if (ui_message_handler != null) {
+
+					}
 				}
 
 				break;
@@ -85,14 +90,14 @@ public class ClientManager implements Serializable {
 			}
 		}
 	};
-	
+
 	private static volatile ClientManager instance = null;
 
-	public static synchronized ClientManager getInstance(Context context) {
+	public static synchronized ClientManager getInstance(Context context, MessageSpreader handler) {
 		if (instance == null) {
 			synchronized (ClientManager.class) {
 				if (instance == null) {
-					instance = new ClientManager(context);
+					instance = new ClientManager(context, handler);
 				}
 			}
 
@@ -100,11 +105,13 @@ public class ClientManager implements Serializable {
 		return instance;
 	}
 
-	public ClientManager(Context context) {
+	public ClientManager(Context context, MessageSpreader handler) {
 		// TODO Auto-generated constructor stub
 		this.client_listener = new ClientManagerSocketReceiveListening();
-		
+
 		this.context = context;
+		this.ui_message_handler = handler;
+
 		if (this.context != null) {
 			String sdPath = "/data/data";
 
@@ -152,14 +159,12 @@ public class ClientManager implements Serializable {
 							// login verify success
 							Message msg = Message.obtain();
 							msg.what = ClientManager.login_verify_suc_key;
-							ClientManager.this.ui_message_handler.sendMessage(msg);
-						}
-						else
-						{
+							ClientManager.this.message_handler.sendMessage(msg);
+						} else {
 							// login verify fail
 							Message msg = Message.obtain();
 							msg.what = ClientManager.login_verify_fail_key;
-							ClientManager.this.ui_message_handler.sendMessage(msg);
+							ClientManager.this.message_handler.sendMessage(msg);
 						}
 					}
 
@@ -240,32 +245,20 @@ public class ClientManager implements Serializable {
 			} else {
 				operator.ToDoOperate();
 			}
-		}
-		else
-		{
+		} else {
 			cur_login_user = new OfflineClientUserCreator(user_info, db);
 			// Unlined user just send success
-			JSONObject json_object = new JSONObject();
-			try {
-				json_object.put(Jsonkey.string_transitionid_key, "");
-				json_object.put(Jsonkey.string_magicid_key, "");
-				JSONObject json_content = new JSONObject();
-				json_object.put(Jsonkey.string_content_key, json_content);
-				json_content.put(Jsonkey.string_ctype_key, "verify_login_reponse");
-				JSONObject json_cvalue = new JSONObject();
-				json_content.put(Jsonkey.string_cvalue_key, json_cvalue);
-				json_cvalue.put(Jsonkey.string_result_key, MyErrors.NoError.nid);
-				json_cvalue.put(Jsonkey.string_result_info_key, "0x0001");
-			} catch (Exception e) {
-				// TODO: handle exception
+			if (ui_message_handler != null) {
+				
+				Message msg = Message.obtain();
+				msg.what = MainActivity.verify_notify_key;
+				ui_message_handler.sendMessage(msg);
+				
+				msg = Message.obtain();
+				msg.what = MainActivity.login_notify_key;
+				msg.obj = true;
+				ui_message_handler.sendMessage(msg);
 			}
-			String json_string = json_object.toString();
-			byte[] ret_byte = json_string.getBytes();
-			if (this.client_listener != null) {
-				client_listener.RevData(ret_byte, ret_byte.length);
-			}
-			
-		
 		}
 
 	}
@@ -306,7 +299,7 @@ public class ClientManager implements Serializable {
 		if (m_threadSend != null) {
 			m_threadSend.exit();
 			m_threadSend = null;
-			
+
 		}
 	}
 

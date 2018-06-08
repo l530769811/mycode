@@ -23,7 +23,7 @@ public abstract class ClientUser implements Serializable {
 
 	abstract boolean commit_find(QueryUnit unit);
 
-	public abstract boolean commit_regist(CardRegistInfo info);
+	public abstract boolean commit_regist(CardRegistInfo info, boolean bPasswordEnctypt);
 	// abstract boolean commit_regist_after_do();
 
 	public abstract boolean commit_verify(CardVerifyInfo info);

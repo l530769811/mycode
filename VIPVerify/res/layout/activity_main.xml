@@ -10,14 +10,14 @@
         android:id="@+id/button_main_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginEnd="10dp" 
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:textSize="20sp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:gravity="top"
-        android:visibility="invisible"
-        android:text="@string/string_menu_symbol" />
+        android:text="@string/string_menu_symbol"
+        android:textSize="20sp"
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:id="@+id/linearLayout_login"
@@ -51,8 +51,7 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:hint="@string/string_userpassword"
-            android:inputType="textPassword"
-            />
+            android:inputType="textPassword" />
 
         <TextView
             android:id="@+id/textView_ipport"
@@ -65,8 +64,9 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="0dp"
             android:clickable="true"
+            android:focusable="true"
             android:text="@string/string_textview_ipport"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textColor="@drawable/textselector" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -135,6 +135,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:clickable="true"
                     android:gravity="center_horizontal"
                     android:text="@string/string_offline_mode"
                     android:textColor="@drawable/textselector" />
@@ -148,7 +149,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-               android:background="@color/view_background_color"
+                android:background="@color/view_background_color"
                 android:text="@string/string_remember"
                 android:textColor="@color/button_text_color" />
         </RelativeLayout>

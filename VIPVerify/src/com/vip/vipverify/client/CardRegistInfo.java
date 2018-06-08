@@ -16,7 +16,8 @@ public class CardRegistInfo {
 			String string_phone,
 			String string_password, 
 			int n_sex,
-			String string_first_name) {
+			String string_first_name,
+			String string_card_own) {
 		super();
 		
 		string_card_number = string_carnumber;
@@ -24,6 +25,7 @@ public class CardRegistInfo {
 		this.string_password = string_password;
 		this.n_sex = n_sex;
 		this.string_first_name = string_first_name;
+		this.string_card_own = string_card_own;
 	}
 	public String getString_card_number() {
 		return string_card_number;
