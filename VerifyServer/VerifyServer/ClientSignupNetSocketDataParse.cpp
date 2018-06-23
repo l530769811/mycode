@@ -97,7 +97,7 @@ bool CClientSignupNetSocketDataParse::_parseData(unsigned long socket_id, const 
 				MyString str_empty;
 				_stprintf(sql, 1024-1, insert_clientuser_data, strUserName.c_str(), strUserPassword.c_str(),strUserPhone.c_str(), str_empty.c_str(), str_empty.c_str());
 				this->m_strSignupSql = sql;				
-				
+				bret = true;
 			}
 		}
 	}

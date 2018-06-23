@@ -27,3 +27,8 @@ MyString CClientSignupData::ToSql() const
 	_stprintf(sql, insert_clientuser_data, m_strUserName.c_str(), m_strUserPassword.c_str(), m_strPhone.c_str(), _T(""), _T(""));
 	return MyString(sql);
 }
+
+MyString CClientSignupData::GetName() const 
+{
+	return m_strUserName;
+}

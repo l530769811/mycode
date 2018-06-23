@@ -40,14 +40,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <LibraryPath>../lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>../dbin</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>../lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <OutDir>../bin</OutDir>
@@ -59,12 +59,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;__WIN32__;_WINSTATIC;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../WinService;../omnithread;../DataBase;../IOCompletePort;../socket/udpsocket;../socket;../socket/tcpserver;../OpenSSL;..;../common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Local_UI_Communicate;../WinService;../omnithread;../DataBase;../IOCompletePort;../socket/udpsocket;../socket;../socket/tcpserver;../OpenSSL;../common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>WinService.lib;common.lib;tcpserver.lib;udpsocket.lib;DataBase.lib;omnithread.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Local_UI_Communicate.lib;WinService.lib;common.lib;tcpserver.lib;udpsocket.lib;DataBase.lib;omnithread.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -77,19 +77,20 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WINSTATIC;WIN32;__WIN32__;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../WinService;../omnithread;../database;../IOCompletePort;../socket/tcpserver;../socket/udpsocket;../OpenSSL;../common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Local_UI_Communicate;../WinService;../omnithread;../database;../IOCompletePort;../socket/tcpserver;../socket/udpsocket;../OpenSSL;../common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>WinService.lib;common.lib;tcpserver.lib;udpsocket.lib;DataBase.lib;omnithread.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Local_UI_Communicate.lib;WinService.lib;common.lib;tcpserver.lib;udpsocket.lib;DataBase.lib;omnithread.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +126,7 @@
     <ClInclude Include="NetSocketData.h" />
     <ClInclude Include="NetSocketDataParse.h" />
     <ClInclude Include="NetSocketProxy.h" />
+    <ClInclude Include="NotifyTextCommunicateData.h" />
     <ClInclude Include="Operater.h" />
     <ClInclude Include="RegistCardDBDoOperator.h" />
     <ClInclude Include="RegistCardNetSocketDataParse.h" />
@@ -187,6 +189,7 @@
     <ClCompile Include="NetSocketData.cpp" />
     <ClCompile Include="NetSocketDataParse.cpp" />
     <ClCompile Include="NetSocketProxy.cpp" />
+    <ClCompile Include="NotifyTextCommunicateData.cpp" />
     <ClCompile Include="Operater.cpp" />
     <ClCompile Include="RegistCardDBDoOperator.cpp" />
     <ClCompile Include="RegistCardNetSocketDataParse.cpp" />

@@ -37,7 +37,7 @@ private:
 
 template <typename T>
 CUseCount<T>::CUseCount(void)
-	: m_pCount(new atomic_t(0))
+	: m_pCount(new atomic_t(1))
 	, p(0)
 {
 
@@ -94,11 +94,6 @@ CUseCount<T>::~CUseCount(void)
 		delete m_pCount;
 		m_pCount = 0;
 	}
-	else
-	{
-		atomic_dec((long*)m_pCount);//--(*m_pCount);
-	}
-
 }
 
 template <typename T>
@@ -115,7 +110,7 @@ bool CUseCount<T>::isNull() const
 template <typename T>
 bool CUseCount<T>::Only()
 {	
-	return (*m_pCount) == 1;
+	return (atomic_dec((long*)m_pCount)) == 0;
 }
 
 template <typename T>

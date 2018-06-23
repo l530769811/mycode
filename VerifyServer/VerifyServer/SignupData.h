@@ -12,6 +12,7 @@ public:
 
 public:
 	MyString ToSql() const;
+	MyString GetName() const;
 
 private:
 	MyString m_strUserName;

@@ -24,3 +24,8 @@ MyString CClientVerifyData::ToSql() const
 	_stprintf(sql, select_Login, m_strUserName.c_str(), m_strUserPassword.c_str());
 	return MyString(sql);
 }
+
+MyString CClientVerifyData::GetName() const
+{
+	return m_strUserName;
+}

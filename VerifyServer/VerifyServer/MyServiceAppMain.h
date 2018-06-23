@@ -6,7 +6,7 @@ class CMyServiceAppMain :
 	public ServiceAppMain
 {
 public:
-	CMyServiceAppMain(ProcCallBack call_back);
+	CMyServiceAppMain();
 	virtual ~CMyServiceAppMain(void);
 public:
 	virtual int WinAppMain(unsigned long argc, TCHAR** argv);

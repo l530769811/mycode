@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <TcpServer.h>
 
+
 class CMyServiceAppMain;
 class CAppDataFileCopy;
 class CDBProxy;
@@ -28,6 +29,8 @@ public:
 	CClientManager * GetClientManager() const;
 	CDBSqlManager* GetDataBaseManager() const;
 
+
+
 private:
 
 	CMyServiceAppMain *m_pmain;
@@ -39,7 +42,6 @@ private:
 	CAppDataFileCopy *m_pAppFileData;
 	CClientManager *m_pclient_manager;
 	CVIPCardManager *m_pvipcard_manager;
-
 };
 
 #endif

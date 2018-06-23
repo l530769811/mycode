@@ -347,7 +347,7 @@ void* ServiceWorkThread(void *arg)
         SERVICE_RUNNING,       // service state
         NO_ERROR,              // exit code
         0))                    // wait hint
-		return;
+		return 0;
 #endif //_DEBUG
 	// RUN!
 	

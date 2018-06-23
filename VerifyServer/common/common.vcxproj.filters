@@ -21,6 +21,9 @@
     <ClCompile Include="UseCount.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MyMessagePool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UseCount.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SingleModeTemplete.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMessagePool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

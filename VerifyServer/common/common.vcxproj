@@ -75,10 +75,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MyMessagePool.cpp" />
     <ClCompile Include="UseCount.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_define.h" />
+    <ClInclude Include="MyMessagePool.h" />
     <ClInclude Include="my_assist_define.h" />
     <ClInclude Include="my_platform.h" />
     <ClInclude Include="SingleModeTemplete.h" />

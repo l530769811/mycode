@@ -1,8 +1,8 @@
 #include "MyServiceAppMain.h"
 
 
-CMyServiceAppMain::CMyServiceAppMain(ProcCallBack call_back)
-	: ServiceAppMain(this, call_back)
+CMyServiceAppMain::CMyServiceAppMain()
+	: ServiceAppMain(this)
 {
 }
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <iterator>
 #include "AppEntity.h"
 #include "ThreadSocketRecevier.h"
 #include "AppOperate.h"
@@ -12,6 +13,7 @@
 #include "ClientManager.h"
 #include "MyServiceAppMain.h"
 #include "sqlite_sql.h"
+
 
 CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
 	: m_pmain(pmain)
@@ -36,8 +38,7 @@ CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
 	m_pDbManager->ExecSql(create_user_index);
 
 	m_pDbManager->ExecSql(create_cardregister_table);
-	m_pDbManager->ExecSql(create_cardregister_index);
-	
+	m_pDbManager->ExecSql(create_cardregister_index);	
 }
 
 
@@ -59,6 +60,8 @@ CAppEntity::~CAppEntity(void)
 	SAFE_DELETE(m_pdbproxy);
 	SAFE_DELETE(m_pvipcard_manager);
 	SAFE_DELETE(m_pclient_manager);
+
+	
 }
 
 int CAppEntity::RecevieData(unsigned long id, MyString &data)
