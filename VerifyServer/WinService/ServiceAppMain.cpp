@@ -1,5 +1,6 @@
 #include "ServiceAppMain.h"
 
+static ServiceAppMain* pmain = 0;
 
 int WinAppMain(unsigned long argc, TCHAR** argv)
 {
@@ -10,19 +11,18 @@ int WinAppMain(unsigned long argc, TCHAR** argv)
 	//	h.MyDispatchMessage(&msg);
 	//}
 
-	if(ServiceAppMain::m_pmain!=0)
+	if(pmain!=0)
 	{
-		ServiceAppMain::m_pmain->WinAppMain(argc, argv);
+		pmain->WinAppMain(argc, argv);
 	}
 	return 0;
 }
 
-ServiceAppMain* ServiceAppMain::m_pmain = 0;
 
-ServiceAppMain::ServiceAppMain(ServiceAppMain *pmain)
-{
-	
-	ServiceAppMain::m_pmain = pmain;
+
+ServiceAppMain::ServiceAppMain(ServiceAppMain *main)
+{	
+	pmain = main;
 }
 
 

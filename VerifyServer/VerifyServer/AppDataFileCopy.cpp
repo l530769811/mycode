@@ -4,6 +4,7 @@
 #include <cassert>
 #include <Shlobj.h>
 #include "Shlwapi.h"
+#include "ProcessLogCollecter.h"
 #pragma comment(lib, "Shlwapi.lib")
 
 CAppDataFileCopy::CAppDataFileCopy(const MyString &strProject, const MyString &strFileName)
@@ -42,7 +43,18 @@ void CAppDataFileCopy::_CopyAppData()
 	if (::PathFileExists(strFilePath.c_str()) == FALSE)
 	{
 		BOOL bCreate = CreateDirectoryMulti(const_cast<TCHAR*>(strFilePath.c_str()));
+		if (bCreate==FALSE)
+		{
+			MyString str = __FILEW__; 
+			log(FILE_LOG,  str+_T("  CreateDirectoryMulti fail"));
+		}
 		assert(bCreate);
+	}
+	else
+	{
+		MyString str = __FILEW__; 
+		str = str + _T(" ") + strFilePath + _T(" exist");
+		log(FILE_LOG,  str);
 	}
 
 	if (::PathFileExists(m_szAppDataPath) == FALSE)
@@ -52,7 +64,18 @@ void CAppDataFileCopy::_CopyAppData()
 		_tcscpy(str, strExePath.c_str());
 		::PathAppend(str, m_strFileName.c_str());
 		BOOL bCopy = ::CopyFile(str, m_szAppDataPath, TRUE);
+		if (bCopy==FALSE)
+		{
+			MyString str = __FILEW__; 
+			log(FILE_LOG,  str+_T("  CopyFile fail"));
+		}
 		assert(bCopy);
+	}
+	else
+	{
+		MyString str = __FILEW__; 
+		str = str + _T(" ") + m_szAppDataPath + _T(" exist");
+		log(FILE_LOG,  str);
 	}
 }
 

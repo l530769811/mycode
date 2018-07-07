@@ -42,12 +42,11 @@
 #include <typeinfo>
 
 #include "ServiceAppMain.h"
+#include "DebugLogCollecter.h"
 
-// Error message logging
-void LogErrorMsg(TCHAR *message);
-
-const TCHAR runService[]		= _T("-service");
-const TCHAR runServiceHelper[]	= _T("-servicehelper");
+const TCHAR appName[]			= _T("VerifyServer");
+const TCHAR runService[]		= _T("--service");
+const TCHAR runServiceHelper[]	= _T("--servicehelper");
 
 // OS-SPECIFIC ROUTINES
 
@@ -69,6 +68,7 @@ BOOL	g_nosettings_flag;
 #endif
 
 omni_thread * CWinService::workthread = 0; 
+MyString CWinService::m_strServiceName = _T("");
 
 CWinService::CWinService(ServiceAppMain *pmain) 
 {
@@ -97,6 +97,7 @@ CWinService::~CWinService()
 		CloseHandle(g_impersonation_token);
 		g_impersonation_token = 0;
 	}
+	
 }
 
 #ifdef HORIZONLIVE
@@ -144,25 +145,6 @@ CWinService::VersionMinor()
 }
 
 
-
-
-// SERVICE-MODE ROUTINES
-
-// Service-mode defines:
-
-// Executable name
-#define APPNAME            _T("winvnc")
-
-// Internal service name
-#define VNCSERVICENAME        _T("winvnc")
-
-// Displayed service name
-#define VNCSERVICEDISPLAYNAME _T("VNC Server")
-
-// List of other required services ("dependency 1\0dependency 2\0\0")
-// *** These need filling in properly
-#define VNCDEPENDENCIES       _T("")
-
 // Internal service state
 SERVICE_STATUS          g_srvstatus;       // current status of the service
 SERVICE_STATUS_HANDLE   g_hstatus;
@@ -197,14 +179,16 @@ CWinService::RunningAsService()
 
 // SERVICE MAIN ROUTINE
 int
-CWinService::WinRunAsService()
+CWinService::WinRunAsService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szServiceDisplayName)
 {
 	typedef DWORD (WINAPI * RegisterServiceProc)(DWORD, DWORD);
 	const ULONG RSP_SIMPLE_SERVICE = 0x00000001;
 	const ULONG RSP_UNREGISTER_SERVICE = 0x00000000;
 
 	g_servicemode = TRUE;
-
+	MyString tmp(szServiceName);
+	CWinService::m_strServiceName = tmp;
+	service_log(FILE_LOG, _T("WinRunAsService"));
 	// How to run as a service depends upon the OS being used
 	switch (g_platform_id)
 	{
@@ -260,18 +244,42 @@ CWinService::WinRunAsService()
 			// Create a service entry table
 			SERVICE_TABLE_ENTRY dispatchTable[] =
 			{
-				{VNCSERVICENAME, (LPSERVICE_MAIN_FUNCTION)ServiceMain},
+				{(TCHAR*)szServiceName , (LPSERVICE_MAIN_FUNCTION)ServiceMain},
 				{NULL, NULL}
 			};
 
 			// Call the service control dispatcher with our entry table
 			if (!StartServiceCtrlDispatcher(dispatchTable))
+			{
+				DWORD err = ::GetLastError();
+				service_log(FILE_LOG, _T("StartServiceCtrlDispatcher failed."));
 				LogErrorMsg(_T("StartServiceCtrlDispatcher failed."));
+			}
 #endif // _DEBUG
 			
 		}
 		break;
 
+	default:
+#ifdef _DEBUG
+		ServiceMain(0, 0);
+#else
+		// Create a service entry table
+		SERVICE_TABLE_ENTRY dispatchTable[] =
+		{
+			{(TCHAR*)szServiceName , (LPSERVICE_MAIN_FUNCTION)ServiceMain},
+			{NULL, NULL}
+		};
+
+		// Call the service control dispatcher with our entry table
+		if (!StartServiceCtrlDispatcher(dispatchTable))
+		{
+			DWORD err = ::GetLastError();
+			service_log(FILE_LOG, _T("StartServiceCtrlDispatcher failed."));
+			LogErrorMsg(_T("StartServiceCtrlDispatcher failed."));
+		}
+#endif // _DEBUG
+		break;
 	};
 
 	return 0;
@@ -293,7 +301,7 @@ void WINAPI ServiceMain(DWORD argc, TCHAR**argv)
 	// Register the service control handler
 #ifndef _DEBUG
 
-	g_hstatus = RegisterServiceCtrlHandler(VNCSERVICENAME, ServiceCtrl);
+	g_hstatus = RegisterServiceCtrlHandler(CWinService::m_strServiceName.c_str() , ServiceCtrl);
 
 	if (g_hstatus == 0)
 		return;
@@ -308,6 +316,7 @@ void WINAPI ServiceMain(DWORD argc, TCHAR**argv)
 		NO_ERROR,				// Exit code type
 		15000))					// Hint as to how long WinVNC should have hung before you assume error
 	{
+		service_log(FILE_LOG, _T("ReportStatus failed SERVICE_START_PENDING"));
 		ReportStatus(
 			SERVICE_STOPPED,
 			g_error,
@@ -317,55 +326,31 @@ void WINAPI ServiceMain(DWORD argc, TCHAR**argv)
 #endif //_DEBUG
 
 	// Now start the service for real
-	CArg *parg = new CArg();
-	parg->argc = argc;
-	parg->argv = new TCHAR*[argc];
-	for (int i=0; i<argc; i++)
-	{
-		argv[i] = new TCHAR[256];
-		memcpy(argv[1], argv[i], 256);
-	}
-	CWinService::workthread = omni_thread::create(ServiceWorkThread, parg);
+	CWinService::workthread = omni_thread::create(ServiceWorkThread);
+	//ServiceWorkThread(parg);
     return;
 }
 
 // SERVICE START ROUTINE - thread that calls WinAppMain
 void* ServiceWorkThread(void *arg)
 {
-	CArg *p = NULL;
-
-	p= (CArg*)arg;
+	
 	// Save the current thread identifier
-
-#ifndef _DEBUG
-
 	g_servicethread = GetCurrentThreadId();
 
-    // report the status to the service control manager.
-    //
-    if (!ReportStatus(
-        SERVICE_RUNNING,       // service state
-        NO_ERROR,              // exit code
-        0))                    // wait hint
+#ifndef _DEBUG
+	// report the status to the service control manager.
+	//
+	if (!ReportStatus(
+		SERVICE_RUNNING,       // service state
+		NO_ERROR,              // exit code
+		0))                    // wait hint
 		return 0;
 #endif //_DEBUG
 	// RUN!
-	
-	
-	DWORD argc = 0;
-	TCHAR** argv = NULL;
-	if (p != NULL)
-	{
-		argc = p->argc;
-		argv = p->argv;
-		WinAppMain(argc, argv);
 
-		for (int i=0; i<p->argc; i++)
-		{
-			delete[] argv[i];
-		}
+	WinAppMain(0, 0);
 
-	}
 
 	// Mark that we're no longer running
 	g_servicethread = NULL;
@@ -409,9 +394,11 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 	TCHAR path[pathlength];
 	TCHAR servicecmd[pathlength];
 
+	MyString tmp(szServiceName);
+	CWinService::m_strServiceName = tmp;
+
 	// Get the filename of this executable
-    if (GetModuleFileName(NULL, path, pathlength-(lstrlen(runService)+2)) == 0) {
-		
+    if (GetModuleFileName(NULL, path, pathlength-(lstrlen(runService)+2)) == 0) {		
 		return 0;
     }
 
@@ -437,14 +424,30 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 				
 				break;
 			}
+#ifdef _UNICODE
 
-			// Attempt to add a WinVNC key
+			char cmd[pathlength];
+			::wcstombs(cmd, servicecmd, pathlength-1);
+			char chAppName[256];
+			::wcstombs(chAppName, szAppName, 256-1);
+			// Add the VNCserviceHelper entry
+			if (RegSetValueExA(runservices, chAppName, 0, REG_SZ,
+				(unsigned char *)cmd, strlen(cmd)+1) != ERROR_SUCCESS)
+			{
+				RegCloseKey(runservices);
+
+				break;
+			}
+#else
+			// Attempt to add a WinService key
 			if (RegSetValueEx(runservices, szAppName, 0, REG_SZ, (unsigned char *)servicecmd, lstrlen(servicecmd)+1) != ERROR_SUCCESS)
 			{
 				RegCloseKey(runservices);
-				
+
 				break;
 			}
+#endif
+		
 
 			RegCloseKey(runservices);
 
@@ -482,7 +485,7 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 		{
 			SC_HANDLE   hservice;
 		    SC_HANDLE   hsrvmanager;
-
+			service_log(FILE_LOG, _T("install service begin"));
 			// Open the default, local Service Control Manager database
 		    hsrvmanager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
 			if (hsrvmanager == NULL)
@@ -504,7 +507,7 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 				servicecmd,					// service's binary
 				NULL,						// no load ordering group
 				NULL,						// no tag identifier
-				VNCDEPENDENCIES,			// dependencies
+				_T(""),			// dependencies
 				NULL,						// LocalSystem account
 				NULL);						// no password
 			if (hservice == NULL)
@@ -512,6 +515,7 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 				DWORD error = GetLastError();
 				
  				CloseServiceHandle(hsrvmanager);
+				service_log(FILE_LOG, _T("CreateService service fail"));
 				break;
 			}
 			CloseServiceHandle(hsrvmanager);
@@ -526,21 +530,34 @@ CWinService::InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szSer
 			{
 				;
 			} else {
-				TCHAR servicehelpercmd[pathlength];
-
-				// Append the service-helper-start flag to the end of the path:
-				if (lstrlen(path) + 4 + lstrlen(runServiceHelper) < pathlength)
-					MySprintf(servicehelpercmd, _T("\"%s\" %s"), path, runServiceHelper);
-				else
-					return 0;
-
-				// Add the VNCserviceHelper entry
-				if (RegSetValueEx(runapps, szAppName, 0, REG_SZ,
-					(unsigned char *)servicehelpercmd, lstrlen(servicehelpercmd)+1) != ERROR_SUCCESS)
-				{
-					;
-				}
-				RegCloseKey(runapps);
+//				TCHAR servicehelpercmd[pathlength];
+//
+//				// Append the service-helper-start flag to the end of the path:
+//				if (lstrlen(path) + 4 + lstrlen(runServiceHelper) < pathlength)
+//					MySprintf(servicehelpercmd, _T("\"%s\" %s"), path, runServiceHelper);
+//				else
+//					return 0;
+//#ifdef _UNICODE
+//
+//				char cmd[pathlength];
+//				::wcstombs(cmd, servicehelpercmd, pathlength-1);
+//				char chAppName[256];
+//				::wcstombs(chAppName, szAppName, 256-1);
+//				// Add the VNCserviceHelper entry
+//				if (RegSetValueExA(runapps, chAppName, 0, REG_SZ,
+//					(unsigned char *)cmd, strlen(cmd)+1) != ERROR_SUCCESS)
+//				{
+//					;
+//				}
+//#else
+//				if (RegSetValueEx(runapps, szAppName, 0, REG_SZ,
+//					(unsigned char *)servicehelpercmd, lstrlen(servicehelpercmd)+1) != ERROR_SUCCESS)
+//				{
+//					;
+//				}
+//#endif
+//				RegCloseKey(runapps);
+				;
 			}
 
 			// Everything went fine
@@ -598,18 +615,18 @@ CWinService::RemoveService(TCHAR *szAppName, TCHAR *szServiceName, BOOL silent)
 			SC_HANDLE   hsrvmanager;
 
 			// Attempt to remove the service-helper hook
-			HKEY runapps;
-			if (RegOpenKey(HKEY_LOCAL_MACHINE, 
-				_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"),
-				&runapps) == ERROR_SUCCESS)
-			{
-				// Attempt to delete the WinVNC key
-				if (RegDeleteValue(runapps, szAppName) != ERROR_SUCCESS)
-				{
-					;
-				}
-				RegCloseKey(runapps);
-			}
+			//HKEY runapps;
+			//if (RegOpenKey(HKEY_LOCAL_MACHINE, 
+			//	_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"),
+			//	&runapps) == ERROR_SUCCESS)
+			//{
+			//	// Attempt to delete the WinVNC key
+			//	if (RegDeleteValue(runapps, szAppName) != ERROR_SUCCESS)
+			//	{
+			//		;
+			//	}
+			//	RegCloseKey(runapps);
+			//}
 
 			// Open the SCM
 		    hsrvmanager = OpenSCManager(
@@ -727,8 +744,23 @@ BOOL ReportStatus(DWORD state,
 
 	// Tell the SCM our new status
 	if (!(result = SetServiceStatus(g_hstatus, &g_srvstatus)))
+	{
+		service_log(FILE_LOG, _T("SetServiceStatus failed"));
 		LogErrorMsg(_T("SetServiceStatus failed"));
-
+	}
+	else
+	{
+		const TCHAR strState[7][250] = { _T("SERVICE_STOPPED"),
+			_T("SERVICE_START_PENDING"),
+			_T("SERVICE_STOP_PENDING"),
+			_T("SERVICE_RUNNING"),
+			_T("SERVICE_CONTINUE_PENDING"),
+			_T("SERVICE_PAUSE_PENDING"),
+			_T("SERVICE_PAUSED")};
+		MyString str_log(_T("SetServiceStatus"));
+		str_log = str_log + _T(" ") + strState[state];
+		service_log(FILE_LOG, str_log);
+	}
     return result;
 }
 
@@ -743,9 +775,9 @@ void LogErrorMsg(TCHAR *message)
 	g_error = GetLastError();
 
 	// Use event logging to log the error
-    heventsrc = RegisterEventSource(NULL, VNCSERVICENAME);
+    heventsrc = RegisterEventSource(NULL, CWinService::m_strServiceName.c_str());
 
-	MySprintf(msgbuff, _T("%.200s error: %d"), VNCSERVICENAME, g_error);
+	MySprintf(msgbuff, _T("%.200s error: %d"), CWinService::m_strServiceName.c_str(), g_error);
     strings[0] = msgbuff;
     strings[1] = message;
 

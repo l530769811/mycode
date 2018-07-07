@@ -39,7 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>$(ProjectName)U</TargetName>
+    <TargetName>$(ProjectName)_d</TargetName>
     <OutDir>../lib</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,6 +82,7 @@
     <ClInclude Include="IOCompletePort.h" />
     <ClInclude Include="IOCompletePortOperate.h" />
     <ClInclude Include="IOCompletePortOverlapped.h" />
+    <ClInclude Include="Lock.h" />
     <ClInclude Include="MemAlloctor.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringIOCompletePortOverlapped.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="IOCompletePortOperate.cpp" />
     <ClCompile Include="IOCompletePortOverlapped.cpp" />
     <ClCompile Include="IOCompletePortTest.cpp" />
+    <ClCompile Include="Lock.cpp" />
     <ClCompile Include="MemAlloctor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

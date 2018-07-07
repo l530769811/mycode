@@ -11,11 +11,6 @@
 #include "MyMessagePool.h"
 #include <exception>
 
-const TCHAR		installService[] = 	_T("--install");
-const TCHAR		unstallService[] =	_T("--unstall");
-const TCHAR		runAsService[]	=  _T("--service");
-const TCHAR		runAsUserApp[]  = _T("--run");
-
 #define  NOTIFY_MESSAGE		WM_USER + 0x0001
 
 HANDLE hcommunication_thread;
@@ -29,17 +24,7 @@ CMyMessagePool app;
 unsigned int __stdcall _CommunicationThreadProc(void * pParam)
 {
 	int ret = -1;
-	/*int i=100;
-	while (i>0)
-	{
-		if(app.MyPostMessage(NOTIFY_MESSAGE, 0, 0)==FALSE)
-		{
-			DWORD err = GetLastError();
-		}
-		i--;
-		::Sleep(10);
-	}*/
-
+	
 	CLocalCommunication *pcommunicater = (CLocalCommunication*)pParam;
 	if(pcommunicater->ConnectedNamedPipe()){
 		int notify_index = 0;
@@ -87,7 +72,7 @@ unsigned int __stdcall _CommunicationThreadProc(void * pParam)
 }
 
 int _tmain(int argc, _TCHAR* argv[])
-{
+{	
 	TCHAR str[MAX_PATH] = {0};
 	MyString csBasePath;
 	::GetModuleFileName(NULL, str, MAX_PATH);
@@ -109,14 +94,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	}
 
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
+	//STARTUPINFO si;
+	//PROCESS_INFORMATION pi;
 
-	ZeroMemory( &si, sizeof(si) );
-	si.cb = sizeof(si);
-	ZeroMemory( &pi, sizeof(pi) );
+	//ZeroMemory( &si, sizeof(si) );
+	//si.cb = sizeof(si);
+	//ZeroMemory( &pi, sizeof(pi) );
 	//BOOL bprocess = 	::CreateProcess(csBasePath.c_str(),  // No module name (use command line)
-	//	0,        // Command line
+	//	NULL,        // Command line
 	//	NULL,           // Process handle not inheritable
 	//	NULL,           // Thread handle not inheritable
 	//	FALSE,          // Set handle inheritance to FALSE
@@ -126,7 +111,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//	&si,            // Pointer to STARTUPINFO structure
 	//	&pi				// Pointer to PROCESS_INFORMATION structure
 	//	);
-
 	BOOL bprocess = 1;
 	if (bprocess==TRUE)
 	{
@@ -170,6 +154,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			CCommunicateData *pdata = *it_begin;
 			delete pdata;
 		}
+	}
+	else
+	{
+		return -1;
 	}
 	return 0;
 }

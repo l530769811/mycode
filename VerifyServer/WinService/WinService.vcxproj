@@ -39,6 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>../lib</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>../lib</OutDir>
@@ -50,7 +51,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;__WIN32__;_DEBUG;_LIB;_WINSTATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../common;../omnithread;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../common;../omnithread;../program_log;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,7 +67,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;__WIN32__;NDEBUG;_LIB;_WINSTATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../common;../omnithread;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../common;../omnithread;../program_log;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,12 +80,16 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DebugLogCollecter.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="ServiceAppMain.cpp" />
+    <ClCompile Include="ServiceLogFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugLogCollecter.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="ServiceAppMain.h" />
+    <ClInclude Include="ServiceLogFile.h" />
     <ClInclude Include="winservice_define.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -6,13 +6,6 @@
 #include "thread_lock.h"
 
 
-
-#ifdef _DEBUG
-#pragma comment(lib, "IOCompletePortU.lib")
-#else
-#pragma comment(lib, "IOCompletePort.lib")
-#endif
-
 CThreadSocketRecevier::CThreadSocketRecevier(CSocketRecevier *pRecevier)
 	: m_pRecevier(pRecevier)
 	, m_nCurPort(0)
@@ -51,10 +44,6 @@ void CThreadSocketRecevier::Recevie(unsigned long uSokcetID, BYTE *rev_buf, UINT
 	assert(m_pRecevier!=NULL);
 	if ( m_pRecevier!=NULL )
 	{
-		TCHAR *pUnicodeBuf = reinterpret_cast<TCHAR*>(rev_buf);
-		MyString strData(pUnicodeBuf);
-		
-		
 		CStringIOCompletePortOverlapped *p = new CStringIOCompletePortOverlapped(m_pRecevier);
 		p->Update(uSokcetID, rev_buf, rev_len);
 		if (m_pIoCompletePorts[m_nCurPort]!=NULL)

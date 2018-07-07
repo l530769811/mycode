@@ -16,14 +16,14 @@ public:
 	virtual ~CClientVerifyOperator(void);
 
 	static int ClientVerifyCallback(void *data, int argc, char **argv, char **azColName);
-	bool GetVerifyResult() const;
+	int GetVerifyResult() const;
 
 public:	
 	virtual int Exec(CDBSqlManager *pdb);
 
 private:
 	MyString m_sql;
-	bool result;
+	int result;
 };
 
 #endif //_CLIENTVERIFTOPERATER_H__

@@ -3,10 +3,11 @@
 #include "LoginVerifyReponseNetSocketData.h"
 #include "UdpNetSocketProxy.h"
 #include "DBSqlManager.h"
+#include "error_id_define.h"
 
 CClientVerifyOperator::CClientVerifyOperator(MyString sql)
 	: m_sql(sql)
-	, result(false)
+	, result(LOGIN_VERIFY_ERROR)
 {
 }
 
@@ -26,7 +27,7 @@ int CClientVerifyOperator::Exec(CDBSqlManager *pdb)
 	return nret;
 }
 
-bool CClientVerifyOperator::GetVerifyResult() const
+int CClientVerifyOperator::GetVerifyResult() const
 {
 	return result;
 }
@@ -39,7 +40,7 @@ int CClientVerifyOperator::ClientVerifyCallback(void *data, int argc, char **arg
 	if(data!=0)
 	{
 		CClientVerifyOperator *pdata = reinterpret_cast <CClientVerifyOperator*>(data);
-		pdata->result = (argc>0);
+		pdata->result = (argc>0) ? NO_ERROR : LOGIN_VERIFY_ERROR;
 		
 	}
 

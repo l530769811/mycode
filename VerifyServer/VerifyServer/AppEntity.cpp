@@ -13,10 +13,10 @@
 #include "ClientManager.h"
 #include "MyServiceAppMain.h"
 #include "sqlite_sql.h"
+#include "ProcessLogCollecter.h"
 
 
-CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
-	: m_pmain(pmain)
+CAppEntity::CAppEntity()
 {
 	m_pDbManager = new CDBSqlManager();
 	m_pAppFileData = new CAppDataFileCopy(PROJECT_NAME, DATABASE_NAME);
@@ -31,7 +31,11 @@ CAppEntity::CAppEntity(CMyServiceAppMain *pmain)
 
 	m_pRecevier = new CThreadSocketRecevier(m_pclient_manager);
 	m_tcpServer = new CTcpServer();
-	m_tcpServer->Start(m_pRecevier, ("0.0.0.0"), TCP_PORT);
+	if(m_tcpServer->Start(m_pRecevier, ("0.0.0.0"), TCP_PORT)==FALSE)
+	{
+		log(FILE_LOG, _T(" tcpserver fail"));
+	}
+
 	m_pclient_manager->BindSocket(m_tcpServer);
 
 	m_pDbManager->ExecSql(create_user_table);

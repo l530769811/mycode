@@ -5,6 +5,8 @@
 #include "VerifyCardReponseNetSocketData.h"
 #include "TcpServerNetSocketProxy.h"
 #include "sqlite_sql.h"
+#include "ProcessLogCollecter.h"
+#include "error_id_define.h"
 
 CVerifyCardOperater::CVerifyCardOperater(CVIPCardManager *pmgr, CClientManager *pclient_mgr, unsigned long socket_id, MyString strCardNumber, MyString strCardPassword)
 	: m_pmgr(pmgr)
@@ -32,6 +34,18 @@ bool CVerifyCardOperater::_DoOperate()
 		m_pmgr->DoOperate(op);
 		int result = op.GetResult();
 		MyString strResult = op.GetResultText();
+
+		MyString log_str;
+		if(result==NO_ERROR)
+		{			
+			log_str = log_str + _T("Verify Card Number:") + m_strCardNumber + _T("    done");	
+		}
+		else
+		{
+			log_str = log_str + _T("Verify Card Number:") + m_strCardNumber + _T("    fail");	
+		}
+		log(TEXT_LOG, log_str);
+
 		if(m_pclient_mgr!=0)
 		{
 			CVerifyCardReponseNetSocketData data(result, strResult, m_strCardNumber, m_strCardPassword);

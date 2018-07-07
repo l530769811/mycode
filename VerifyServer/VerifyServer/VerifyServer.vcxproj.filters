@@ -208,6 +208,15 @@
     <ClInclude Include="NotifyTextCommunicateData.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ProcessLogCollecter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckoutUserDBDoOperator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LogFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -376,6 +385,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NotifyTextCommunicateData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessLogCollecter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckoutUserDBDoOperator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LogFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

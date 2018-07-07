@@ -24,9 +24,6 @@ public:
 
 	virtual int WinAppMain(unsigned long argc, TCHAR** argv) = 0;
 
-private:
-
-	static ServiceAppMain *m_pmain;
 };
 
 

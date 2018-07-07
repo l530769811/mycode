@@ -20,7 +20,7 @@ class CVIPCardManager;
 class CAppEntity
 {
 public:
-	CAppEntity(CMyServiceAppMain *pmain);
+	CAppEntity(void);
 	~CAppEntity(void);
 
 	int RecevieData(unsigned long id, MyString &data);

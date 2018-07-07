@@ -77,7 +77,7 @@ BOOL CLocalCommunication::ConnectedNamedPipe()
 	}
 	else
 	{
-		while( 
+		if( 
 			(m_hPipeFile = CreateFile(m_strName.c_str(),
 			GENERIC_READ |  // read and write access 
 			GENERIC_WRITE, 
@@ -88,17 +88,17 @@ BOOL CLocalCommunication::ConnectedNamedPipe()
 			NULL)
 			) ==  INVALID_HANDLE_VALUE)
 		{
-			if(::WaitNamedPipe(m_strName.c_str(), NMPWAIT_WAIT_FOREVER)==FALSE)
+			if(::WaitNamedPipe(m_strName.c_str(), 100)==FALSE)
 			{
 				DWORD err_code = ::GetLastError();
 				if (err_code!=ERROR_SEM_TIMEOUT && err_code!=ERROR_SUCCESS && err_code!=ERROR_FILE_NOT_FOUND)
 				{
-					break;
+					;
 				}
 
 				if (err_code==ERROR_FILE_NOT_FOUND)
 				{
-					::Sleep(1000);
+					::Sleep(100);
 				}
 			}
 		}

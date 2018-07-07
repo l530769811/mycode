@@ -30,6 +30,7 @@ const TCHAR insert_clientuser_data[] = {_T("INSERT INTO tlVeriryClientUser ( \
 const TCHAR update_user_password_data[] = {_T("UPDATE tlVeriryClientUser SET Password='%s' WHERE UserName='%s';")};
 const TCHAR select_user_data[] = {_T("SELECT * FROM tlVeriryClientUser;")};
 const TCHAR select_Login[] = {_T("SELECT * FROM tlVeriryClientUser WHERE UserName='%s' and Password='%s';")};
+const TCHAR select_check_login_name[] = {_T("SELECT * FROM tlVeriryClientUser WHERE UserName='%s';")};
 
 const TCHAR create_cardregister_table[]  = {_T("CREATE TABLE tlVeriryCardUser(\
 									   ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\

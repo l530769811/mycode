@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "MemAlloctor.h"
+#include "Lock.h"
 
 
 CMem::CMem(void)
@@ -83,18 +84,19 @@ std::vector<CMem*> CMemPool::m_vecOtherMembuf;
 
 std::list<CMem*> CMemPool::m_listFreeMem;
 std::list<CMem*> CMemPool::m_listBusyMem;
-CRITICAL_SECTION CMemPool::m_csMemLock;
+//CRITICAL_SECTION CMemPool::m_csMemLock;
 
+CCriticalSectionLock mem_lock;
 CMemPool::CMemPool(void)
 {
 	_initMemBuf();
-	::InitializeCriticalSection(&m_csMemLock);	
+	//::InitializeCriticalSection(&m_csMemLock);	
 }
 
 
 CMemPool::~CMemPool(void)
 {
-	::DeleteCriticalSection(&m_csMemLock);
+	//::DeleteCriticalSection(&m_csMemLock);
 	_clearMemBuf();
 }
 
@@ -132,7 +134,8 @@ void* CMemPool::NewMem(size_t nsize)
 	void *p = NULL;
 	try
 	{
-		::EnterCriticalSection(&m_csMemLock);
+		//::EnterCriticalSection(&m_csMemLock);
+		//mem_lock.Lock();
 		std::list<CMem*>::iterator it_begin = m_listFreeMem.begin();
 		for ( ; it_begin!=m_listFreeMem.end(); it_begin++)
 		{
@@ -168,10 +171,12 @@ void* CMemPool::NewMem(size_t nsize)
 			m_listBusyMem.push_back(pOtherMem);
 			p = pOtherMem->_GetBuff();		
 		}
-		::LeaveCriticalSection(&m_csMemLock);
+		//::LeaveCriticalSection(&m_csMemLock);
+		//mem_lock.Unlock();
 	}
 	catch(...)
 	{
+		//mem_lock.Unlock();
 		throw;
 	}
 	return p;
@@ -181,8 +186,8 @@ void CMemPool::DeleteMem(void *p)
 {
 	try
 	{
-		::EnterCriticalSection(&m_csMemLock);
-		
+		//::EnterCriticalSection(&m_csMemLock);
+		//mem_lock.Lock();
 		//this p is same the m_pbyte;
 		CMem *pMem = CONTAINING_RECORD(p,
 			CMem,
@@ -194,10 +199,12 @@ void CMemPool::DeleteMem(void *p)
 			m_listBusyMem.remove(pMem);
 			m_listFreeMem.push_back(pMem);
 		}		
-		::LeaveCriticalSection(&m_csMemLock);
+		//::LeaveCriticalSection(&m_csMemLock);
+		//mem_lock.Unlock();
 	}
 	catch(...)
 	{
+		//mem_lock.Unlock();
 		throw;
 	}
 }
@@ -219,10 +226,13 @@ void* CMemAlloctor::operator new(size_t nsize)
 	void *p = NULL;
 	try
 	{
-		p = memPool.NewMem(nsize);	
+		mem_lock.Lock();
+		p = memPool.NewMem(nsize);
+		mem_lock.Unlock();
 	}
 	catch(...)
 	{
+		mem_lock.Unlock();
 		throw;
 	}
 
@@ -233,10 +243,13 @@ void CMemAlloctor::operator delete(void *p)
 {
 	try
 	{
+		mem_lock.Lock();
 		memPool.DeleteMem(p);
+		mem_lock.Unlock();
 	}
 	catch(...)
 	{
+		mem_lock.Unlock();
 		throw;
 	}
 }

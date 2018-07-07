@@ -1055,9 +1055,9 @@ void CTcpServer::SaveData(PIO_CONTEXT pIO, const char* pBuf, const int nLen)
 			int nLen = buf.nLen - 15;
 			BYTE *tmp = new BYTE[nLen+1];
 			memcpy(tmp, buf.pBuf+10, buf.nLen-15);
-			tmp[nLen] = NULL;
-			nLen = MultiByteToWideChar(CP_UTF8, 0, (char*)tmp, -1, NULL, 0);
+			tmp[nLen] = NULL;			
 #else
+			//nLen = MultiByteToWideChar(CP_UTF8, 0, (char*)tmp, -1, NULL, 0);
 			DWORD flaglen = (sizeof(TCHAR)*2 +
 				sizeof(DWORD) + sizeof(DWORD) + sizeof(DWORD) +
 				sizeof(TCHAR));
@@ -1068,17 +1068,7 @@ void CTcpServer::SaveData(PIO_CONTEXT pIO, const char* pBuf, const int nLen)
 			tmp[nLen] = NULL;
 #endif	//REV_UNICODE		
 			if (nLen > 0)
-			{
-				//TCHAR *pUnicodeBuf = new TCHAR[nLen+1];
-				//Utf8ToUnicode((char*)tmp, pUnicodeBuf, nLen);
-
-				//if (m_pRecevier != NULL)
-				//{
-				//	m_pRecevier->Recevie(pIO->connID, (BYTE*)pUnicodeBuf, _tcslen(pUnicodeBuf)*sizeof(TCHAR));
-				//}
-
-				//delete[] pUnicodeBuf;
-
+			{				
 				if (m_pRecevier != NULL)
 				{
 					m_pRecevier->Recevie(pIO->connID, (BYTE*)tmp, nLen);

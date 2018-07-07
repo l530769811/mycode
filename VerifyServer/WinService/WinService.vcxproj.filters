@@ -24,6 +24,12 @@
     <ClCompile Include="ServiceAppMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DebugLogCollecter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceLogFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Service.h">
@@ -33,6 +39,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="winservice_define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugLogCollecter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceLogFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,58 @@
+[2018-07-07 15:15:37]	process begin
+
+[2018-07-07 15:15:37]	process end
+
+[2018-07-07 15:15:41]	process begin
+
+[2018-07-07 15:15:41]	argv --service
+
+[2018-07-07 15:15:41]	 cmyserviceappmain::winappmain begin
+
+[2018-07-07 15:15:49]	 cmyserviceappmain::winappmain end
+
+[2018-07-07 15:15:49]	process end
+
+[2018-07-07 15:15:52]	process begin
+
+[2018-07-07 15:15:52]	argv --service
+
+[2018-07-07 15:15:52]	 cmyserviceappmain::winappmain begin
+
+[2018-07-07 15:18:22]	 cmyserviceappmain::winappmain end
+
+[2018-07-07 15:18:22]	process end
+
+[2018-07-07 15:18:25]	process begin
+
+[2018-07-07 15:18:25]	argv --service
+
+[2018-07-07 15:18:25]	 cmyserviceappmain::winappmain begin
+
+[2018-07-07 15:18:27]	 cmyserviceappmain::winappmain end
+
+[2018-07-07 15:18:27]	process end
+
+[2018-07-07 15:18:36]	process begin
+
+[2018-07-07 15:18:36]	process end
+
+[2018-07-07 15:18:49]	process begin
+
+[2018-07-07 15:18:49]	process end
+
+[2018-07-07 15:18:57]	process begin
+
+[2018-07-07 15:18:57]	argv --service
+
+[2018-07-07 15:18:57]	 cmyserviceappmain::winappmain begin
+
+[2018-07-07 15:19:01]	 cmyserviceappmain::winappmain end
+
+[2018-07-07 15:19:01]	process end
+
+[2018-07-07 15:19:03]	process begin
+
+[2018-07-07 15:19:03]	argv --service
+
+[2018-07-07 15:19:03]	 cmyserviceappmain::winappmain begin
+

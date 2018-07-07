@@ -66,7 +66,7 @@ private:
 
 	static std::list<CMem*> m_listFreeMem;
 	static std::list<CMem*> m_listBusyMem;
-	static CRITICAL_SECTION m_csMemLock;
+	//static CRITICAL_SECTION m_csMemLock;
 };
 
 class CMemAlloctor

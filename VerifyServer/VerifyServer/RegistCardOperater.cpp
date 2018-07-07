@@ -5,6 +5,8 @@
 #include "TcpServerNetSocketProxy.h"
 #include "RegistCardReponseNetSocketData.h"
 #include "sqlite_sql.h"
+#include "error_id_define.h"
+#include "ProcessLogCollecter.h"
 
 CRegistCardOperater::CRegistCardOperater(CVIPCardManager *pmgr,
 	CClientManager *pclient_mgr,
@@ -51,6 +53,18 @@ bool CRegistCardOperater::_DoOperate()
 		CRegistCardDBDoOperator op(strSql);
 		m_pmgr->DoOperate(op);
 		int result = op.GetResult();
+
+		MyString log_str;
+		if(result==NO_ERROR)
+		{			
+			log_str = log_str + _T("Regist Card Number:") + m_strCardNumber + _T("    done");	
+		}
+		else
+		{
+			log_str = log_str + _T("Regist Card Number:") + m_strCardNumber + _T("    fail");	
+		}
+		log(TEXT_LOG, log_str);
+
 		if(m_pclient_mgr!=0)
 		{
 			CRegistCardReponseNetSocketData data(result, m_strCardNumber, m_strCardPassword);

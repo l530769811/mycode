@@ -46,12 +46,17 @@ class CWinService;
 #include <tchar.h>
 
 #include "SingleModeTemplete.h"
+#include "my_assist_define.h"
 
 #ifndef UNICODE
 #define MySprintf sprintf
 #else
 #define MySprintf swprintf
 #endif
+
+
+// Error message logging
+void LogErrorMsg(TCHAR *message);
 
 class ServiceAppMain;
 struct CArg{
@@ -66,6 +71,7 @@ struct CArg{
 class omni_thread;
 class CWinService
 {
+	friend void LogErrorMsg(TCHAR *message);
 public:
 	
 	CWinService(ServiceAppMain *pmain);
@@ -75,7 +81,7 @@ public:
 
 	// Routine called by WinMain to cause WinVNC to be installed
 	// as a service.
-	static int WinRunAsService();
+	static int WinRunAsService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szServiceDisplayName);
 
 	// Routine to install the WinVNC service on the local machine
 	static int InstallService(TCHAR *szAppName, TCHAR* szServiceName, TCHAR *szServiceDisplayName, BOOL silent=0);
@@ -110,6 +116,9 @@ private:
 
 private:
 	friend void* ServiceWorkThread(void *arg);
+
+private:
+	static MyString m_strServiceName;
 };
 
 #endif
